@@ -1,0 +1,25 @@
+{
+  "name": "blog-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^7.1.7"
+  },
+  "dependencies": {
+    "electron-store": "^5.1.0",
+    "form-data": "^3.0.0",
+    "jsdom": "^15.2.1",
+    "marked": "^0.8.0",
+    "path": "^0.12.7",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0",
+    "urlencode": "^1.1.0"
+  }
+}
