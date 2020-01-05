@@ -1,4 +1,3 @@
-const {dialog, shell} = require('electron')
 const https = require('https');
 const DataStore = require('../app-store')
 const dataStore = new DataStore()
