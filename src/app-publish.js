@@ -105,7 +105,7 @@ const publishArticleTo = async (title, content, dirname, site) => {
     // 3.发布文章
     switch (site) {
         case string.cnblogs:
-            await cnblogs.publishArticleToCnBlog(title, value)
+            await cnblogs.publishArticleToCnBlogs(title, value)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break

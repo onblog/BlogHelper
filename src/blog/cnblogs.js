@@ -53,7 +53,7 @@ function uploadPictureToCnBlogs(filePath) {
 let cnBlog_url = 'https://i1.cnblogs.com/EditPosts.aspx?opt=1'
 
 //发布文章到博客园
-function publishArticleToCnBlog(title, content) {
+function publishArticleToCnBlogs(title, content) {
     return new Promise((resolve, reject) => {
         let req = https.get(cnBlog_url, {
             headers: {
@@ -151,4 +151,4 @@ function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATO
 }
 
 exports.uploadPictureToCnBlogs = uploadPictureToCnBlogs
-exports.publishArticleToCnBlog = publishArticleToCnBlog
+exports.publishArticleToCnBlogs = publishArticleToCnBlogs
