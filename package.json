@@ -8,7 +8,8 @@
     "dist": "electron-builder"
   },
   "keywords": [],
-  "author": "",
+  "author": "yueshutong",
+  "repository": "https://github.com/yueshutong/BlogHelper",
   "license": "GPL3.0",
   "devDependencies": {
     "electron": "^7.1.7",
@@ -23,5 +24,30 @@
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "urlencode": "^1.1.0"
+  },
+  "build": {
+    "appId": "com.github.yueshutong.bloghelper",
+    "productName": "BlogHelper",
+    "mac": {
+      "icon": "build/app.icns",
+      "type": "development",
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "build/app.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "build/app.ico",
+      "category": "Office",
+      "target": [
+        "AppImage"
+      ]
+    }
   }
 }
