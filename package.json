@@ -1,13 +1,16 @@
 {
   "name": "blog-helper",
   "version": "1.0.0",
-  "description": "blog helper",
+  "description": "",
+  "productName": "BlogHelper",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder"
   },
-  "keywords": [],
+  "keywords": [
+    "write"
+  ],
   "author": "yueshutong",
   "repository": "https://github.com/yueshutong/BlogHelper",
   "license": "GPL3.0",
