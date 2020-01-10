@@ -39,8 +39,8 @@
 
 #### 📣如果帮助到你了，请不吝赞赏！三克油～
 
-<img src='./README/erweima.png' style="width:300px" width="1030"/>
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/erweima.png?raw=true' style="width:300px" />
 
-<img src='./README/gzh.png' style="width:300px" width="1030"/>
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/gzh.png?raw=true' style="width:300px"/>
 
 #### ❗本项目使用GPL开源协议，使用了本项目代码的项目也必须使用 GPL 协议开源。
