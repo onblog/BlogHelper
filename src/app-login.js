@@ -1,11 +1,11 @@
-const {BrowserWindow, session, dialog, Notification} = require('electron')
+const {BrowserWindow, session, Notification} = require('electron')
 const https = require('https')
 const jsDom = require("jsdom")
 const icon = require('./icon')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 
-//登录某网站获取Cookie通用方法
+//b登录某网站获取Cookie通用方法
 function getSiteCookie(url, callback) {
     let win = new BrowserWindow(
         {width: 700, height: 600, icon: icon.iconName, title: '【登陆成功后关闭窗口即可完成设置】'})
@@ -30,7 +30,7 @@ function getSiteCookie(url, callback) {
     })
 }
 
-//登录新浪图床
+// 登录新浪图床
 const loginWebBoPicture = function (item, focusedWindow, event) {
     getSiteCookie('https://www.weibo.com/', (cookie) => {
         dataStore.setWeiBoCookies(cookie)
@@ -38,7 +38,7 @@ const loginWebBoPicture = function (item, focusedWindow, event) {
 }
 exports.loginWebBoPicture = loginWebBoPicture
 
-//登录博客园
+// 登录博客园
 const loginCnBlog = function (item, focusedWindow, event) {
     getSiteCookie('https://www.cnblogs.com/', (cookie) => {
         dataStore.setCnBlogCookie(cookie)
@@ -46,7 +46,7 @@ const loginCnBlog = function (item, focusedWindow, event) {
 }
 exports.loginCnBlog = loginCnBlog
 
-//登录CSDN
+// 登录CSDN
 const loginCSDN = function (item, focusedWindow, event) {
     getSiteCookie('https://blog.csdn.net/', (cookie) => {
         dataStore.setCSDNCookie(cookie)
@@ -54,7 +54,7 @@ const loginCSDN = function (item, focusedWindow, event) {
 }
 exports.loginCSDN = loginCSDN
 
-//登录掘金
+// 登录掘金
 const loginJueJin = function (item, focusedWindow, event) {
     getSiteCookie('https://juejin.im/', (cookie) => {
         dataStore.setJueJinCookie(cookie)
@@ -62,7 +62,7 @@ const loginJueJin = function (item, focusedWindow, event) {
 }
 exports.loginJueJin = loginJueJin
 
-//登录开源中国
+// 登录开源中国
 const loginOsChina = function (item, focusedWindow, event) {
     getSiteCookie('https://my.oschina.net/', (cookie) => {
         dataStore.setOsChinaCookie(cookie)
@@ -71,7 +71,7 @@ const loginOsChina = function (item, focusedWindow, event) {
 }
 exports.loginOsChina = loginOsChina
 
-//获取开源中国的g_user_code，获取g_user_id
+// 获取开源中国的g_user_code，获取g_user_id
 function getOsChinaUserInfo() {
     https.get('https://www.oschina.net/', {
         headers: {
@@ -100,7 +100,7 @@ function getOsChinaUserInfo() {
     })
 }
 
-//登录思否
+// 登录思否
 const loginSegmentFault = function (item, focusedWindow, event) {
     getSiteCookie('https://segmentfault.com', (cookie) => {
         dataStore.setSegmentFaultCookie(cookie)
