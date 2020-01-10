@@ -33,14 +33,14 @@
 
 - 薛勤，一个就爱瞎鼓捣的程序猿🐒
 
-- 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📧
+- 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📩
 
 - 加入QQ群：[781927207](https://shang.qq.com/wpa/qunwpa?idkey=d0756ea301050e3f093124a97ba19f7b5e40d5e03b6a849e7ca1748421eb193b)💬
 
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/yueshutong/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/erweima.png?raw=true' style="width:300px" />
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/erweima.png?raw=true' width="300px" />
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/gzh.png?raw=true' style="width:300px"/>
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/gzh.png?raw=true' width="300px"/>
 
 #### ❗本项目使用GPL开源协议，使用了本项目代码的项目也必须使用 GPL 协议开源。
