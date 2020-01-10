@@ -1,7 +1,7 @@
 {
   "name": "blog-helper",
   "version": "1.0.0",
-  "description": "",
+  "description": "blog helper",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -13,7 +13,7 @@
   "license": "GPL3.0",
   "devDependencies": {
     "electron": "^7.1.7",
-    "electron-builder": "^21.2.0"
+    "electron-builder": "^22.1.0"
   },
   "dependencies": {
     "electron-store": "^5.1.0",
