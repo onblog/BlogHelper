@@ -10,7 +10,7 @@ const juejin = require('./blog/juejin')
 const oschina = require('./blog/oschina')
 const segmentfault = require('./blog/segmentfault')
 
-//发布文章到平台
+// 发布文章到平台
 const publishArticleTo = async (title, content, dirname, site) => {
     // 1.参数校验
     if (title == null || title.length < 1) {
