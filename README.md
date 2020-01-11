@@ -31,7 +31,7 @@
 
 ## 🚩预览
 
-![](README/image-20200111141318185.png)
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/image-20200111141318185.png?raw=true' width="400px" />
 
 ## 🚩关于作者
 
@@ -43,8 +43,8 @@
 
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/yueshutong/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/erweima.png?raw=true' width="300px" />
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/erweima.png?raw=true' width="400px" />
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/gzh.png?raw=true' width="300px"/>
+<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/gzh.png?raw=true' width="400px"/>
 
 #### ❗本项目使用GPL开源协议，使用了本项目代码的项目也必须使用 GPL 协议开源。
