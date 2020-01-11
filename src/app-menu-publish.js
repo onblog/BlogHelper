@@ -116,7 +116,9 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
     // 4.上传本地图片
     await weiBo.uploadPictureToWeiBo(filePath)
         .then(href => {
-            clipboard.writeText(href)
+            while (!clipboard.readImage().isEmpty()) {
+                clipboard.writeText(href)
+            }
             dialog.showMessageBox({message: '图片链接已拷贝至剪贴板'}).then()
         })
         .catch(message => {
@@ -138,6 +140,7 @@ exports.autoUpdateApp = (bool) => {
         req.on('end', function () {
             parseHtml(result);
         });
+
         //解析html获取内容
         function parseHtml(result) {
             const dom = new jsdom.JSDOM(result);
