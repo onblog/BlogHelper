@@ -43,8 +43,8 @@
 
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/yueshutong/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/erweima.png?raw=true' width="400px" />
+<img src='http://ww3.sinaimg.cn/large/007ZVq6cly1gau3bl3iu0j30sm0ek74f.jpg' width="400px" />
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/gzh.png?raw=true' width="200px"/>
+<img src='http://ww3.sinaimg.cn/large/007ZVq6cly1gau3c2at4aj30by0bymyd.jpg' width="200px"/>
 
 #### ❗本项目使用GPL开源协议，使用了本项目代码的项目也必须使用 GPL 协议开源。
