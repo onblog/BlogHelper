@@ -11,6 +11,29 @@ const dataStore = new DataStore()
 const appCheck = require('./app-check')
 const https = require('https')
 const jsdom = require('jsdom')
+const appDownload = require('./app-download')
+
+// 操作完成，保存在新文件还是剪贴板？
+function saveNewFileOrClipboard(result, content, mark) {
+    // 1.提示保存
+    let number = dialog.showMessageBoxSync({message: '操作完成，保存在', buttons: ['新文件', '剪贴板']})
+    if (number === 0) {
+        // 2.写入新文档
+        let filename = result.title + mark + result.extname
+        let filepath = path.join(result.dirname, filename)
+        fs.writeFileSync(filepath, content)
+        let num = dialog.showMessageBoxSync(
+            {message: '保存成功，是否打开新文档？', buttons: ['不了,谢谢', '打开']})
+        if (num === 1) {
+            shell.openItem(filepath)
+        }
+    } else if (number === 1) {
+        // 3.写入剪贴板
+        while (clipboard.readText() !== content) {
+            clipboard.writeText(content)
+        }
+    }
+}
 
 // 上传文章
 exports.publishArticleTo = (tray, site) => {
@@ -29,44 +52,40 @@ exports.publishArticleTo = (tray, site) => {
     })
 }
 
-// 上传文章图片
+// 本地图片上传
 exports.uploadAllPictureToWeiBo = async (tray) => {
     // 1.验证是否登录
     if (!dataStore.getWeiBoCookies()) {
-        dialog.showMessageBox({message: '请先登录新浪微博'}).then()
+        dialog.showMessageBoxSync({message: '请先登录新浪微博'})
         return
     }
-    // 3.选择本地文件
+    // 2.选择本地文件
     const result = appDialog.openLocalFileSync()
     if (result.canceled) {
         return
     }
-    // 2.开启进度条图标
+    // 3.开启进度条图标
     tray.setImage(icon.proIconFile)
-    const title = result.title
-    const content = result.content
-    const dirname = result.dirname;
-    let value = content
-    let success = 0;
-    const map = new Map();
     // 4.读取图片的真实路径
-    util.readImgLink(content, (src) => {
-        const all_src = util.relativePath(dirname, src)
-        map.set(src, all_src)
+    const map = new Map();
+    util.readImgLink(result.content, (src) => {
+        const fullPath = util.relativePath(result.dirname, src)
+        map.set(src, fullPath)
     })
-    let tip = {is: true}
-    for (let [src, all_src] of map.entries()) {
-        if (path.isAbsolute(all_src) && fs.existsSync(all_src)) {
-            // 5.上传本地图片
-            await weiBo.uploadPictureToWeiBo(all_src)
+    // 5.本地图片上传
+    let value = result.content
+    let mark = {next: true, number: 0}
+    for (let [src, fullPath] of map.entries()) {
+        if (path.isAbsolute(fullPath) && fs.existsSync(fullPath)) {
+            await weiBo.uploadPictureToWeiBo(fullPath)
                 .then(href => {
                     value = value.replace(src, href)
-                    success++
+                    mark.number++
                 })
                 .catch(message => {
-                    if (tip.is) {
-                        dialog.showMessageBoxSync({message: message})
-                        tip.is = false
+                    if (mark.next) {
+                        dialog.showMessageBoxSync({message: message, type: 'error'})
+                        mark.next = false
                     }
                 })
         }
@@ -74,37 +93,23 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
     // 6.关闭进度条图标
     tray.setImage(icon.iconFile)
     // 上传失败
-    if (!tip.is) {
+    if (!mark.next) {
         return
     }
     // 上传图片数量为0
-    if (success === 0) {
-        dialog.showMessageBox({message: '该文档无md本地图片引用'}).then()
+    if (mark.number === 0) {
+        dialog.showMessageBoxSync({message: '该文档无本地图片引用'})
         return
     }
-    // 新文件名
-    const paths = path.join(dirname, title + '-PIC.md')
-    // 7.写入新文档
-    fs.writeFile(paths, value, function (err) {
-        if (err) {
-            return console.error(err)
-        }
-        let number = dialog.showMessageBoxSync({
-                                                   message: '上传图片' + success + '张, 是否打开新文档？',
-                                                   buttons: ['不了,谢谢', '打开']
-                                               })
-        if (number === 1) {
-            // shell.showItemInFolder(paths)
-            shell.openItem(paths)
-        }
-    });
+    // 7.保存
+    saveNewFileOrClipboard(result, value, '-PIC-' + mark.number)
 }
 
 // 上传一张图片
 exports.uploadPictureToWeiBo = async (tray, image) => {
     // 1.验证是否登录
     if (!dataStore.getWeiBoCookies()) {
-        dialog.showMessageBox({message: '请先登录新浪微博'}).then()
+        dialog.showMessageBoxSync({message: '请先登录新浪微博'})
         return
     }
     // 2.开启进度条图标
@@ -116,25 +121,24 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
     // 4.上传本地图片
     await weiBo.uploadPictureToWeiBo(filePath)
         .then(href => {
-            dialog.showMessageBox({message: '图片链接已获取，拷贝格式为', buttons: ['Markdown','HTML','URL']})
-                .then(res => {
-                    if (res.response === 0) {
-                        while (!clipboard.readImage().isEmpty()) {
-                            clipboard.writeText('![]('+href+')')
-                        }
-                    }else if (res.response===1){
-                        while (!clipboard.readImage().isEmpty()) {
-                            clipboard.writeText(`<img src="${href}" referrerpolicy="no-referrer"/>`)
-                        }
-                    }else if (res.response===2){
-                        while (!clipboard.readImage().isEmpty()) {
-                            clipboard.writeText(href)
-                        }
-                    }
-                })
+            let number = dialog.showMessageBoxSync(
+                {message: '图片链接已获取，拷贝格式为', buttons: ['Markdown', 'HTML', 'URL']})
+            if (number === 0) {
+                while (!clipboard.readImage().isEmpty()) {
+                    clipboard.writeText('![](' + href + ')')
+                }
+            } else if (number === 1) {
+                while (!clipboard.readImage().isEmpty()) {
+                    clipboard.writeText(`<img src="${href}" referrerpolicy="no-referrer"/>`)
+                }
+            } else if (number === 2) {
+                while (!clipboard.readImage().isEmpty()) {
+                    clipboard.writeText(href)
+                }
+            }
         })
         .catch(message => {
-            dialog.showMessageBox({message: message}).then()
+            dialog.showMessageBoxSync({message: message})
         })
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
@@ -186,4 +190,83 @@ exports.autoUpdateApp = (bool) => {
         console.error(e);
     });
     req.end();
+}
+
+// Md图片转Img
+exports.pictureMdToImg = function (tray) {
+    // 1.开启进度条图标
+    tray.setImage(icon.proIconFile)
+    // 2.选择本地文件
+    const result = appDialog.openLocalFileSync()
+    if (result.canceled) {
+        return
+    }
+    // 3.Md转Img
+    let arrayList = result.content.split('\n')
+    let newValue = ''
+    arrayList.forEach(line => {
+        const split = line.indexOf('!') !== -1 ? line.split('!') : []
+        for (let i = 0; i < split.length; i++) {
+            if (split[i].length > 4 && split[i].indexOf('[') !== -1 && split[i].indexOf(']') !== -1
+                && split[i].indexOf('(') !== -1 && split[i].indexOf(')') !== -1) {
+                const start = split[i].lastIndexOf('(')
+                const end = split[i].lastIndexOf(')')
+                let src = split[i].substring(start + 1, end) //图片的真实地址
+                line =
+                    line.replace("!" + split[i], `<img src="${src}" referrerPolicy="no-referrer"/>`)
+            }
+        }
+        newValue += line + '\n'
+    })
+    // 4.保存
+    saveNewFileOrClipboard(result, newValue, '-IMG')
+    // 5.关闭进度条图标
+    tray.setImage(icon.iconFile)
+}
+
+// 网络图片下载
+exports.downloadMdNetPicture = async function (tray) {
+    // 1.开启进度条图标
+    tray.setImage(icon.proIconFile)
+    // 2.选择本地文件
+    const result = appDialog.openLocalFileSync()
+    if (result.canceled) {
+        return
+    }
+    // 3.读取网络链接
+    const map = new Map()
+    util.readImgLink(result.content, (src) => {
+        if (util.isWebPicture(src)) {
+            let filepath = path.join(result.dirname, result.title, path.basename(src))
+            map.set(src, filepath)
+        }
+    })
+    // 4.替换
+    let newValue = result.content
+    let mark = {next: true, number: 0}
+    for (let [src, filepath] of map.entries()) {
+        await appDownload.downloadPicture(src, filepath)
+            .then(value => {
+                newValue = newValue.replace(src, filepath)
+                mark.number++;
+            })
+            .catch(reason => {
+                if (mark.next) {
+                    dialog.showMessageBoxSync({message: reason, type: 'error'})
+                    mark.next = false
+                }
+            })
+    }
+    // 5.关闭进度条图标
+    tray.setImage(icon.iconFile)
+    // 上传失败
+    if (!mark.next) {
+        return
+    }
+    if (mark.number === 0) {
+        dialog.showMessageBoxSync({message: '该文档无网络图片引用'})
+        return
+    }
+    // 6.保存
+    saveNewFileOrClipboard(result, newValue, '-Local-' + mark.number)
 }

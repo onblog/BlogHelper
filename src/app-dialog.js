@@ -43,13 +43,17 @@ exports.openLocalFileSync = () => {
     result.canceled = (files === undefined)
     if (files) {
         // 已选中文件
-        const filePath = files[0]
-        const title = util.getTitle(filePath)
-        const dirname = path.dirname(filePath)
-        const content = fs.readFileSync(filePath)
+        const filepath = files[0]
+        const title = util.getTitle(filepath)
+        const dirname = path.dirname(filepath)
+        const content = fs.readFileSync(filepath)
+        const extname = path.extname(filepath)
+        // 返回
+        result.filepath = filepath
         result.title = title
         result.content = content.toString()
         result.dirname = dirname
+        result.extname = extname
     }
     return result
 }
