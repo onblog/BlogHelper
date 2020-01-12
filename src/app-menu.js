@@ -128,7 +128,7 @@ exports.buildContextMenu = (tray) => {
                     label: '本地图片整理'
                 }
                 , {
-                    label: '图片转img标签',
+                    label: 'Md转Img标签',
                     click: function () {
                         appMenuPublish.pictureMdToImg(tray)
                     }
