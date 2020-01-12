@@ -113,16 +113,25 @@ exports.buildContextMenu = (tray) => {
             label: '文章',
             submenu: [
                 {
-                    label: '网络图片下载'
-                }
-                , {
                     label: '本地图片上传',
                     click: function () {
                         appMenuPublish.uploadAllPictureToWeiBo(tray).then()
                     }
                 }
                 , {
+                    label: '网络图片下载',
+                    click: function () {
+                        appMenuPublish.downloadMdNetPicture(tray).then()
+                    }
+                }
+                , {
                     label: '本地图片整理'
+                }
+                , {
+                    label: '图片转img标签',
+                    click: function () {
+                        appMenuPublish.pictureMdToImg(tray)
+                    }
                 }
             ]
         }

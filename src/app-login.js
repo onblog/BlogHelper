@@ -5,7 +5,7 @@ const icon = require('./icon')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 
-//b登录某网站获取Cookie通用方法
+//登录某网站获取Cookie通用方法
 function getSiteCookie(url, callback) {
     let win = new BrowserWindow(
         {width: 700, height: 600, icon: icon.iconName, title: '【登陆成功后关闭窗口即可完成设置】'})
