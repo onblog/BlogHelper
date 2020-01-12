@@ -31,7 +31,7 @@
 
 ## 🚩预览
 
-<img src='https://github.com/yueshutong/BlogHelper/blob/master/README/image-20200111141318185.png?raw=true' width="400px" />
+<img src='http://ww3.sinaimg.cn/large/007ZVq6cly1gau3dad40ej31460rmkjm.jpg' width="400px" />
 
 ## 🚩关于作者
 
