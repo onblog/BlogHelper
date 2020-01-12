@@ -116,10 +116,22 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
     // 4.上传本地图片
     await weiBo.uploadPictureToWeiBo(filePath)
         .then(href => {
-            while (!clipboard.readImage().isEmpty()) {
-                clipboard.writeText(href)
-            }
-            dialog.showMessageBox({message: '图片链接已拷贝至剪贴板'}).then()
+            dialog.showMessageBox({message: '图片链接已获取，拷贝格式为', buttons: ['Markdown','HTML','URL']})
+                .then(res => {
+                    if (res.response === 0) {
+                        while (!clipboard.readImage().isEmpty()) {
+                            clipboard.writeText('![]('+href+')')
+                        }
+                    }else if (res.response===1){
+                        while (!clipboard.readImage().isEmpty()) {
+                            clipboard.writeText(`<img src="${href}" referrerpolicy="no-referrer"/>`)
+                        }
+                    }else if (res.response===2){
+                        while (!clipboard.readImage().isEmpty()) {
+                            clipboard.writeText(href)
+                        }
+                    }
+                })
         })
         .catch(message => {
             dialog.showMessageBox({message: message}).then()
