@@ -103,3 +103,19 @@ exports.compareVersion = function (v1, v2){
     }
     return 0
 }
+
+//只保留汉字+英文+数字
+exports.stringDeal = function (str) {
+    let result = ''
+    for (let i=0; i<str.length; i++) {
+        let c = str.charCodeAt(i);
+        if (c>=0x4e00&&c<=0x9fa5){ //汉字
+            result+= str.charAt(i)
+        } else if (c>=0x61 && c<=0x7a || c>=0x41 && c<=0x5a){ //字母
+            result+=str.charAt(i)
+        }else if (c>=0x30&&c<=0x39){ //数字
+            result+=str.charAt(i)
+        }
+    }
+    return result
+}
