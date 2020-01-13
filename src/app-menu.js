@@ -125,7 +125,10 @@ exports.buildContextMenu = (tray) => {
                     }
                 }
                 , {
-                    label: '本地图片整理'
+                    label: '本地图片整理',
+                    click: function () {
+                        appMenuPublish.movePictureToFolder(tray)
+                    }
                 }
                 , {
                     label: 'Md转Img标签',

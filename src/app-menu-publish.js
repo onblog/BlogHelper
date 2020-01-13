@@ -12,28 +12,7 @@ const appCheck = require('./app-check')
 const https = require('https')
 const jsdom = require('jsdom')
 const appDownload = require('./app-download')
-
-// 操作完成，保存在新文件还是剪贴板？
-function saveNewFileOrClipboard(result, content, mark) {
-    // 1.提示保存
-    let number = dialog.showMessageBoxSync({message: '操作完成，保存在', buttons: ['新文件', '剪贴板']})
-    if (number === 0) {
-        // 2.写入新文档
-        let filename = result.title + mark + result.extname
-        let filepath = path.join(result.dirname, filename)
-        fs.writeFileSync(filepath, content)
-        let num = dialog.showMessageBoxSync(
-            {message: '保存成功，是否打开新文档？', buttons: ['不了,谢谢', '打开']})
-        if (num === 1) {
-            shell.openItem(filepath)
-        }
-    } else if (number === 1) {
-        // 3.写入剪贴板
-        while (clipboard.readText() !== content) {
-            clipboard.writeText(content)
-        }
-    }
-}
+const appSave = require('./app-save')
 
 // 上传文章
 exports.publishArticleTo = (tray, site) => {
@@ -102,7 +81,7 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
         return
     }
     // 7.保存
-    saveNewFileOrClipboard(result, value, '-PIC-' + mark.number)
+    appSave.saveNewFileOrClipboard(result, value, '-PIC-' + mark.number)
 }
 
 // 上传一张图片
@@ -219,7 +198,7 @@ exports.pictureMdToImg = function (tray) {
         newValue += line + '\n'
     })
     // 4.保存
-    saveNewFileOrClipboard(result, newValue, '-IMG')
+    appSave.saveNewFileOrClipboard(result, newValue, '-IMG')
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
@@ -233,11 +212,13 @@ exports.downloadMdNetPicture = async function (tray) {
     if (result.canceled) {
         return
     }
-    // 3.读取网络链接
+    // 3.读取网图链接
     const map = new Map()
     util.readImgLink(result.content, (src) => {
         if (util.isWebPicture(src)) {
-            let filepath = path.join(result.dirname, result.title, path.basename(src))
+            // 存放图片的文件夹
+            const dirName = util.stringDeal(result.title)
+            let filepath = path.join(result.dirname, dirName, path.basename(src))
             map.set(src, filepath)
         }
     })
@@ -268,5 +249,51 @@ exports.downloadMdNetPicture = async function (tray) {
         return
     }
     // 6.保存
-    saveNewFileOrClipboard(result, newValue, '-Local-' + mark.number)
+    appSave.saveNewFileOrClipboard(result, newValue, '-Local-' + mark.number)
+}
+
+// 一键图片整理到picture文件夹
+exports.movePictureToFolder = function (tray) {
+    // 1.开启进度条图标
+    tray.setImage(icon.proIconFile)
+    // 2.选择本地文件
+    const result = appDialog.openLocalFileSync()
+    if (result.canceled) {
+        return
+    }
+    // 3.读取图片的真实路径
+    const map = new Map();
+    util.readImgLink(result.content, (src) => {
+        if (util.isLocalPicture(src)) {
+            const fullPath = util.relativePath(result.dirname, src)
+            // 当前图片在本地存在
+            if (fs.existsSync(fullPath)) {
+                map.set(src, fullPath)
+            }
+        }
+    })
+    // 4.复制整理
+    let value = result.content
+    for (let [src, fullPath] of map.entries()) {
+        // 存放图片的文件夹
+        const dirName = util.stringDeal(result.title)
+        // 图片文件名
+        const picName = path.basename(src)
+        // 新的保存位置
+        const picPath = path.join(result.dirname, dirName, picName)
+        // 新的相对路径
+        const relativePath = './'+path.join(dirName, picName)
+        if (picPath !== fullPath) {
+            fs.copyFileSync(fullPath, picPath)
+            value = value.replace(src, relativePath)
+        } else {
+            if (src !== relativePath){
+                value = value.replace(src, relativePath)
+            }
+        }
+    }
+    // 5.保存
+    appSave.saveNewFileOrClipboard(result,value,'-NORM')
+    // 6.关闭进度条图标
+    tray.setImage(icon.iconFile)
 }
