@@ -31,7 +31,7 @@
 
 ## 🚩预览
 
-<img src="http://ww3.sinaimg.cn/large/007ZVq6cly1gauwh01tb6j311y0mox6p.jpg" referrerpolicy="no-referrer"/>
+<img src="http://ww3.sinaimg.cn/large/007ZVq6cly1gauwh01tb6j311y0mox6p.jpg" referrerpolicy="no-referrer" width="400px"/>
 
 ## 🚩关于作者
 
