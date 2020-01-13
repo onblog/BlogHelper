@@ -13,7 +13,7 @@ function createTray() {
     // 新建系统托盘并添加图标
     const tray = new Tray(icon.iconFile)
     // 悬停通知
-    tray.setToolTip('今天你最好看')
+    tray.setToolTip('你今天真好看')
     // 添加菜单到系统托盘区
     tray.setContextMenu(appMenu.buildContextMenu(tray))
 }
