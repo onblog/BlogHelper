@@ -45,6 +45,6 @@
 
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/yueshutong/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
-<img src="https://user-images.githubusercontent.com/31175877/67548917-af6d1600-f735-11e9-9807-351e6a2db269.png" width="300px" referrerpolicy="no-referrer">
+<img src="https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png" width="300px" referrerpolicy="no-referrer">
 
 #### ❗本项目使用GPL开源协议，使用了本项目代码的项目也必须使用 GPL 协议开源。
