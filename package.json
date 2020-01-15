@@ -9,9 +9,10 @@
     "dist": "electron-builder"
   },
   "keywords": [
-    "write"
+    "pc",
+    "util"
   ],
-  "author": "yueshutong",
+  "author": "Github@yueshutong",
   "repository": "https://github.com/yueshutong/BlogHelper",
   "license": "GPL3.0",
   "devDependencies": {
