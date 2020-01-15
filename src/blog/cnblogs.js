@@ -38,6 +38,8 @@ function uploadPictureToCnBlogs(filePath) {
                     } else {
                         reject(result.message)
                     }
+                }else {
+                    reject('上传图片失败,响应码' + res.statusCode)
                 }
             });
         });

@@ -34,6 +34,8 @@ function uploadPictureToCSDN(filePath) {
                     } else {
                         reject(result.content)
                     }
+                }else {
+                    reject('上传图片失败,响应码' + res.statusCode)
                 }
             });
         });

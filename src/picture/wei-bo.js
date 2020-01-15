@@ -1,5 +1,4 @@
 const urlEncode = require('urlencode')
-const {dialog} = require('electron')
 const https = require('https');
 const DataStore = require('../app-store')
 const dataStore = new DataStore()
@@ -11,6 +10,11 @@ const fs = require('fs')
  */
 function uploadPictureToWeiBo(filePath) {
     return new Promise((resolve, reject) => {
+        // 验证是否登录
+        if (!dataStore.getWeiBoCookies()) {
+            reject('请先绑定新浪微博')
+            return
+        }
         let image_url = 'https://picupload.weibo.com/interface/pic_upload.php?mime=image%2Fjpeg&data=base64&url=0&markpos=1&logo=&nick=0&marks=1&app=miniblog'
         fs.readFile(filePath, {encoding: 'base64'}, function (err, data) {
             if (err) {
@@ -56,7 +60,7 @@ function uploadPictureToWeiBo(filePath) {
 
             req.on('error', function (e) {
                 console.log('problem with request: ' + e.message);
-                reject('网络异常')
+                reject('网络连接异常')
             });
 
             req.write(image_data)

@@ -91,10 +91,6 @@ function getOsChinaUserInfo() {
             if (g_user_code && g_user_id) {
                 dataStore.setOsChinaUserCode(g_user_code)
                 dataStore.setOsChinaUserId(g_user_id)
-                // dialog.showMessageBoxSync({message: '已登录开源中国'})
-                if (Notification.isSupported()){
-                    new Notification()
-                }
             }
         });
     })

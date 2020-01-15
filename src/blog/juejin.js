@@ -36,6 +36,8 @@ function uploadPictureToJueJin(filePath) {
                     } else {
                         reject(result.m)
                     }
+                }else {
+                    reject('上传图片失败,响应码' + res.statusCode)
                 }
             });
         });
