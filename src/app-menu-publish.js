@@ -5,7 +5,6 @@ const path = require('path')
 const fs = require('fs')
 const icon = require('./icon')
 const appDialog = require('./app-dialog')
-const weiBo = require('./picture/wei-bo')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 const appCheck = require('./app-check')
@@ -13,6 +12,8 @@ const https = require('https')
 const jsdom = require('jsdom')
 const appDownload = require('./app-download')
 const appSave = require('./app-save')
+const appToast = require('./app-toast')
+const appUpload = require('./app-upload')
 
 // 上传文章
 exports.publishArticleTo = (tray, site) => {
@@ -33,11 +34,6 @@ exports.publishArticleTo = (tray, site) => {
 
 // 本地图片上传
 exports.uploadAllPictureToWeiBo = async (tray) => {
-    // 1.验证是否登录
-    if (!dataStore.getWeiBoCookies()) {
-        dialog.showMessageBoxSync({message: '请先登录新浪微博'})
-        return
-    }
     // 2.选择本地文件
     const result = appDialog.openLocalFileSync()
     if (result.canceled) {
@@ -56,7 +52,7 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
     let mark = {next: true, number: 0}
     for (let [src, fullPath] of map.entries()) {
         if (path.isAbsolute(fullPath) && fs.existsSync(fullPath)) {
-            await weiBo.uploadPictureToWeiBo(fullPath)
+            await appUpload.uploadPicture(fullPath)
                 .then(href => {
                     value = value.replace(src, href)
                     mark.number++
@@ -77,7 +73,7 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
     }
     // 上传图片数量为0
     if (mark.number === 0) {
-        dialog.showMessageBoxSync({message: '该文档无本地图片引用'})
+        appToast.toast({title: '提示',body:'该文档无本地图片引用'})
         return
     }
     // 7.保存
@@ -86,11 +82,6 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
 
 // 上传一张图片
 exports.uploadPictureToWeiBo = async (tray, image) => {
-    // 1.验证是否登录
-    if (!dataStore.getWeiBoCookies()) {
-        dialog.showMessageBoxSync({message: '请先登录新浪微博'})
-        return
-    }
     // 2.开启进度条图标
     tray.setImage(icon.proIconFile)
     // 3.存储到临时文件夹
@@ -98,7 +89,7 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
     const filePath = path.join(app.getPath("temp"), Math.floor(Math.random() * 10000000) + '.png')
     fs.writeFileSync(filePath, buffer)
     // 4.上传本地图片
-    await weiBo.uploadPictureToWeiBo(filePath)
+    await appUpload.uploadPicture(filePath)
         .then(href => {
             let number = dialog.showMessageBoxSync(
                 {message: '图片链接已获取，拷贝格式为', buttons: ['Markdown', 'HTML', 'URL']})
@@ -117,7 +108,7 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
             }
         })
         .catch(message => {
-            dialog.showMessageBoxSync({message: message})
+            dialog.showMessageBoxSync({message: message, type:'error'})
         })
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
@@ -143,7 +134,7 @@ exports.autoUpdateApp = (bool) => {
                 'div.release-header > ul> li > a[title]')
             if (!(element && element.getAttribute('title'))) {
                 if (bool) {
-                    dialog.showMessageBox({message: '已经是最新版本！'}).then()
+                    appToast.toast({title: '提示',body:'已经是最新版本！'})
                 }
                 return
             }
@@ -160,13 +151,14 @@ exports.autoUpdateApp = (bool) => {
                     }
                 })
             } else if (bool) {
-                dialog.showMessageBox({message: '已经是最新版本！'}).then()
+                appToast.toast({title: '提示',body:'已经是最新版本！'})
             }
         }
 
     })
     req.on('error', (e) => {
         console.error(e);
+        dialog.showMessageBoxSync({message:'网络连接异常'})
     });
     req.end();
 }
@@ -245,7 +237,7 @@ exports.downloadMdNetPicture = async function (tray) {
         return
     }
     if (mark.number === 0) {
-        dialog.showMessageBoxSync({message: '该文档无网络图片引用'})
+        appToast.toast({title: '提示',body:'该文档无网络图片引用'})
         return
     }
     // 6.保存

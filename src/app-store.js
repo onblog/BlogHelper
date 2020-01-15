@@ -123,6 +123,34 @@ class DataStore extends Store {
         return this.set(this.OsChinaUserIdKey, v)
     }
 
+    // 启用图床Key
+    figureBedSwitch = 'figureBedSwitch'
+    // Value
+    WEIBO = 'WEIBO'
+    SMMS = 'SMMS'
+
+    // 是否启用微博图床
+    isWeiBoFigureBedSwitch() {
+        if (this.has(this.figureBedSwitch)) {
+            return this.get(this.figureBedSwitch) === this.WEIBO
+        }
+        return false
+    }
+    setWeiBoFigureBedSwitch() {
+        this.set(this.figureBedSwitch, this.WEIBO+'')
+    }
+
+    // 是否启用SM.MS图床
+    isSmMSFigureBedSwitch() {
+        if (this.has(this.figureBedSwitch)) {
+            return this.get(this.figureBedSwitch) === this.SMMS
+        }
+        return false
+    }
+    setSmMSFigureBedSwitch() {
+        this.set(this.figureBedSwitch, this.SMMS+'')
+    }
+
 }
 
 module.exports = DataStore

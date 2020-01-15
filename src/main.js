@@ -25,7 +25,7 @@ app.on('window-all-closed', () => {
 // 提醒喝水小助手
 function remindDrinking() {
     const interval = setInterval(() => {
-        dialog.showMessageBox({message: '⏰您已连续工作1小时，小助手提醒您及时补充水分！', buttons: ['好的,我知道了', '关闭提醒']})
+        dialog.showMessageBox({message: '⏰您已连续工作1小时，小助手提醒您及时补充水分！', buttons: ['好的,谢谢', '关闭提醒']})
             .then(value => {
                 if (value.response===1){
                     clearInterval(interval)

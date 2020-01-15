@@ -1,8 +1,11 @@
-const {Menu, app, dialog, clipboard, shell} = require('electron')
+const {Menu, app, clipboard, shell} = require('electron')
 const appLogin = require('./app-login')
 const string = require('./app-string')
 const appMenuPublish = require('./app-menu-publish')
 const appUtil = require('./app-util')
+const DataStore = require('./app-store')
+const dataStore = new DataStore()
+const toast = require('./app-toast')
 
 exports.buildContextMenu = (tray) => {
     // 开机自动检查一次更新
@@ -98,11 +101,29 @@ exports.buildContextMenu = (tray) => {
                         }
                         , {
                             label: '启用',
-                            type: 'checkbox',
-                            checked: true,
+                            // id: 'wei-bo',
+                            // type: 'checkbox',
+                            // checked: dataStore.isWeiBoFigureBedSwitch(),
                             click: function (menuItem, browserWindow, event) {
-                                dialog.showMessageBox({message: '暂时只支持新浪图床'}).then()
-                                menuItem.checked = true
+                                // menuItem.checked = true
+                                dataStore.setWeiBoFigureBedSwitch()
+                                toast.toast({title: '启用成功',body:'正在使用新浪图床'})
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: 'SM.MS',
+                    submenu: [
+                        {
+                            label: '启用',
+                            // id: 'sm-ms',
+                            // type: 'checkbox',
+                            // checked: dataStore.isSmMSFigureBedSwitch(),
+                            click:function (menuItem, browserWindow, even) {
+                                // menuItem.checked = true
+                                dataStore.setSmMSFigureBedSwitch()
+                                toast.toast({title: '启用成功',body:'正在使用SM图床'})
                             }
                         }
                     ]
@@ -146,7 +167,7 @@ exports.buildContextMenu = (tray) => {
                     click: function (menuItem, browserWindow, event) {
                         const nativeImage = clipboard.readImage()
                         if (nativeImage.isEmpty()) {
-                            dialog.showMessageBox({message: '剪贴板未检索到图片'}).then()
+                            toast.toast({title: '提示',body:'剪贴板未检索到图片'})
                         } else {
                             appMenuPublish.uploadPictureToWeiBo(tray, nativeImage).then()
                         }
@@ -159,7 +180,7 @@ exports.buildContextMenu = (tray) => {
                         clipboard.writeText(appUtil.formatCode(oldT))
                         const newT = clipboard.readText()
                         if (oldT !== newT) {
-                            dialog.showMessageBox({message: '剪贴板已更新'}).then()
+                            toast.toast({title: '提示',body:'剪贴板已更新'})
                         }
                     }
                 }
@@ -218,7 +239,7 @@ exports.buildContextMenu = (tray) => {
                 , {
                     label: '版本查询',
                     click: function () {
-                        dialog.showMessageBox({message: app.getVersion()}).catch()
+                        toast.toast({title: '当前版本',body:app.getVersion()})
                     }
                 }, {
                     label: '检查更新',

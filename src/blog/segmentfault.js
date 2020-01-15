@@ -36,7 +36,7 @@ function uploadPictureToSegmentFault(filePath) {
                         reject('上传图片失败')
                     }
                 } else {
-                    reject('上传图片失败,状态码' + res.statusCode)
+                    reject('上传图片失败,响应码' + res.statusCode)
                 }
             });
         });
