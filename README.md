@@ -17,9 +17,11 @@
 
 - 剪贴板截屏、拷贝的图片一键上传至云端，更新剪贴板内容为云端图片地址。
 
-- 剪贴板拷贝的代码进行格式化操作，去掉代码块左侧空白。
+- 剪贴板拷贝的代码进行格式化操作，解决粘贴代码左侧留白的苦恼。
 
 - 丰富的工具集，包括一键打开微信文章排版，一键打开图片素材网站等。
+
+- 对文章的图片进行各种DIY操作，一键网络图片下载，一键本地图片整理。
 
 ## 🚩更多功能
 
@@ -31,7 +33,7 @@
 
 ## 🚩预览
 
-<img src="http://ww3.sinaimg.cn/large/007ZVq6cly1gauwh01tb6j311y0mox6p.jpg" referrerpolicy="no-referrer" width="400px"/>
+<img src="https://i.loli.net/2020/01/14/zkCc9WN5A8iQKgm.png" referrerpolicy="no-referrer" width="400px"/>
 
 ## 🚩关于作者
 
@@ -43,6 +45,6 @@
 
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/yueshutong/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
-<img src='http://ww3.sinaimg.cn/large/007ZVq6cly1gau3bl3iu0j30sm0ek74f.jpg' referrerPolicy="no-referrer" width="400px" />
+<img src="https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png" width="300px" referrerpolicy="no-referrer">
 
 #### ❗本项目使用GPL开源协议，使用了本项目代码的项目也必须使用 GPL 协议开源。
