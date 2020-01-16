@@ -119,3 +119,15 @@ exports.stringDeal = function (str) {
     }
     return result
 }
+
+// electron MenuItem
+exports.myGetMenuItemById = function myGetMenuItemById(id, myMenu) {
+    const items = myMenu.items
+    let found = items.find(item => item.id === id) || null
+    for (let i = 0, length = items.length; !found && i < length; i++) {
+        if (items[i].submenu) {
+            found = myGetMenuItemById(id, items[i].submenu)
+        }
+    }
+    return found
+}
