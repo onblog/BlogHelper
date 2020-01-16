@@ -7,9 +7,13 @@ const DataStore = require('./app-store')
 const dataStore = new DataStore()
 const toast = require('./app-toast')
 
+// 图床
+const PIC = ['WEIBO', 'SMMS']
+
 exports.buildContextMenu = (tray) => {
     // 开机自动检查一次更新
     appMenuPublish.autoUpdateApp(false)
+    let menu
     const template = [
         {
             label: '博客',
@@ -101,13 +105,14 @@ exports.buildContextMenu = (tray) => {
                         }
                         , {
                             label: '启用',
-                            // id: 'wei-bo',
-                            // type: 'checkbox',
-                            // checked: dataStore.isWeiBoFigureBedSwitch(),
+                            id: PIC[0],
+                            type: 'checkbox',
+                            checked: dataStore.isWeiBoFigureBedSwitch(),
                             click: function (menuItem, browserWindow, event) {
-                                // menuItem.checked = true
+                                menuItem.checked = true
                                 dataStore.setWeiBoFigureBedSwitch()
-                                toast.toast({title: '启用成功',body:'正在使用新浪图床'})
+                                toast.toast({title: '启用成功', body: '正在使用新浪图床'})
+                                closeMenuChecked(menuItem.id, menu)
                             }
                         }
                     ]
@@ -117,13 +122,14 @@ exports.buildContextMenu = (tray) => {
                     submenu: [
                         {
                             label: '启用',
-                            // id: 'sm-ms',
-                            // type: 'checkbox',
-                            // checked: dataStore.isSmMSFigureBedSwitch(),
-                            click:function (menuItem, browserWindow, even) {
-                                // menuItem.checked = true
+                            id: PIC[1],
+                            type: 'checkbox',
+                            checked: dataStore.isSmMSFigureBedSwitch(),
+                            click: function (menuItem, browserWindow, even) {
+                                menuItem.checked = true
                                 dataStore.setSmMSFigureBedSwitch()
-                                toast.toast({title: '启用成功',body:'正在使用SM图床'})
+                                toast.toast({title: '启用成功', body: '正在使用SM图床'})
+                                closeMenuChecked(menuItem.id, menu)
                             }
                         }
                     ]
@@ -167,7 +173,7 @@ exports.buildContextMenu = (tray) => {
                     click: function (menuItem, browserWindow, event) {
                         const nativeImage = clipboard.readImage()
                         if (nativeImage.isEmpty()) {
-                            toast.toast({title: '提示',body:'剪贴板未检索到图片'})
+                            toast.toast({title: '提示', body: '剪贴板未检索到图片'})
                         } else {
                             appMenuPublish.uploadPictureToWeiBo(tray, nativeImage).then()
                         }
@@ -180,7 +186,7 @@ exports.buildContextMenu = (tray) => {
                         clipboard.writeText(appUtil.formatCode(oldT))
                         const newT = clipboard.readText()
                         if (oldT !== newT) {
-                            toast.toast({title: '提示',body:'剪贴板已更新'})
+                            toast.toast({title: '提示', body: '剪贴板已更新'})
                         }
                     }
                 }
@@ -239,7 +245,7 @@ exports.buildContextMenu = (tray) => {
                 , {
                     label: '版本查询',
                     click: function () {
-                        toast.toast({title: '当前版本',body:app.getVersion()})
+                        toast.toast({title: '当前版本', body: app.getVersion()})
                     }
                 }, {
                     label: '检查更新',
@@ -257,5 +263,15 @@ exports.buildContextMenu = (tray) => {
             }
         }
     ]
-    return Menu.buildFromTemplate(template)
+    menu = Menu.buildFromTemplate(template)
+    return menu
+}
+
+// 关闭除ID外的其他图床按钮
+function closeMenuChecked(id, menu) {
+    for (let pic of PIC) {
+        if (id !== pic) {
+            appUtil.myGetMenuItemById(pic, menu).checked = false
+        }
+    }
 }
