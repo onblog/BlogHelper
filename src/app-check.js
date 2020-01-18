@@ -8,31 +8,31 @@ exports.loginCheck = (site) => {
     switch (site) {
         case string.cnblogs:
             if (!dataStore.getCnBlogCookies()) {
-                appToast.toast({title: '提示',body:'请先登录博客园'})
+                appToast.toast({title: '请先登录博客园'})
                 return false
             }
             break
         case string.csdn:
             if (!dataStore.getCSDNCookies()) {
-                appToast.toast({title: '提示',body:'请先登录CSDN'})
+                appToast.toast({title: '请先登录CSDN'})
                 return false
             }
             break
         case string.juejin:
             if (!dataStore.getJueJinCookies()) {
-                appToast.toast({title: '提示',body:'请先登录掘金'})
+                appToast.toast({title: '请先登录掘金',body:''})
                 return false
             }
             break
         case string.oschina:
             if (!dataStore.getOsChinaCookies()) {
-                appToast.toast({title: '提示',body:'请先登录开源中国'})
+                appToast.toast({title: '请先登录开源中国',body:''})
                 return false
             }
             break
         case string.segmentfault:
             if (!dataStore.getSegmentFaultCookie()) {
-                appToast.toast({title: '提示',body:'请先登录思否'})
+                appToast.toast({title: '请先登录思否',body:''})
                 return false
             }
             break

@@ -4,9 +4,7 @@ const util = require('./app-util')
 const path = require('path')
 const fs = require('fs')
 const icon = require('./icon')
-const appDialog = require('./app-dialog')
-const DataStore = require('./app-store')
-const dataStore = new DataStore()
+const appDialog = require('./app-localFile')
 const appCheck = require('./app-check')
 const https = require('https')
 const jsdom = require('jsdom')
@@ -73,7 +71,7 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
     }
     // 上传图片数量为0
     if (mark.number === 0) {
-        appToast.toast({title: '提示',body:'该文档无本地图片引用'})
+        appToast.toast({title: '操作中止',body:'该文档无本地图片引用'})
         return
     }
     // 7.保存
@@ -134,7 +132,7 @@ exports.autoUpdateApp = (bool) => {
                 'div.release-header > ul> li > a[title]')
             if (!(element && element.getAttribute('title'))) {
                 if (bool) {
-                    appToast.toast({title: '提示',body:'已经是最新版本！'})
+                    appToast.toast({title: '已经是最新版本',body:''})
                 }
                 return
             }
@@ -151,7 +149,7 @@ exports.autoUpdateApp = (bool) => {
                     }
                 })
             } else if (bool) {
-                appToast.toast({title: '提示',body:'已经是最新版本！'})
+                appToast.toast({title: '已经是最新版本',body:''})
             }
         }
 
@@ -237,7 +235,7 @@ exports.downloadMdNetPicture = async function (tray) {
         return
     }
     if (mark.number === 0) {
-        appToast.toast({title: '提示',body:'该文档无网络图片引用'})
+        appToast.toast({title: '操作中止',body:'该文档无网络图片引用'})
         return
     }
     // 6.保存

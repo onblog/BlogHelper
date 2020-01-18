@@ -1,0 +1,14 @@
+#container {
+  padding: 50px 50px 50px 50px;
+}
+#submit{
+    margin-top: 15px;
+}
+.star{
+    font-weight: bold !important;
+    font-size: 18px;
+}
+.addon{
+    border-left-width: 0;
+    border-right-width: 0;
+}
