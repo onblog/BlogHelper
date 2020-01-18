@@ -7,7 +7,7 @@ exports.planDoThing = function planDoThing(win) {
     if (global.sharedObject.planing) {
         appToast.toast({title: '您有计划正在进行中哦'})
     } else {
-        win.setBounds({ width: 600, height: 400 })
+        win.setBounds({ width: 600, height: 350 })
         win.loadURL(`file://${__dirname}/plan/index.html`).then(value => {
             win.show()
         })
