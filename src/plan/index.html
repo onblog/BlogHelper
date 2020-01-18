@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计划工作</title>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container-fluid" id="container">
+    <h3>您计划要做的事情</h3>
+    <div class="input-group">
+        <div class="input-group-addon"><span class="glyphicon glyphicon-star star" aria-hidden="true"></span></div>
+        <input type="text" id="something" class="form-control" placeholder="do something.." />
+    </div>
+    <h3>预计花费的时间</h3>
+    <div class="input-group">
+        <div class="input-group-addon"><span class="glyphicon glyphicon-time star" aria-hidden="true"></span></div>
+        <input type="text" class="form-control" placeholder="default is 0" id="hour" />
+        <div class="input-group-addon" class="addon">小时</div>
+        <input type="text" class="form-control" placeholder="enter qualified numbers" id="minute"/>
+        <div class="input-group-addon">分钟</div>
+    </div>
+    <button type="button" class="btn btn-primary" id="submit">提交计划</button>
+</div>
+
+<script>window.$ = window.jQuery = require("jquery");</script>
+<script src="./index.js"></script>
+<script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+</body>
+</html>

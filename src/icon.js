@@ -5,9 +5,12 @@ const iconDir = path.normalize(path.join(__dirname, 'resource'));
 // 按平台选择，mac是18px的倍数，win是16px的倍数
 const iconName = process.platform === 'win32' ? 'star-win.png' : 'star-mac.png'
 const proIconName = process.platform === 'win32' ? 'process-win.png' : 'process-mac.png'
+const timeIconName = process.platform === 'win32' ? 'time-win.png' : 'time-mac.png'
 
 exports.iconDir = iconDir
 exports.iconName = iconName
+
 exports.iconFile = path.join(iconDir, iconName)
 
 exports.proIconFile = path.join(iconDir, proIconName)
+exports.timeIconFile = path.join(iconDir, timeIconName)

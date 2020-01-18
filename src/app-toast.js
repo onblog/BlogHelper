@@ -1,7 +1,7 @@
 const {Notification, dialog} = require('electron')
 
 // 异步弹出提示消息
-exports.toast = function (config) {
+exports.toast = function toast(config) {
     if (Notification.isSupported()){
         new Notification(config).show()
     }else {

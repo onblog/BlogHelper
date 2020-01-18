@@ -6,13 +6,15 @@ const appUtil = require('./app-util')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 const toast = require('./app-toast')
+const appPlan = require('./app-plan')
 
 // 图床
 const PIC = ['WEIBO', 'SMMS']
 
-exports.buildContextMenu = (tray) => {
+exports.buildContextMenu = function buildContextMenu(tray, win) {
     // 开机自动检查一次更新
     appMenuPublish.autoUpdateApp(false)
+    // 菜单栏引用
     let menu
     const template = [
         {
@@ -173,7 +175,7 @@ exports.buildContextMenu = (tray) => {
                     click: function (menuItem, browserWindow, event) {
                         const nativeImage = clipboard.readImage()
                         if (nativeImage.isEmpty()) {
-                            toast.toast({title: '提示', body: '剪贴板未检索到图片'})
+                            toast.toast({title: '剪贴板未检索到图片', body: ''})
                         } else {
                             appMenuPublish.uploadPictureToWeiBo(tray, nativeImage).then()
                         }
@@ -186,7 +188,7 @@ exports.buildContextMenu = (tray) => {
                         clipboard.writeText(appUtil.formatCode(oldT))
                         const newT = clipboard.readText()
                         if (oldT !== newT) {
-                            toast.toast({title: '提示', body: '剪贴板已更新'})
+                            toast.toast({title: '剪贴板已更新'})
                         }
                     }
                 }
@@ -208,6 +210,12 @@ exports.buildContextMenu = (tray) => {
                     }
                 }
             ]
+        }
+        , {
+            label: '计划工作',
+            click: function () {
+                appPlan.planDoThing(win)
+            }
         }
         , {
             type: "separator"
@@ -245,7 +253,7 @@ exports.buildContextMenu = (tray) => {
                 , {
                     label: '版本查询',
                     click: function () {
-                        toast.toast({title: '当前版本', body: app.getVersion()})
+                        toast.toast({title: '当前版本 '+app.getVersion(), body: ''})
                     }
                 }, {
                     label: '检查更新',
@@ -259,6 +267,7 @@ exports.buildContextMenu = (tray) => {
             label: '退出程序',
             click: () => {
                 tray.destroy()
+                win.destroy()
                 app.quit()
             }
         }
@@ -267,7 +276,7 @@ exports.buildContextMenu = (tray) => {
     return menu
 }
 
-// 关闭除ID外的其他图床按钮
+// 关闭除ID外的其他checked
 function closeMenuChecked(id, menu) {
     for (let pic of PIC) {
         if (id !== pic) {
