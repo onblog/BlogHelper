@@ -212,7 +212,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
             ]
         }
         , {
-            label: '计划工作',
+            label: '计划做事',
             click: function () {
                 appPlan.planDoThing(win)
             }
