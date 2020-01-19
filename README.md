@@ -37,7 +37,6 @@
 
 <img src="https://i.loli.net/2020/01/14/zkCc9WN5A8iQKgm.png" referrerpolicy="no-referrer" width="400px"/>
 
-<img src="https://i.loli.net/2020/01/19/F7dyKezwU9RopA1.png" referrerpolicy="no-referrer" width="300px"/>
 
 ## 🚩关于作者
 
