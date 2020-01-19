@@ -41,10 +41,6 @@ document.getElementById('submit').addEventListener('click', event => {
                 toast({title: '输入的时间超过60分钟'})
                 return
             }
-            if (minute === 0 && hour === 0) {
-                toast({title: '不支持计划时间为0'})
-                return
-            }
         } else {
             // 不是数字
             toast({title: '输入的时间不是数字'})
@@ -53,10 +49,9 @@ document.getElementById('submit').addEventListener('click', event => {
     } else {
         // 无内容
         minute = 0
-        if (minute === 0 && hour === 0) {
-            toast({title: '您设定的计划时间无效'})
-            return
-        }
+    }
+    if (minute === 0 && hour === 0) {
+        toast({title: '您设定的计划时间无效'})
         return
     }
 
