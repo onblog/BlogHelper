@@ -4,11 +4,11 @@
 #submit{
     margin-top: 15px;
 }
-.star{
+.star {
     font-weight: bold !important;
     font-size: 18px;
 }
-.addon{
-    border-left-width: 0;
-    border-right-width: 0;
+.addon {
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
 }
