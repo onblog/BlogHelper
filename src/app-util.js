@@ -35,8 +35,8 @@ exports.isLocalPicture = (src) => {
 
 // 返回图片的真实路径
 exports.relativePath = (dirname, str) => {
-    //补齐相对路径
-    if (str.indexOf('.') === 0) {
+    //若是相对路径，补齐
+    if (!path.isAbsolute(str)) {
         str = path.join(dirname, str)
     }
     //最终一定是格式化好的路径

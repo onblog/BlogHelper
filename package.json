@@ -1,6 +1,6 @@
 {
   "name": "blog-helper",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "productName": "BlogHelper",
   "main": "src/main.js",
