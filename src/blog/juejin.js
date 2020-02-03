@@ -34,7 +34,7 @@ function uploadPictureToJueJin(filePath) {
                     if (result.m === 'ok') {
                         resolve(result.d.url.https)
                     } else {
-                        reject(result.m)
+                        reject('上传图片失败,' +result.m)
                     }
                 }else {
                     reject('上传图片失败,响应码' + res.statusCode)
@@ -143,7 +143,7 @@ function publishArticleToJueJinFact(data,resolve, reject) {
                     resolve(url)
                 } else {
                     //发布失败
-                    reject(result.m)
+                    reject('发布失败,' +result.m)
                 }
             });
         })

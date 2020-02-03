@@ -27,7 +27,6 @@ function uploadPictureToSmMs(filePath) {
                    }
             );
             res.on('end', () => {
-                console.log(res.statusCode)
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
                     //上传之后result就是返回的结果
@@ -35,7 +34,7 @@ function uploadPictureToSmMs(filePath) {
                     if (result.success) {
                         resolve(result.data.url)
                     } else {
-                        reject(result.message)
+                        reject('上传图片失败,' +result.message)
                     }
                 }else {
                     reject('上传图片失败,响应码' + res.statusCode)

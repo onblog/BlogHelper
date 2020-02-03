@@ -36,7 +36,7 @@ function uploadPictureToCnBlogs(filePath) {
                     if (result.success) {
                         resolve(result.message)
                     } else {
-                        reject(result.message)
+                        reject('上传图片失败,' +result.message)
                     }
                 }else {
                     reject('上传图片失败,响应码' + res.statusCode)
@@ -139,7 +139,7 @@ function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATO
             });
         } else {
             //发布失败
-            reject('上传失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
+            reject('发布失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
         }
     })
 
