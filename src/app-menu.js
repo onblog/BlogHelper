@@ -160,7 +160,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     }
                 }
                 , {
-                    label: 'Md转Img标签',
+                    label: 'MD转IMG标签',
                     click: function () {
                         appMenuPublish.pictureMdToImg(tray)
                     }
@@ -186,6 +186,17 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     click: function (menuItem, browserWindow, event) {
                         const oldT = clipboard.readText()
                         clipboard.writeText(appUtil.formatCode(oldT))
+                        const newT = clipboard.readText()
+                        if (oldT !== newT) {
+                            toast.toast({title: '剪贴板已更新'})
+                        }
+                    }
+                }
+                , {
+                    label: 'HTML转MD',
+                    click: function () {
+                        const oldT = clipboard.readText()
+                        clipboard.writeText(require('html-to-md')(oldT))
                         const newT = clipboard.readText()
                         if (oldT !== newT) {
                             toast.toast({title: '剪贴板已更新'})
@@ -253,7 +264,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 , {
                     label: '版本查询',
                     click: function () {
-                        toast.toast({title: '当前版本 '+app.getVersion(), body: ''})
+                        toast.toast({title: '当前版本 ' + app.getVersion(), body: ''})
                     }
                 }, {
                     label: '检查更新',

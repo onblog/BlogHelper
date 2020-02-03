@@ -67,7 +67,7 @@ function uploadPictureToOsChina(filePath) {
                     if (result.uploaded === 1) {
                         resolve(result.url)
                     } else {
-                        reject(result.error.message)
+                        reject('上传图片失败,' +result.error.message)
                     }
                 } else {
                     reject('上传图片失败,响应码' + res.statusCode)
@@ -133,7 +133,7 @@ function publishArticleToOsChina(title, content) {
                                                          + result.result.draft
                                             resolve(url1)
                                         } else {
-                                            reject(result.message)
+                                            reject('发布失败,' +result.message)
                                         }
                                     });
                                 }

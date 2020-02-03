@@ -10,7 +10,7 @@ exports.downloadPicture = function (uri, filepath) {
                 return console.error(err)
             }
             if (!fs.existsSync(path.dirname(filepath))) {
-                fs.mkdirSync(path.dirname(filepath))
+                fs.mkdirSync(path.dirname(filepath), {recursive: true})
             }
             request(uri).pipe(fs.createWriteStream(filepath)).on('error', function () {
                 reject('下载图片失败')

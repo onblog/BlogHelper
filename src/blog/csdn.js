@@ -32,7 +32,7 @@ function uploadPictureToCSDN(filePath) {
                     if (result.result === 1) {
                         resolve(result.url.substring(0, result.url.indexOf('?')))
                     } else {
-                        reject(result.content)
+                        reject('上传图片失败,' +result.content)
                     }
                 }else {
                     reject('上传图片失败,响应码' + res.statusCode)
@@ -93,7 +93,7 @@ function publishArticleToCSDN(title, markdowncontent, content) {
                         const url = 'https://mp.csdn.net'+'/postedit/'+result.data.id
                         resolve(url)
                     } else {
-                        reject(result.content)
+                        reject('发布失败,' +result.content)
                     }
                 }
             });

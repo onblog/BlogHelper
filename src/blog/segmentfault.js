@@ -142,7 +142,7 @@ function publishArticleToSegmentFaultFact(title, text, resolve, reject) {
                         const url = 'https://segmentfault.com/write?draftId='+result.data
                         resolve(url)
                     } else {
-                        reject(result.message)
+                        reject('发布失败,' +result.message)
                     }
                 } else {
                     reject('请先登录思否')
