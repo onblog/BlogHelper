@@ -99,7 +99,7 @@ exports.downloadMdNetPicture = async function (tray) {
         const catalog = 'LOCAL'
         util.readImgLink(file.content, (src) => {
             if (util.isWebPicture(src)) {
-                // 存放图片的文件夹
+                // 存放图片的文件夹名
                 const dirName = util.stringDeal(file.title)
                 let filepath = path.join(file.dirname, catalog, dirName, path.basename(src))
                 map.set(src, filepath)
@@ -163,7 +163,7 @@ exports.movePictureToFolder = function (tray) {
         let value = file.content
         const catalog = 'NORM'
         for (let [src, fullPath] of map.entries()) {
-            // 存放图片的文件夹
+            // 存放图片的文件夹名
             const dirName = util.stringDeal(file.title)
             // 图片文件名
             const picName = path.basename(src)
@@ -171,6 +171,10 @@ exports.movePictureToFolder = function (tray) {
             const picPath = path.join(file.dirname, catalog, dirName, picName)
             // 新的相对路径
             const relativePath = './' + path.join(dirName, picName)
+            // 检查文件夹
+            if (!fs.existsSync(path.dirname(picPath))) {
+                fs.mkdirSync(path.dirname(picPath), {recursive: true})
+            }
             if (picPath !== fullPath) {
                 fs.copyFileSync(fullPath, picPath)
                 value = value.replace(src, relativePath)
