@@ -6,7 +6,6 @@ const appUtil = require('./app-util')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 const toast = require('./app-toast')
-const appPlan = require('./app-plan')
 
 // 图床
 const PIC = ['WEIBO', 'SMMS']
@@ -182,12 +181,15 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     }
                 }
                 , {
-                    label: '代码格式化',
+                    label: '代码对齐',
                     click: function (menuItem, browserWindow, event) {
                         const oldT = clipboard.readText()
-                        clipboard.writeText(appUtil.formatCode(oldT))
-                        const newT = clipboard.readText()
-                        if (oldT !== newT) {
+                        const text = appUtil.formatCode(oldT)
+                        clipboard.writeText(text)
+                        while (clipboard.readText()!==text){
+                            clipboard.writeText(text)
+                        }
+                        if (oldT !== clipboard.readText()) {
                             toast.toast({title: '剪贴板已更新'})
                         }
                     }
@@ -221,12 +223,6 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     }
                 }
             ]
-        }
-        , {
-            label: '计划做事',
-            click: function () {
-                appPlan.planDoThing(win)
-            }
         }
         , {
             type: "separator"
