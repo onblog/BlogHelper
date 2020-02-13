@@ -97,11 +97,12 @@ exports.downloadMdNetPicture = async function (tray) {
         const map = new Map()
         // 保存在新的目录
         const catalog = 'LOCAL'
+        const dirname = path.join(file.dirname, catalog)
+        // 存放图片的文件夹名
+        const name = util.stringDeal(file.title)
         util.readImgLink(file.content, (src) => {
             if (util.isWebPicture(src)) {
-                // 存放图片的文件夹名
-                const dirName = util.stringDeal(file.title)
-                let filepath = path.join(file.dirname, catalog, dirName, path.basename(src))
+                let filepath = path.join(dirname, name, path.basename(src))
                 map.set(src, filepath)
             }
         })
@@ -111,7 +112,9 @@ exports.downloadMdNetPicture = async function (tray) {
         for (let [src, filepath] of map.entries()) {
             await appDownload.downloadPicture(src, filepath)
                 .then(value => {
-                    newValue = newValue.replace(src, filepath)
+                    // 相对路径
+                    const relativePath = './'+path.join(name, path.basename(filepath))
+                    newValue = newValue.replace(src, relativePath)
                 })
                 .catch(reason => {
                     if (mark.next) {
