@@ -8,7 +8,7 @@ const dataStore = new DataStore()
 const toast = require('./app-toast')
 
 // 图床
-const PIC = ['WEIBO', 'SMMS']
+const PIC = dataStore.PIC
 
 exports.buildContextMenu = function buildContextMenu(tray, win) {
     // 开机自动检查一次更新
@@ -113,6 +113,23 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                                 menuItem.checked = true
                                 dataStore.setWeiBoFigureBedSwitch()
                                 toast.toast({title: '启用成功', body: '正在使用新浪图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: '图壳',
+                    submenu: [
+                        {
+                            label: '启用',
+                            id: PIC[2],
+                            type: 'checkbox',
+                            checked: dataStore.isIMGKRFigureBedSwitch(),
+                            click: function (menuItem, browserWindow, even) {
+                                menuItem.checked = true
+                                dataStore.setIMGKRFigureBedSwitch()
+                                toast.toast({title: '启用成功', body: '正在使用图壳图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }

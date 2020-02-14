@@ -126,29 +126,39 @@ class DataStore extends Store {
     // 启用图床Key
     figureBedSwitch = 'figureBedSwitch'
     // Value
-    WEIBO = 'WEIBO'
-    SMMS = 'SMMS'
+    PIC = ['WEIBO', 'SMMS', 'IMGKR']
 
     // 是否启用微博图床
     isWeiBoFigureBedSwitch() {
         if (this.has(this.figureBedSwitch)) {
-            return this.get(this.figureBedSwitch) === this.WEIBO
+            return this.get(this.figureBedSwitch) === this.PIC[0]
         }
         return false
     }
     setWeiBoFigureBedSwitch() {
-        this.set(this.figureBedSwitch, this.WEIBO+'')
+        this.set(this.figureBedSwitch, this.PIC[0]+'')
     }
 
     // 是否启用SM.MS图床
     isSmMSFigureBedSwitch() {
         if (this.has(this.figureBedSwitch)) {
-            return this.get(this.figureBedSwitch) === this.SMMS
+            return this.get(this.figureBedSwitch) === this.PIC[1]
         }
         return false
     }
     setSmMSFigureBedSwitch() {
-        this.set(this.figureBedSwitch, this.SMMS+'')
+        this.set(this.figureBedSwitch, this.PIC[1]+'')
+    }
+
+    // 是否启用图壳图床
+    isIMGKRFigureBedSwitch() {
+        if (this.has(this.figureBedSwitch)) {
+            return this.get(this.figureBedSwitch) === this.PIC[2]
+        }
+        return false
+    }
+    setIMGKRFigureBedSwitch() {
+        this.set(this.figureBedSwitch, this.PIC[2]+'')
     }
 
 }
