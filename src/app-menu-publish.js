@@ -70,13 +70,13 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
             break
         }
         // 6.保存
-        appSave.saveNewFileOrClipboard(file, value, 'PIC', i)
+        appSave.saveNewFileOrClipboard(file, value, i)
         // 7.提示
         appToast.toast({title: '完成', body: file.title})
         // 统计
         number = i + 1
     }
-    dialog.showMessageBoxSync({message: `预处理${result.files.length}个,实际处理${number}个`})
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
     // 8.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
@@ -96,8 +96,7 @@ exports.downloadMdNetPicture = async function (tray) {
         // 3.读取网图链接
         const map = new Map()
         // 保存在新的目录
-        const catalog = 'LOCAL'
-        const dirname = path.join(file.dirname, catalog)
+        const dirname = file.dirname
         // 存放图片的文件夹名
         const name = util.stringDeal(file.title)
         util.readImgLink(file.content, (src) => {
@@ -128,13 +127,13 @@ exports.downloadMdNetPicture = async function (tray) {
             break
         }
         // 6.保存
-        appSave.saveNewFileOrClipboard(file, newValue, catalog, i)
+        appSave.saveNewFileOrClipboard(file, newValue, i)
         // 7.提示
         appToast.toast({title: '完成', body: file.title})
         // 统计
         number = i + 1
     }
-    dialog.showMessageBoxSync({message: `预处理${result.files.length}个,实际处理${number}个`})
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
     // 8.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
@@ -164,14 +163,13 @@ exports.movePictureToFolder = function (tray) {
         })
         // 4.复制整理
         let value = file.content
-        const catalog = 'NORM'
         for (let [src, fullPath] of map.entries()) {
             // 存放图片的文件夹名
             const dirName = util.stringDeal(file.title)
             // 图片文件名
             const picName = path.basename(src)
             // 新的保存位置
-            const picPath = path.join(file.dirname, catalog, dirName, picName)
+            const picPath = path.join(file.dirname, dirName, picName)
             // 新的相对路径
             const relativePath = './' + path.join(dirName, picName)
             // 检查文件夹
@@ -188,13 +186,13 @@ exports.movePictureToFolder = function (tray) {
             }
         }
         // 5.保存
-        appSave.saveNewFileOrClipboard(file, value, catalog, i)
+        appSave.saveNewFileOrClipboard(file, value, i)
         // 6.提示
         appToast.toast({title: '完成', body: file.title})
         // 统计
         number = i + 1
     }
-    dialog.showMessageBoxSync({message: `预处理${result.files.length}个,实际处理${number}个`})
+    appToast.toast({body: `预处理${result.files.length}个,实际处理${number}个`})
     // 7.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
@@ -231,13 +229,13 @@ exports.pictureMdToImg = function (tray) {
             newValue += line + '\n'
         })
         // 4.保存
-        appSave.saveNewFileOrClipboard(file, newValue.trim(), 'IMG', i)
+        appSave.saveNewFileOrClipboard(file, newValue.trim(), i)
         // 5.提示
         appToast.toast({title: '完成', body: file.title})
         // 统计
         number = i + 1
     }
-    dialog.showMessageBoxSync({message: `预处理${result.files.length}个,实际处理${number}个`})
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
     // 6.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
