@@ -203,7 +203,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                         const oldT = clipboard.readText()
                         const text = appUtil.formatCode(oldT)
                         clipboard.writeText(text)
-                        while (clipboard.readText()!==text){
+                        while (clipboard.readText() !== text) {
                             clipboard.writeText(text)
                         }
                         if (oldT !== clipboard.readText()) {
@@ -237,6 +237,12 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     label: '图片素材',
                     click: function () {
                         shell.openExternal('http://pic.onblogs.cn').then()
+                    }
+                }
+                , {
+                    label: 'JSON美化',
+                    click: function () {
+                        shell.openExternal('https://www.bejson.com/jsonviewernew/').then()
                     }
                 }
             ]
