@@ -23,7 +23,8 @@ exports.readImgLink = (text, callback) => {
 exports.isWebPicture = (src) => {
     return src.startsWith('http') && (src.endsWith('png') || src.endsWith('jpg')
                                       || src.endsWith('png') || src.endsWith('jpeg')
-                                      || src.endsWith('gif') || src.endsWith('bmp'))
+                                      || src.endsWith('gif') || src.endsWith('bmp')
+    || src.indexOf('img-blog.csdn.net')!==-1)
 }
 
 // 是否是本地图片
