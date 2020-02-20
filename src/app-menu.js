@@ -176,6 +176,12 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     }
                 }
                 , {
+                    label: '整理至新目录',
+                    click: function () {
+                        appMenuPublish.movePictureAndMdToFolder(tray)
+                    }
+                }
+                , {
                     label: 'MD转IMG标签',
                     click: function () {
                         appMenuPublish.pictureMdToImg(tray)
