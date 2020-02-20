@@ -52,14 +52,16 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
         let value = file.content
         let mark = {next: true}
         for (let [src, fullPath] of map.entries()) {
-            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath) && util.isLocalPicture(fullPath)) {
+            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath) && util.isLocalPicture(
+                fullPath)) {
                 await appUpload.uploadPicture(fullPath)
                     .then(href => {
                         value = value.replace(src, href)
                     })
                     .catch(message => {
                         if (mark.next) {
-                            dialog.showMessageBoxSync({message: file.filepath+'\n'+message, type: 'error'})
+                            dialog.showMessageBoxSync(
+                                {message: file.filepath + '\n' + message, type: 'error'})
                             mark.next = false
                         }
                     })
@@ -102,7 +104,8 @@ exports.downloadMdNetPicture = async function (tray) {
         util.readImgLink(file.content, (src) => {
             if (util.isWebPicture(src)) {
                 // 图片文件名
-                let filepath = path.join(dirname, name, Math.floor(Math.random() * 100000000)+'.png')
+                let filepath = path.join(dirname, name,
+                                         Math.floor(Math.random() * 100000000) + '.png')
                 map.set(src, filepath)
             }
         })
@@ -113,12 +116,13 @@ exports.downloadMdNetPicture = async function (tray) {
             await appDownload.downloadPicture(src, filepath)
                 .then(value => {
                     // 相对路径
-                    const relativePath = './'+path.join(name, path.basename(filepath))
+                    const relativePath = './' + path.join(name, path.basename(filepath))
                     newValue = newValue.replace(src, relativePath)
                 })
                 .catch(reason => {
                     if (mark.next) {
-                        dialog.showMessageBoxSync({message: file.filepath+'\n'+reason, type: 'error'})
+                        dialog.showMessageBoxSync(
+                            {message: file.filepath + '\n' + reason, type: 'error'})
                         mark.next = false
                     }
                 })
@@ -139,7 +143,7 @@ exports.downloadMdNetPicture = async function (tray) {
     tray.setImage(icon.iconFile)
 }
 
-// 一键图片整理到picture文件夹
+// 文章本地图片整理
 exports.movePictureToFolder = function (tray) {
     // 1.选择本地文件
     const result = appDialog.openManyLocalFileSync()
@@ -187,6 +191,71 @@ exports.movePictureToFolder = function (tray) {
             }
         }
         // 5.保存
+        appSave.saveNewFileOrClipboard(file, value, i)
+        // 6.提示
+        appToast.toast({title: '完成', body: file.title})
+        // 统计
+        number = i + 1
+    }
+    appToast.toast({body: `预处理${result.files.length}个,实际处理${number}个`})
+    // 7.关闭进度条图标
+    tray.setImage(icon.iconFile)
+}
+
+// 整理至新目录
+exports.movePictureAndMdToFolder = function (tray) {
+    // 1.选择本地文件
+    const result = appDialog.openManyLocalFileSync()
+    if (result.canceled) {
+        return
+    }
+    // 2.开启进度条图标
+    tray.setImage(icon.proIconFile)
+    let number = 0
+    for (let i = 0; i < result.files.length; i++) {
+        const file = result.files[i]
+        // 3.读取图片的真实路径
+        const map = new Map();
+        util.readImgLink(file.content, (src) => {
+            if (util.isLocalPicture(src)) {
+                const fullPath = util.relativePath(file.dirname, src)
+                // 当前图片在本地存在
+                if (fs.existsSync(fullPath)) {
+                    map.set(src, fullPath)
+                }
+            }
+        })
+        // 4.复制整理
+        let value = file.content
+        // 移动至新目录
+        const output = path.join(file.dirname, 'OUTPUT')
+        if (!fs.existsSync(output)) {
+            fs.mkdirSync(output, {recursive: true})
+        }
+        for (let [src, fullPath] of map.entries()) {
+            // 存放图片的文件夹名
+            const dirName = util.stringDeal(file.title)
+            // 图片文件名
+            const picName = path.basename(src)
+            // 新的保存位置
+            const picPath = path.join(output, dirName, picName)
+            // 新的相对路径
+            const relativePath = './' + path.join(dirName, picName)
+            // 检查文件夹
+            if (!fs.existsSync(path.dirname(picPath))) {
+                fs.mkdirSync(path.dirname(picPath), {recursive: true})
+            }
+            if (picPath !== fullPath) {
+                fs.copyFileSync(fullPath, picPath)
+                value = value.replace(src, relativePath)
+            } else {
+                if (src !== relativePath) {
+                    value = value.replace(src, relativePath)
+                }
+            }
+        }
+        // 5.保存
+        file.filepath = path.join(output, path.basename(file.filepath))
         appSave.saveNewFileOrClipboard(file, value, i)
         // 6.提示
         appToast.toast({title: '完成', body: file.title})
