@@ -52,14 +52,14 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
         let value = file.content
         let mark = {next: true}
         for (let [src, fullPath] of map.entries()) {
-            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath)) {
+            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath) && util.isLocalPicture(fullPath)) {
                 await appUpload.uploadPicture(fullPath)
                     .then(href => {
                         value = value.replace(src, href)
                     })
                     .catch(message => {
                         if (mark.next) {
-                            dialog.showMessageBoxSync({message: message, type: 'error'})
+                            dialog.showMessageBoxSync({message: file.filepath+'\n'+message, type: 'error'})
                             mark.next = false
                         }
                     })
@@ -101,7 +101,8 @@ exports.downloadMdNetPicture = async function (tray) {
         const name = util.stringDeal(file.title)
         util.readImgLink(file.content, (src) => {
             if (util.isWebPicture(src)) {
-                let filepath = path.join(dirname, name, path.basename(src))
+                // 图片文件名
+                let filepath = path.join(dirname, name, Math.floor(Math.random() * 100000000)+'.png')
                 map.set(src, filepath)
             }
         })
@@ -117,7 +118,7 @@ exports.downloadMdNetPicture = async function (tray) {
                 })
                 .catch(reason => {
                     if (mark.next) {
-                        dialog.showMessageBoxSync({message: reason, type: 'error'})
+                        dialog.showMessageBoxSync({message: file.filepath+'\n'+reason, type: 'error'})
                         mark.next = false
                     }
                 })
