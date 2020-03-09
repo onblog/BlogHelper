@@ -12,8 +12,8 @@
     "pc",
     "util"
   ],
-  "author": "Github@yueshutong",
-  "repository": "https://github.com/yueshutong/BlogHelper",
+  "author": "Github@ystcode",
+  "repository": "https://github.com/ystcode/BlogHelper",
   "license": "GPL3.0",
   "devDependencies": {
     "electron": "^7.1.7",
@@ -33,8 +33,8 @@
     "urlencode": "^1.1.0"
   },
   "build": {
-    "appId": "com.github.yueshutong.bloghelper",
-    "productName": "BlogHelper",
+    "appId": "com.github.ystcode.bloghelper",
+    "productName": "写作助手",
     "mac": {
       "icon": "build/app.icns",
       "type": "development",
