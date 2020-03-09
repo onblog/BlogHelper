@@ -7,10 +7,6 @@ app.on('ready', () => {
     process.platform === 'win32' ? Menu.setApplicationMenu(null) : app.dock.hide()
     // 创建菜单栏
     createTray()
-    // 共享变量
-    global.sharedObject = {
-        planing: false
-    }
 });
 
 // 创建唯一的窗口
