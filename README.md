@@ -27,16 +27,19 @@
 
 ## 🚩更多功能
 
-- 🙋[我要提需求](https://github.com/yueshutong/BlogHelper/issues)
+- 🙋[我要提需求](https://github.com/ystcode/BlogHelper/issues)
 
 ## 🚩下载我吧
 
 - 📥[点击下载](https://github.com/yueshutong/BlogHelper/releases)
 
+目前只提供 mac 和 win 平台的软件下载，linux 用户请自行打包。
+
 ## 🚩预览
 
 <img src="https://i.loli.net/2020/01/14/zkCc9WN5A8iQKgm.png" referrerpolicy="no-referrer" width="400px"/>
 
+预览图可能版本过低，请以具体应用为准。
 
 ## 🚩关于作者
 
@@ -44,9 +47,7 @@
 
 - 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📩
 
-- 加入QQ群：[781927207](https://shang.qq.com/wpa/qunwpa?idkey=d0756ea301050e3f093124a97ba19f7b5e40d5e03b6a849e7ca1748421eb193b)💬
-
-#### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/yueshutong/BlogHelper)右上角小星星，这将是我持续更新的动力！
+#### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/ystcode/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
 <img src="https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png" width="300px" referrerpolicy="no-referrer">
 
