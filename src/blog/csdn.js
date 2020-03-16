@@ -12,11 +12,12 @@ function uploadPictureToCSDN(filePath) {
 
         let headers = formData.getHeaders()
         headers.Cookie = dataStore.getCSDNCookies() //获取Cookie
+        headers["user-agent"] = "Mozilla/5.0"
         //自己的headers属性在这里追加
         let request = https.request({
-                                        host: 'mp.csdn.net',
+                                        host: 'blog-console-api.csdn.net',
                                         method: 'POST',
-                                        path: '/UploadImage?shuiyin=2',
+                                        path: '/v2/upload/img?shuiyin=2',
                                         headers: headers
                                     }, function (res) {
             let str = '';
@@ -29,13 +30,14 @@ function uploadPictureToCSDN(filePath) {
                     const result = JSON.parse(str);
                     //上传之后result就是返回的结果
                     // console.log(result)
-                    if (result.result === 1) {
-                        resolve(result.url.substring(0, result.url.indexOf('?')))
+                    if (result.code === 200) {
+                        const url = result.data.url
+                        resolve(url.substring(0, url.indexOf('?')))
                     } else {
-                        reject('上传图片失败,' +result.content)
+                        reject('上传图片失败,' +result.msg)
                     }
                 }else {
-                    reject('上传图片失败,响应码' + res.statusCode)
+                    reject('上传图片失败:' + res.statusCode)
                 }
             });
         });
@@ -51,31 +53,24 @@ function uploadPictureToCSDN(filePath) {
 //上传文章到CSDN
 function publishArticleToCSDN(title, markdowncontent, content) {
     return new Promise((resolve, reject) => {
-        let formData = new FormData();
-        formData.append('title', title)
-        formData.append('markdowncontent', markdowncontent)
-        formData.append('content', content)
-        formData.append('id', '')
-        formData.append('readType', 'public')
-        formData.append('tags', '')
-        formData.append('status', 2)
-        formData.append('categories', '')
-        formData.append('type', '')
-        formData.append('original_link', '')
-        formData.append('authorized_status', 'undefined')
-        formData.append('articleedittype', 1)
-        formData.append('Description', '')
-        formData.append('resource_url', '')
-        formData.append('csrf_token', '')
-
-        let headers = formData.getHeaders()
-        headers.Cookie = dataStore.getCSDNCookies() //获取Cookie
-        //自己的headers属性在这里追加
+        const json = JSON.stringify({
+                           title: title,
+                           markdowncontent: markdowncontent,
+                           content: content,
+                           readType: "public",
+                           status: 2,
+                           not_auto_saved: "1",
+                           source: "pc_mdeditor"
+                       })
         let request = https.request({
-                                        host: 'mp.csdn.net',
+                                        host: 'blog-console-api.csdn.net',
                                         method: 'POST',
-                                        path: '/mdeditor/saveArticle',
-                                        headers: headers
+                                        path: '/v1/mdeditor/saveArticle',
+                                        headers: {
+                                            "content-type":"application/json",
+                                            "cookie":dataStore.getCSDNCookies(),
+                                            "user-agent":"Mozilla/5.0"
+                                        }
                                     }, function (res) {
             let str = '';
             res.on('data', function (buffer) {
@@ -88,17 +83,21 @@ function publishArticleToCSDN(title, markdowncontent, content) {
                     const result = JSON.parse(str);
                     //上传之后result就是返回的结果
                     // console.log(result)
-                    if (result.status) {
+                    if (result.code === 200) {
                         // const url = result.data.url
-                        const url = 'https://mp.csdn.net'+'/postedit/'+result.data.id
+                        const url = 'https://editor.csdn.net/md/?articleId='+result.data.id
                         resolve(url)
                     } else {
-                        reject('发布失败,' +result.content)
+                        reject('发布失败,' +result.msg)
                     }
+                }else {
+                    reject('发布失败:' + res.statusCode)
                 }
             });
         });
-        formData.pipe(request)
+
+        request.write(json)
+        request.end();
 
         request.on('error', function (e) {
             console.log('problem with request: ' + e.message);

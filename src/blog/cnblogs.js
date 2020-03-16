@@ -39,7 +39,7 @@ function uploadPictureToCnBlogs(filePath) {
                         reject('上传图片失败,' +result.message)
                     }
                 }else {
-                    reject('上传图片失败,响应码' + res.statusCode)
+                    reject('上传图片失败:' + res.statusCode)
                 }
             });
         });
@@ -124,23 +124,23 @@ function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATO
     }
 
     let req = https.request(cnBlog_url, options, function (res) {
-        if (res.statusCode === 302) {
-            //发布成功
             res.setEncoding('utf-8')
             let str = ''
             res.on('data', function (chunk) {
                 str += chunk
             });
             res.on('end', () => {
-                const dom = new jsdom.JSDOM(str);
-                const a = dom.window.document.body.getElementsByTagName('a')[0]
-                let url = 'https://i.cnblogs.com' + a.href
-                resolve(url)
+                if (res.statusCode === 302) {
+                    //发布成功
+                    const dom = new jsdom.JSDOM(str);
+                    const a = dom.window.document.body.getElementsByTagName('a')[0]
+                    let url = 'https://i.cnblogs.com' + a.href
+                    resolve(url)
+                } else {
+                    //发布失败
+                    reject('发布失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
+                }
             });
-        } else {
-            //发布失败
-            reject('发布失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
-        }
     })
 
     req.on('error', function (e) {

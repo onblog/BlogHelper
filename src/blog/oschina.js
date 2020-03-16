@@ -70,7 +70,7 @@ function uploadPictureToOsChina(filePath) {
                         reject('上传图片失败,' +result.error.message)
                     }
                 } else {
-                    reject('上传图片失败,响应码' + res.statusCode)
+                    reject('上传图片失败:' + res.statusCode)
                 }
             });
         });
