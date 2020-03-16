@@ -33,10 +33,10 @@ function uploadPictureToSegmentFault(filePath) {
                     if (result[0] === 0) {
                         resolve(result[1])
                     } else {
-                        reject('上传图片失败')
+                        reject('上传图片失败,'+str)
                     }
                 } else {
-                    reject('上传图片失败,响应码' + res.statusCode)
+                    reject('上传图片失败:' + res.statusCode)
                 }
             });
         });

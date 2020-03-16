@@ -37,7 +37,7 @@ function uploadPictureToJueJin(filePath) {
                         reject('上传图片失败,' +result.m)
                     }
                 }else {
-                    reject('上传图片失败,响应码' + res.statusCode)
+                    reject('上传图片失败:' + res.statusCode)
                 }
             });
         });
@@ -143,7 +143,7 @@ function publishArticleToJueJinFact(data,resolve, reject) {
                     resolve(url)
                 } else {
                     //发布失败
-                    reject('发布失败,' +result.m)
+                    reject('发布失败:' +result.m)
                 }
             });
         })
