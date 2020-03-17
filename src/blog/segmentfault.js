@@ -29,7 +29,6 @@ function uploadPictureToSegmentFault(filePath) {
             res.on('end', () => {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    //上传之后result就是返回的结果
                     if (result[0] === 0) {
                         resolve(result[1])
                     } else {
@@ -135,7 +134,6 @@ function publishArticleToSegmentFaultFact(title, text, resolve, reject) {
             res.on('end', () => {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    //上传之后result就是返回的结果
                     // console.log(result)
                     if (result.status === 0) {
                         // const url = 'https://segmentfault.com/user/draft'
