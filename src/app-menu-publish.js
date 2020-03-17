@@ -346,7 +346,7 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
 
 // 自动检查更新（bool：是否主动操作）
 exports.autoUpdateApp = (bool) => {
-    const releases = 'https://github.com/yueshutong/BlogHelper/releases'
+    const releases = 'https://github.com/ystcode/BlogHelper/releases'
     const req = https.request(releases, {}, function (req) {
         let result = '';
         req.on('data', function (data) {
