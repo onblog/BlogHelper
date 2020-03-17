@@ -6,7 +6,8 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "ico": "png-to-ico build/app.png > build/app.ico"
   },
   "keywords": [
     "pc",
@@ -17,7 +18,8 @@
   "license": "GPL3.0",
   "devDependencies": {
     "electron": "^7.1.7",
-    "electron-builder": "^22.1.0"
+    "electron-builder": "^22.1.0",
+    "png-to-ico": "^2.1.0"
   },
   "dependencies": {
     "bootstrap": "^3.4.1",
