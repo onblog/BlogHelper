@@ -262,13 +262,13 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 {
                     label: '官方网站',
                     click: function () {
-                        shell.openExternal('https://github.com/yueshutong/BlogHelper').catch()
+                        shell.openExternal('https://github.com/ystcode/BlogHelper').catch()
                     }
                 }
                 , {
                     label: '我要反馈',
                     click: function () {
-                        shell.openExternal('https://github.com/yueshutong/BlogHelper/issues')
+                        shell.openExternal('https://github.com/ystcode/BlogHelper/issues')
                             .catch()
                     }
                 }
@@ -276,14 +276,6 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     label: '给我写信',
                     click: function () {
                         shell.openExternal('mailto:yster@foxmail.com').catch()
-                    }
-                }
-                , {
-                    label: '加入群聊',
-                    click: function () {
-                        shell.openExternal(
-                            'https://shang.qq.com/wpa/qunwpa?idkey=d0756ea301050e3f093124a97ba19f7b5e40d5e03b6a849e7ca1748421eb193b')
-                            .catch()
                     }
                 }
                 , {
