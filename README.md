@@ -49,6 +49,8 @@
 
 - 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📩
 
+- LOGO设计师：Summer（QQ：1003737038）
+
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/ystcode/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
 <img src="https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png" width="300px" referrerpolicy="no-referrer">
