@@ -63,7 +63,6 @@ function uploadPictureToOsChina(filePath) {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str)
                     // console.log(result)
-                    //上传之后result就是返回的结果
                     if (result.uploaded === 1) {
                         resolve(result.url)
                     } else {

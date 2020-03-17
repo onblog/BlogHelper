@@ -137,7 +137,6 @@ function publishArticleToJueJinFact(data,resolve, reject) {
             res.on('end', () => {
                 const result = JSON.parse(str)
                 // console.log(result)
-                //上传之后result就是返回的结果
                 if (result.m === 'ok') {
                     const url = 'https://juejin.im/editor/drafts/' + result.d[0]
                     resolve(url)
