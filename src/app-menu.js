@@ -6,13 +6,14 @@ const appUtil = require('./app-util')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 const toast = require('./app-toast')
+const appUpdate = require('./app-update')
 
 // 图床
 const PIC = dataStore.PIC
 
 exports.buildContextMenu = function buildContextMenu(tray, win) {
-    // 开机自动检查一次更新
-    appMenuPublish.autoUpdateApp(false)
+    // 开机自动检查一次版本更新
+    appUpdate.autoUpdateApp(false)
     // 菜单栏引用
     let menu
     const template = [
@@ -205,7 +206,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 }
                 , {
                     label: '代码对齐',
-                    click: function (menuItem, browserWindow, event) {
+                    click: function () {
                         const oldT = clipboard.readText()
                         const text = appUtil.formatCode(oldT)
                         clipboard.writeText(text)
@@ -236,19 +237,19 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 {
                     label: '文章排版',
                     click: function () {
-                        shell.openExternal('http://md.onblogs.cn').then()
+                        shell.openExternal(require('./app-constant').article).then()
                     }
                 }
                 , {
                     label: '图片素材',
                     click: function () {
-                        shell.openExternal('http://pic.onblogs.cn').then()
+                        shell.openExternal(require('./app-constant').pic).then()
                     }
                 }
                 , {
                     label: 'JSON美化',
                     click: function () {
-                        shell.openExternal('https://www.bejson.com/jsonviewernew/').then()
+                        shell.openExternal(require('./app-constant').json).then()
                     }
                 }
             ]
@@ -262,20 +263,20 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 {
                     label: '官方网站',
                     click: function () {
-                        shell.openExternal('https://github.com/ystcode/BlogHelper').catch()
+                        shell.openExternal(require('./app-constant').link).catch()
                     }
                 }
                 , {
                     label: '我要反馈',
                     click: function () {
-                        shell.openExternal('https://github.com/ystcode/BlogHelper/issues')
+                        shell.openExternal(require('./app-constant').issues)
                             .catch()
                     }
                 }
                 , {
                     label: '给我写信',
                     click: function () {
-                        shell.openExternal('mailto:yster@foxmail.com').catch()
+                        shell.openExternal(require('./app-constant').mail).catch()
                     }
                 }
                 , {
@@ -286,7 +287,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 }, {
                     label: '检查更新',
                     click: function () {
-                        appMenuPublish.autoUpdateApp(true)
+                        appUpdate.autoUpdateApp(true)
                     }
                 }
             ]
