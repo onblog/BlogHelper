@@ -1,0 +1,7 @@
+exports.url = 'https://github.com/ystcode/BlogHelper/releases'
+exports.link = 'https://github.com/ystcode/BlogHelper'
+exports.issues = 'https://github.com/ystcode/BlogHelper/issues'
+exports.mail = 'mailto:yster@foxmail.com'
+exports.article = 'http://md.onblogs.cn'
+exports.pic = 'http://pic.onblogs.cn'
+exports.json = 'https://www.bejson.com/jsonviewernew'

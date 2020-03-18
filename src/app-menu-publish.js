@@ -1,4 +1,4 @@
-const {shell, dialog, app, clipboard} = require('electron')
+const {dialog, app, clipboard} = require('electron')
 const appPublish = require('./app-publish')
 const util = require('./app-util')
 const path = require('path')
@@ -6,8 +6,6 @@ const fs = require('fs')
 const icon = require('./icon')
 const appDialog = require('./app-localFile')
 const appCheck = require('./app-check')
-const https = require('https')
-const jsdom = require('jsdom')
 const appDownload = require('./app-download')
 const appSave = require('./app-save')
 const appToast = require('./app-toast')
@@ -342,52 +340,4 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
         })
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
-}
-
-// 自动检查更新（bool：是否主动操作）
-exports.autoUpdateApp = (bool) => {
-    const releases = 'https://github.com/ystcode/BlogHelper/releases'
-    const req = https.request(releases, {}, function (req) {
-        let result = '';
-        req.on('data', function (data) {
-            result += data;
-        });
-        req.on('end', function () {
-            parseHtml(result);
-        });
-
-        //解析html获取内容
-        function parseHtml(result) {
-            const dom = new jsdom.JSDOM(result);
-            const element = dom.window.document.body.querySelector(
-                'div.release-header > ul> li > a[title]')
-            if (!(element && element.getAttribute('title'))) {
-                if (bool) {
-                    appToast.toast({title: '已经是最新版本', body: ''})
-                }
-                return
-            }
-            const version = element.getAttribute('title')
-            if (util.compareVersion(version, app.getVersion()) > 0) {
-                //发现更新
-                dialog.showMessageBox({
-                                          buttons: ['取消', '更新'],
-                                          message: `当前版本：${app.getVersion()}\n发现新版本：${version}`
-                                      }
-                ).then(function (res) {
-                    if (res.response === 1) {
-                        shell.openExternal(releases).then()
-                    }
-                })
-            } else if (bool) {
-                appToast.toast({title: '已经是最新版本', body: ''})
-            }
-        }
-
-    })
-    req.on('error', (e) => {
-        console.error(e);
-        dialog.showMessageBoxSync({message: '网络连接异常'})
-    });
-    req.end();
 }
