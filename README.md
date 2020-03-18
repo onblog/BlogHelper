@@ -35,8 +35,6 @@
 
 - 📥[点击下载](https://github.com/ystcode/BlogHelper/releases)
 
-目前只提供 mac 和 win 平台的软件下载，linux 用户请自行打包。
-
 ## 🚩预览
 
 <img src="https://i.loli.net/2020/01/14/zkCc9WN5A8iQKgm.png" referrerpolicy="no-referrer" width="400px"/>
@@ -45,7 +43,7 @@
 
 ## 🚩关于作者
 
-- 薛勤，一个就爱瞎鼓捣的程序猿🐒 运营个人公众号：代码艺术
+- 薛勤，一个就爱瞎鼓捣的程序猿🐒 欢迎关注个人技术公众号：代码艺术
 
 - 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📩
 
