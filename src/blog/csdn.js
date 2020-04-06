@@ -17,7 +17,7 @@ function uploadPictureToCSDN(filePath) {
         let request = https.request({
                                         host: 'blog-console-api.csdn.net',
                                         method: 'POST',
-                                        path: '/v2/upload/img?shuiyin=2',
+                                        path: '/v1/upload/img?shuiyin=2',
                                         headers: headers
                                     }, function (res) {
             let str = '';
