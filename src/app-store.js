@@ -10,6 +10,8 @@ class DataStore extends Store {
     CSDNCookieKey = 'csdn-cookie-key'
     //掘金
     JueJinCookieKey = 'jueJin-cookie-key'
+    //知乎
+    ZhiHuCookiekey = 'zhihu-cookie-key'
     //开源中国
     OsChinaCookieKey = 'OsChina-cookie-key'
     OsChinaUserCodeKey = 'osChina-user-code-key'
@@ -22,6 +24,17 @@ class DataStore extends Store {
         const baseConfig = {name: 'blog-helper-2'}
         const finalConfig = {...baseConfig, ...settings};
         super(finalConfig)
+    }
+
+    getZhiHuCookies(){
+        if (this.has(this.ZhiHuCookiekey)) {
+            return this.get(this.ZhiHuCookiekey)
+        }
+        return null
+    }
+
+    setZhiHuCookies(v) {
+        return this.set(this.ZhiHuCookiekey, v)
     }
 
     getCnBlogCookies() {

@@ -90,6 +90,19 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                             appMenuPublish.publishArticleTo(tray, string.segmentfault)
                         }
                     }]
+                }, {
+                    label: '知乎',
+                    submenu: [{
+                        label: '绑定',
+                        click: function (menuItem, browserWindow, event) {
+                            appLogin.loginZhiHu(menuItem, browserWindow, event)
+                        }
+                    }, {
+                        label: '发布',
+                        click: function (menuItem, browserWindow, event) {
+                            appMenuPublish.publishArticleTo(tray, string.zhihu)
+                        }
+                    }]
                 }
             ]
         }

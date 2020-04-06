@@ -28,7 +28,6 @@ function uploadPictureToCSDN(filePath) {
             res.on('end', () => {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    //上传之后result就是返回的结果
                     // console.log(result)
                     if (result.code === 200) {
                         const url = result.data.url

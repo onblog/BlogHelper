@@ -29,7 +29,7 @@ function uploadPictureToImgKr(filePath) {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
                     //上传之后result就是返回的结果
-                    console.log(result)
+                    // console.log(result)
                     if (result.success) {
                         resolve(result.data)
                     } else {
