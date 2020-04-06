@@ -102,4 +102,14 @@ const loginSegmentFault = function (item, focusedWindow, event) {
         dataStore.setSegmentFaultCookie(cookie)
     })
 }
+
 exports.loginSegmentFault = loginSegmentFault
+
+// 登录知乎
+const loginZhiHu = function (item, focusedWindow, event) {
+    getSiteCookie('https://www.zhihu.com', (cookie) => {
+        dataStore.setZhiHuCookies(cookie)
+    })
+}
+
+exports.loginZhiHu = loginZhiHu

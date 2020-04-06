@@ -3,12 +3,14 @@ const util = require('./app-util')
 const string = require('./app-string')
 const marked = require('marked')
 const fs = require('fs')
+const appUpload = require('./app-upload')
 
 const cnblogs = require('./blog/cnblogs')
 const csdn = require('./blog/csdn')
 const juejin = require('./blog/juejin')
 const oschina = require('./blog/oschina')
 const segmentfault = require('./blog/segmentfault')
+const zhihu = require('./blog/zhihu')
 
 // 发布文章到平台
 const publishArticleTo = async (title, content, dirname, site) => {
@@ -96,6 +98,20 @@ const publishArticleTo = async (title, content, dirname, site) => {
                             next = false
                         })
                     break
+                case string.zhihu:
+                    await appUpload.uploadPicture(all_src)
+                        .then(async v => {
+                            await zhihu.uploadPictureToZhiHu(v.toString()).then(value1 => {
+                                value = value.replace(src, value1.toString())
+                            }).catch(reason => {
+                                dialog.showMessageBox({message: reason.toString()}).then()
+                                next = false
+                            })
+                        }).catch(value => {
+                            dialog.showMessageBox({message: value.toString()}).then()
+                            next = false
+                        })
+                    break
             }
         }
     }
@@ -126,6 +142,11 @@ const publishArticleTo = async (title, content, dirname, site) => {
             break
         case string.segmentfault:
             await segmentfault.publishArticleToSegmentFault(title, value)
+                .then(openPublishUrl)
+                .catch(openCatchInfo)
+            break
+        case string.zhihu:
+            await zhihu.publishArticleToZhiHu(title, value)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break

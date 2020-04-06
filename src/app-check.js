@@ -36,6 +36,12 @@ exports.loginCheck = (site) => {
                 return false
             }
             break
+        case string.zhihu:
+            if (!dataStore.getZhiHuCookies()) {
+                appToast.toast({title: '请先登录知乎',body:''})
+                return false
+            }
+            break
         default:
             return false
     }
