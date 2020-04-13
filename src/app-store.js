@@ -19,11 +19,24 @@ class DataStore extends Store {
     //思否
     SegmentFaultCookieKey = 'segmentFault-cookie-key'
     SegmentFaultTokenKey = 'segmentFault-token-key'
+    //简书
+    JianShuCookieKey = 'jianShu-cookie-key'
 
     constructor(settings) {
         const baseConfig = {name: 'blog-helper-2'}
         const finalConfig = {...baseConfig, ...settings};
         super(finalConfig)
+    }
+
+    getJianShuCookies(){
+        if (this.has(this.JianShuCookieKey)) {
+            return this.get(this.JianShuCookieKey)
+        }
+        return null
+    }
+
+    setJianShuCookies(v) {
+        return this.set(this.JianShuCookieKey, v)
     }
 
     getZhiHuCookies(){

@@ -42,7 +42,14 @@ exports.loginCheck = (site) => {
                 return false
             }
             break
+        case string.jianshu:
+            if (!dataStore.getJianShuCookies()) {
+                appToast.toast({title: '请先登录简书',body:''})
+                return false
+            }
+            break
         default:
+            appToast.toast({title: '未注册检查类型'})
             return false
     }
     return true
