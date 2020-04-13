@@ -8,11 +8,11 @@
 ## 🚩我是谁
 
 - 一个没有任何界面，只存放于系统托盘的小助手🌝，帮助更多人更好的写作！
-- PS：软件纯公益，点赞就是动力。我还有好多想法没做，给点动力～
+- PS：软件纯公益，点赞就是动力。
 
 ## 🚩我能做什么
 
-- 一键发布本地文章到知乎、博客园、CSDN、掘金、SegmentFault(思否)、开源中国等平台。
+- 一键发布本地文章到知乎、简书、博客园、CSDN、掘金、SegmentFault(思否)、开源中国等平台。
 
 - 一键将本地文章中的所有本地图片上传到图床并替换为网图链接。
 
@@ -38,7 +38,7 @@
 
 ## 🚩预览
 
-<img src="https://i.loli.net/2020/01/14/zkCc9WN5A8iQKgm.png" referrerpolicy="no-referrer" width="400px"/>
+<img src="https://imgkr.cn-bj.ufileos.com/46f74e8a-7ca9-4d33-8030-4a3baf57d63b.png" referrerpolicy="no-referrer" width="400px"/>
 
 预览图可能版本过低，请以具体应用为准。
 
