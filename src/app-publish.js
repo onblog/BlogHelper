@@ -11,6 +11,7 @@ const juejin = require('./blog/juejin')
 const oschina = require('./blog/oschina')
 const segmentfault = require('./blog/segmentfault')
 const zhihu = require('./blog/zhihu')
+const jianshu = require('./blog/jianshu')
 
 // 发布文章到平台
 const publishArticleTo = async (title, content, dirname, site) => {
@@ -112,6 +113,16 @@ const publishArticleTo = async (title, content, dirname, site) => {
                             next = false
                         })
                     break
+                case string.jianshu:
+                    await jianshu.uploadPictureToJianShu(all_src)
+                        .then(v => {
+                            value = value.replace(src, v.toString())
+                        })
+                        .catch(value => {
+                            dialog.showMessageBox({message: value.toString()}).then()
+                            next = false
+                        })
+                    break
             }
         }
     }
@@ -150,10 +161,14 @@ const publishArticleTo = async (title, content, dirname, site) => {
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
+        case string.jianshu:
+            await jianshu.publishArticleToJianshu(title, value)
+                .then(openPublishUrl)
+                .catch(openCatchInfo)
+            break
     }
 }
 exports.publishArticleTo = publishArticleTo
-
 
 const openPublishUrl = url => {
     const number = dialog.showMessageBoxSync({message: '上传成功！是否在浏览器打开？', buttons: ['取消', '打开']})

@@ -1,4 +1,4 @@
-const {BrowserWindow, session, Notification} = require('electron')
+const {BrowserWindow, session} = require('electron')
 const https = require('https')
 const jsDom = require("jsdom")
 const icon = require('./icon')
@@ -113,3 +113,12 @@ const loginZhiHu = function (item, focusedWindow, event) {
 }
 
 exports.loginZhiHu = loginZhiHu
+
+// 登录简书
+const loginJianShu = function (item, focusedWindow, event) {
+    getSiteCookie('https://www.jianshu.com/sign_in', (cookie) => {
+        dataStore.setJianShuCookies(cookie)
+    })
+}
+
+exports.loginJianShu = loginJianShu

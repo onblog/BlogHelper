@@ -19,33 +19,32 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
     const template = [
         {
             label: '博客',
-            // enabled: false
             submenu: [
                 {
-                    label: '博客园',
+                    label: '知乎',
                     submenu: [{
                         label: '绑定',
                         click: function (menuItem, browserWindow, event) {
-                            appLogin.loginCnBlog(menuItem, browserWindow, event)
+                            appLogin.loginZhiHu(menuItem, browserWindow, event)
                         }
                     }, {
                         label: '发布',
                         click: function (menuItem, browserWindow, event) {
-                            appMenuPublish.publishArticleTo(tray, string.cnblogs)
+                            appMenuPublish.publishArticleTo(tray, string.zhihu)
                         }
                     }]
                 }
                 , {
-                    label: 'CSDN',
+                    label: '简书',
                     submenu: [{
                         label: '绑定',
                         click: function (menuItem, browserWindow, event) {
-                            appLogin.loginCSDN(menuItem, browserWindow, event)
+                            appLogin.loginJianShu(menuItem, browserWindow, event)
                         }
                     }, {
                         label: '发布',
                         click: function (menuItem, browserWindow, event) {
-                            appMenuPublish.publishArticleTo(tray, string.csdn)
+                            appMenuPublish.publishArticleTo(tray, string.jianshu)
                         }
                     }]
                 }
@@ -64,20 +63,6 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     }]
                 }
                 , {
-                    label: '开源中国',
-                    submenu: [{
-                        label: '绑定',
-                        click: function (menuItem, browserWindow, event) {
-                            appLogin.loginOsChina(menuItem, browserWindow, event)
-                        }
-                    }, {
-                        label: '发布',
-                        click: function (menuItem, browserWindow, event) {
-                            appMenuPublish.publishArticleTo(tray, string.oschina)
-                        }
-                    }]
-                }
-                , {
                     label: '思否',
                     submenu: [{
                         label: '绑定',
@@ -90,17 +75,46 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                             appMenuPublish.publishArticleTo(tray, string.segmentfault)
                         }
                     }]
-                }, {
-                    label: '知乎',
+                }
+                , {
+                    label: 'CSDN',
                     submenu: [{
                         label: '绑定',
                         click: function (menuItem, browserWindow, event) {
-                            appLogin.loginZhiHu(menuItem, browserWindow, event)
+                            appLogin.loginCSDN(menuItem, browserWindow, event)
                         }
                     }, {
                         label: '发布',
                         click: function (menuItem, browserWindow, event) {
-                            appMenuPublish.publishArticleTo(tray, string.zhihu)
+                            appMenuPublish.publishArticleTo(tray, string.csdn)
+                        }
+                    }]
+                }
+                , {
+                    label: '博客园',
+                    submenu: [{
+                        label: '绑定',
+                        click: function (menuItem, browserWindow, event) {
+                            appLogin.loginCnBlog(menuItem, browserWindow, event)
+                        }
+                    }, {
+                        label: '发布',
+                        click: function (menuItem, browserWindow, event) {
+                            appMenuPublish.publishArticleTo(tray, string.cnblogs)
+                        }
+                    }]
+                }
+                , {
+                    label: '开源中国',
+                    submenu: [{
+                        label: '绑定',
+                        click: function (menuItem, browserWindow, event) {
+                            appLogin.loginOsChina(menuItem, browserWindow, event)
+                        }
+                    }, {
+                        label: '发布',
+                        click: function (menuItem, browserWindow, event) {
+                            appMenuPublish.publishArticleTo(tray, string.oschina)
                         }
                     }]
                 }

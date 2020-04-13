@@ -30,7 +30,7 @@ function parseHtml(result, isTip) {
     const element = dom.window.document.body.querySelector('div.release-header > ul> li > a[title]')
     if (!(element && element.getAttribute('title'))) {
         if (isTip) {
-            appToast.toast({title: '检查更新失败,请前去官网查看', body: ''})
+            appToast.toast({title: '检查更新失败, 请前去官网查看', body: ''})
             shell.openExternal(url).then()
         }
         return
