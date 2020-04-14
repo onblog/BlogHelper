@@ -245,6 +245,20 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                         updateClipboard(newT)
                     }
                 }, {
+                    label: '删除换行',
+                    click: function () {
+                        const oldT = clipboard.readText()
+                        const newT = oldT.replace(/\n/g, '')
+                        updateClipboard(newT)
+                    }
+                }, {
+                    label: '删除空格',
+                    click: function () {
+                        const oldT = clipboard.readText()
+                        const newT = oldT.replace(/\s+/g, '')
+                        updateClipboard(newT)
+                    }
+                }, {
                     label: 'HTML转MD',
                     click: function () {
                         const oldT = clipboard.readText()
