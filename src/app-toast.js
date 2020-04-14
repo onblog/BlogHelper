@@ -5,6 +5,8 @@ exports.toast = function toast(config) {
     if (Notification.isSupported()){
         new Notification(config).show()
     }else {
-        dialog.showMessageBox({message:config.title+'\n'+config.body}).then()
+        const title = config.title || ''
+        const body = config.body || ''
+        dialog.showMessageBox({message: title + '\n' + body}).then()
     }
 }
