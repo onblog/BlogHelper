@@ -235,25 +235,21 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     label: '代码对齐',
                     click: function () {
                         const oldT = clipboard.readText()
-                        const text = appUtil.formatCode(oldT)
-                        clipboard.writeText(text)
-                        while (clipboard.readText() !== text) {
-                            clipboard.writeText(text)
-                        }
-                        if (oldT !== clipboard.readText()) {
-                            toast.toast({title: '剪贴板已更新'})
-                        }
+                        const newT = appUtil.formatCode(oldT)
+                        updateClipboard(newT)
                     }
-                }
-                , {
+                }, {
+                    label: '转纯文字',
+                    click: function () {
+                        const newT = clipboard.readText()
+                        updateClipboard(newT)
+                    }
+                }, {
                     label: 'HTML转MD',
                     click: function () {
                         const oldT = clipboard.readText()
-                        clipboard.writeText(require('html-to-md')(oldT))
-                        const newT = clipboard.readText()
-                        if (oldT !== newT) {
-                            toast.toast({title: '剪贴板已更新'})
-                        }
+                        const newT = require('html-to-md')(oldT)
+                        updateClipboard(newT)
                     }
                 }
             ]
@@ -332,11 +328,29 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
     return menu
 }
 
-// 关闭除ID外的其他checked
+/**
+ * 关闭除ID外的其他checked
+ */
 function closeMenuChecked(id, menu) {
     for (let pic of PIC) {
         if (id !== pic) {
             appUtil.myGetMenuItemById(pic, menu).checked = false
         }
     }
+}
+
+/**
+ * 更新剪贴板文字
+ * @param newT
+ */
+function updateClipboard(newT) {
+    // 清空剪贴板
+    while (clipboard.readText() != null && clipboard.readText().length > 0) {
+        clipboard.clear()
+    }
+    // 写入剪贴板
+    while (clipboard.readText() !== newT) {
+        clipboard.writeText(newT)
+    }
+    toast.toast({title: '剪贴板已更新'})
 }
