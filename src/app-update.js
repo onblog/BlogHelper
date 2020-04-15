@@ -7,7 +7,7 @@ const appToast = require('./app-toast')
 const url = require('./app-constant').url
 
 // 自动检查更新（bool：是否主动操作）
-exports.autoUpdateApp = function autoUpdateApp(isTip){
+exports.autoUpdateApp = function autoUpdateApp(isTip) {
     const req = https.request(url, {}, function (req) {
         let result = '';
         req.on('data', function (data) {
@@ -36,7 +36,8 @@ function parseHtml(result, isTip) {
         return
     }
     const version = element.getAttribute('title')
-    if (util.compareVersion(version, app.getVersion()) > 0) {
+    const compareVersion = util.compareVersion(version, app.getVersion())
+    if (compareVersion > 0) {
         //发现更新
         dialog.showMessageBox({
                                   buttons: ['取消', '更新'],
@@ -48,6 +49,7 @@ function parseHtml(result, isTip) {
             }
         })
     } else if (isTip) {
-        appToast.toast({title: '已经是最新版本', body: ''})
+        appToast.toast({title: '已经是最新版本', body: '最新发布版本 '+version})
+
     }
 }
