@@ -1,7 +1,7 @@
 const {BrowserWindow, session} = require('electron')
 const https = require('https')
 const jsDom = require("jsdom")
-const icon = require('./icon')
+const icon = require('./app-icon')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
 

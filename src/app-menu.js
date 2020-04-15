@@ -1,4 +1,4 @@
-const {Menu, app, clipboard, shell} = require('electron')
+const {Menu, app, clipboard, shell, globalShortcut} = require('electron')
 const appLogin = require('./app-login')
 const string = require('./app-string')
 const appMenuPublish = require('./app-menu-publish')
@@ -10,10 +10,10 @@ const appUpdate = require('./app-update')
 
 // 图床
 const PIC = dataStore.PIC
+// 快捷键
+const ACCELERATORS = ['CmdOrCtrl+Alt+N', 'CmdOrCtrl+Alt+T']
 
-exports.buildContextMenu = function buildContextMenu(tray, win) {
-    // 开机自动检查一次版本更新
-    appUpdate.autoUpdateApp(false)
+exports.buildContextMenu = function buildContextMenu(tray) {
     // 菜单栏引用
     let menu
     const template = [
@@ -222,13 +222,9 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
             submenu: [
                 {
                     label: '图片上传',
-                    click: function (menuItem, browserWindow, event) {
-                        const nativeImage = clipboard.readImage()
-                        if (nativeImage.isEmpty()) {
-                            toast.toast({title: '剪贴板未检索到图片', body: ''})
-                        } else {
-                            appMenuPublish.uploadPictureToWeiBo(tray, nativeImage).then()
-                        }
+                    accelerator: ACCELERATORS[0],
+                    click: function () {
+                        uploadClipboardPic(tray)
                     }
                 }
                 , {
@@ -240,9 +236,9 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                     }
                 }, {
                     label: '转纯文字',
+                    accelerator: ACCELERATORS[1],
                     click: function () {
-                        const newT = clipboard.readText()
-                        updateClipboard(newT)
+                        coverToText()
                     }
                 }, {
                     label: '删除换行',
@@ -324,7 +320,7 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
                 }, {
                     label: '检查更新',
                     click: function () {
-                        appUpdate.autoUpdateApp(true)
+                        checkUpdateApp(true)
                     }
                 }
             ]
@@ -333,7 +329,6 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
             label: '退出程序',
             click: () => {
                 tray.destroy()
-                win.destroy()
                 app.quit()
             }
         }
@@ -341,6 +336,29 @@ exports.buildContextMenu = function buildContextMenu(tray, win) {
     menu = Menu.buildFromTemplate(template)
     return menu
 }
+
+/**
+ * 注册快捷键
+ */
+exports.initGlobalShortcut = function initGlobalShortcut(tray) {
+    // 剪贴板图谱上传快捷键
+    globalShortcut.register(ACCELERATORS[0], () => {
+        uploadClipboardPic(tray)
+    })
+    // 剪贴板富文本转纯文字
+    globalShortcut.register(ACCELERATORS[1], () => {
+        coverToText()
+    })
+}
+
+/**
+ * 检查更新
+ */
+function checkUpdateApp(isTip) {
+    appUpdate.autoUpdateApp(isTip)
+}
+
+exports.checkUpdateApp = checkUpdateApp
 
 /**
  * 关闭除ID外的其他checked
@@ -354,7 +372,15 @@ function closeMenuChecked(id, menu) {
 }
 
 /**
- * 更新剪贴板文字
+ * 剪贴板转纯文字
+ */
+function coverToText() {
+    const newT = clipboard.readText()
+    updateClipboard(newT)
+}
+
+/**
+ * 更新剪贴板文字为
  * @param newT
  */
 function updateClipboard(newT) {
@@ -367,4 +393,16 @@ function updateClipboard(newT) {
         clipboard.writeText(newT)
     }
     toast.toast({title: '剪贴板已更新'})
+}
+
+/**
+ * 图片上传
+ */
+function uploadClipboardPic(tray) {
+    const nativeImage = clipboard.readImage()
+    if (nativeImage.isEmpty()) {
+        toast.toast({title: '剪贴板未检索到图片', body: ''})
+    } else {
+        appMenuPublish.uploadPictureToWeiBo(tray, nativeImage).then()
+    }
 }
