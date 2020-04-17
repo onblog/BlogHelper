@@ -109,7 +109,7 @@ const publishArticleTo = async (title, content, dirname, site) => {
                                 next = false
                             })
                         }).catch(value => {
-                            dialog.showMessageBox({message: value.toString()}).then()
+                            dialog.showMessageBox({message: value.toString()+"\n因知乎的特殊性，请尝试切换其它图床"}).then()
                             next = false
                         })
                     break
