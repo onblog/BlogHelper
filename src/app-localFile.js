@@ -34,11 +34,11 @@ exports.openManyLocalFile = (callback) => {
 }
 
 // 读取选中的多个文件信息(同步)
-exports.openManyLocalFileSync = () => {
+exports.openManyLocalFileSync = (filters) => {
     let files = dialog.showOpenDialogSync({
                                               properties: ['openFile', 'createDirectory',
                                                            'multiSelections'],
-                                              filters: [
+                                              filters: filters ? filters :[
                                                   {name: 'markdown', extensions: ['md']}
                                               ]
                                           })
