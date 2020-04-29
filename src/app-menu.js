@@ -210,9 +210,14 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     }
                 }
                 , {
-                    label: 'MD转IMG标签',
+                    label: 'Md图转Img',
                     click: function () {
                         appMenuPublish.pictureMdToImg(tray)
+                    }
+                }, {
+                    label: 'HTML转为Md',
+                    click: function () {
+                        appMenuPublish.HTMLToMd(tray)
                     }
                 }
             ]
@@ -255,7 +260,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         updateClipboard(newT)
                     }
                 }, {
-                    label: 'HTML转MD',
+                    label: 'HTML转Md',
                     click: function () {
                         const oldT = clipboard.readText()
                         const newT = require('html-to-md')(oldT)

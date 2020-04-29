@@ -1,6 +1,5 @@
 const {shell, dialog, clipboard} = require('electron')
 const fs = require('fs')
-const path = require('path')
 
 let numOne = 0
 let numTwo = 0
