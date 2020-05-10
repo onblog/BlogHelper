@@ -1,17 +1,16 @@
-const {Menu, app, clipboard, shell, globalShortcut} = require('electron')
+const {Menu, app, clipboard, shell} = require('electron')
 const appLogin = require('./app-login')
 const string = require('./app-string')
 const appMenuPublish = require('./app-menu-publish')
 const appUtil = require('./app-util')
 const DataStore = require('./app-store')
 const dataStore = new DataStore()
-const toast = require('./app-toast')
+const appToast = require('./app-toast')
 const appUpdate = require('./app-update')
+const appShortcut = require('./app-shortcut')
 
 // 图床
 const PIC = dataStore.PIC
-// 快捷键
-const ACCELERATORS = ['CmdOrCtrl+Alt+N', 'CmdOrCtrl+Alt+T']
 
 exports.buildContextMenu = function buildContextMenu(tray) {
     // 菜单栏引用
@@ -57,7 +56,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.juejin)
                         }
                     }]
@@ -71,7 +70,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.segmentfault)
                         }
                     }]
@@ -85,7 +84,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.csdn)
                         }
                     }]
@@ -140,7 +139,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             click: function (menuItem, browserWindow, event) {
                                 menuItem.checked = true
                                 dataStore.setWeiBoFigureBedSwitch()
-                                toast.toast({title: '启用成功', body: '正在使用新浪图床'})
+                                appToast.toast({title: '启用成功', body: '正在使用新浪图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -157,7 +156,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             click: function (menuItem, browserWindow, even) {
                                 menuItem.checked = true
                                 dataStore.setIMGKRFigureBedSwitch()
-                                toast.toast({title: '启用成功', body: '正在使用图壳图床'})
+                                appToast.toast({title: '启用成功', body: '正在使用图壳图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -174,7 +173,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             click: function (menuItem, browserWindow, even) {
                                 menuItem.checked = true
                                 dataStore.setSmMSFigureBedSwitch()
-                                toast.toast({title: '启用成功', body: '正在使用SM图床'})
+                                appToast.toast({title: '启用成功', body: '正在使用SM图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -227,9 +226,8 @@ exports.buildContextMenu = function buildContextMenu(tray) {
             submenu: [
                 {
                     label: '图片上传',
-                    accelerator: ACCELERATORS[0],
                     click: function () {
-                        uploadClipboardPic(tray)
+                        appMenuPublish.uploadClipboardPic(tray)
                     }
                 }
                 , {
@@ -237,34 +235,53 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     click: function () {
                         const oldT = clipboard.readText()
                         const newT = appUtil.formatCode(oldT)
-                        updateClipboard(newT)
+                        appUtil.updateClipboard(newT)
                     }
                 }, {
                     label: '转纯文字',
-                    accelerator: ACCELERATORS[1],
                     click: function () {
-                        coverToText()
+                        appMenuPublish.coverToText()
                     }
                 }, {
                     label: '删除换行',
                     click: function () {
                         const oldT = clipboard.readText()
                         const newT = oldT.replace(/\n/g, '')
-                        updateClipboard(newT)
+                        appUtil.updateClipboard(newT)
                     }
                 }, {
                     label: '删除空格',
                     click: function () {
                         const oldT = clipboard.readText()
                         const newT = oldT.replace(/\s+/g, '')
-                        updateClipboard(newT)
+                        appUtil.updateClipboard(newT)
                     }
                 }, {
                     label: 'HTML转Md',
                     click: function () {
                         const oldT = clipboard.readText()
                         const newT = require('html-to-md')(oldT)
-                        updateClipboard(newT)
+                        appUtil.updateClipboard(newT)
+                    }
+                }
+            ]
+        }, {
+            label: '快捷键',
+            submenu: [
+                {
+                    label: '图片上传',
+                    type: 'checkbox',
+                    accelerator: appShortcut.ACCELERATORS[0],
+                    click: function (menuItem) {
+                        appShortcut.uploadClipboardPicSwitch(tray, menuItem.checked)
+                    }
+                },
+                {
+                    label: '转纯文字',
+                    type: 'checkbox',
+                    accelerator: appShortcut.ACCELERATORS[1],
+                    click: function (menuItem) {
+                        appShortcut.coverToTextSwitch(tray, menuItem.checked)
                     }
                 }
             ]
@@ -320,7 +337,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 , {
                     label: '版本查询',
                     click: function () {
-                        toast.toast({title: '当前版本 ' + app.getVersion(), body: ''})
+                        appToast.toast({title: '当前版本 ' + app.getVersion(), body: ''})
                     }
                 }, {
                     label: '检查更新',
@@ -343,20 +360,6 @@ exports.buildContextMenu = function buildContextMenu(tray) {
 }
 
 /**
- * 注册快捷键
- */
-exports.initGlobalShortcut = function initGlobalShortcut(tray) {
-    // 剪贴板图谱上传快捷键
-    globalShortcut.register(ACCELERATORS[0], () => {
-        uploadClipboardPic(tray)
-    })
-    // 剪贴板富文本转纯文字
-    globalShortcut.register(ACCELERATORS[1], () => {
-        coverToText()
-    })
-}
-
-/**
  * 检查更新
  */
 function checkUpdateApp(isTip) {
@@ -373,41 +376,5 @@ function closeMenuChecked(id, menu) {
         if (id !== pic) {
             appUtil.myGetMenuItemById(pic, menu).checked = false
         }
-    }
-}
-
-/**
- * 剪贴板转纯文字
- */
-function coverToText() {
-    const newT = clipboard.readText()
-    updateClipboard(newT)
-}
-
-/**
- * 更新剪贴板文字为
- * @param newT
- */
-function updateClipboard(newT) {
-    // 清空剪贴板
-    while (clipboard.readText() != null && clipboard.readText().length > 0) {
-        clipboard.clear()
-    }
-    // 写入剪贴板
-    while (clipboard.readText() !== newT) {
-        clipboard.writeText(newT)
-    }
-    toast.toast({title: '剪贴板已更新'})
-}
-
-/**
- * 图片上传
- */
-function uploadClipboardPic(tray) {
-    const nativeImage = clipboard.readImage()
-    if (nativeImage.isEmpty()) {
-        toast.toast({title: '剪贴板未检索到图片', body: ''})
-    } else {
-        appMenuPublish.uploadPictureToWeiBo(tray, nativeImage).then()
     }
 }

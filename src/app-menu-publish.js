@@ -1,6 +1,6 @@
 const {dialog, app, clipboard} = require('electron')
 const appPublish = require('./app-publish')
-const util = require('./app-util')
+const appUtil = require('./app-util')
 const path = require('path')
 const fs = require('fs')
 const icon = require('./app-icon')
@@ -42,15 +42,15 @@ exports.uploadAllPictureToWeiBo = async (tray) => {
         const file = result.files[i]
         // 3.读取图片的真实路径
         const map = new Map();
-        util.readImgLink(file.content, (src) => {
-            const fullPath = util.relativePath(file.dirname, src)
+        appUtil.readImgLink(file.content, (src) => {
+            const fullPath = appUtil.relativePath(file.dirname, src)
             map.set(src, fullPath)
         })
         // 4.本地图片上传
         let value = file.content
         let mark = {next: true}
         for (let [src, fullPath] of map.entries()) {
-            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath) && util.isLocalPicture(
+            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath) && appUtil.isLocalPicture(
                 fullPath)) {
                 await appUpload.uploadPicture(fullPath)
                     .then(href => {
@@ -98,12 +98,12 @@ exports.downloadMdNetPicture = async function (tray) {
         // 保存在新的目录
         const dirname = file.dirname
         // 存放图片的文件夹名
-        const name = util.stringDeal(file.title)
-        util.readImgLink(file.content, (src) => {
-            if (util.isWebPicture(src)) {
+        const name = appUtil.stringDeal(file.title)
+        appUtil.readImgLink(file.content, (src) => {
+            if (appUtil.isWebPicture(src)) {
                 // 图片文件名
                 let filepath = path.join(dirname, name,
-                    Math.floor(Math.random() * 100000000) + '.png')
+                                         Math.floor(Math.random() * 100000000) + '.png')
                 map.set(src, filepath)
             }
         })
@@ -155,9 +155,9 @@ exports.movePictureToFolder = function (tray) {
         const file = result.files[i]
         // 3.读取图片的真实路径
         const map = new Map();
-        util.readImgLink(file.content, (src) => {
-            if (util.isLocalPicture(src)) {
-                const fullPath = util.relativePath(file.dirname, src)
+        appUtil.readImgLink(file.content, (src) => {
+            if (appUtil.isLocalPicture(src)) {
+                const fullPath = appUtil.relativePath(file.dirname, src)
                 // 当前图片在本地存在
                 if (fs.existsSync(fullPath)) {
                     map.set(src, fullPath)
@@ -168,7 +168,7 @@ exports.movePictureToFolder = function (tray) {
         let value = file.content
         for (let [src, fullPath] of map.entries()) {
             // 存放图片的文件夹名
-            const dirName = util.stringDeal(file.title)
+            const dirName = appUtil.stringDeal(file.title)
             // 图片文件名
             const picName = path.basename(src)
             // 新的保存位置
@@ -214,9 +214,9 @@ exports.movePictureAndMdToFolder = function (tray) {
         const file = result.files[i]
         // 3.读取图片的真实路径
         const map = new Map();
-        util.readImgLink(file.content, (src) => {
-            if (util.isLocalPicture(src)) {
-                const fullPath = util.relativePath(file.dirname, src)
+        appUtil.readImgLink(file.content, (src) => {
+            if (appUtil.isLocalPicture(src)) {
+                const fullPath = appUtil.relativePath(file.dirname, src)
                 // 当前图片在本地存在
                 if (fs.existsSync(fullPath)) {
                     map.set(src, fullPath)
@@ -232,7 +232,7 @@ exports.movePictureAndMdToFolder = function (tray) {
         }
         for (let [src, fullPath] of map.entries()) {
             // 存放图片的文件夹名
-            const dirName = util.stringDeal(file.title)
+            const dirName = appUtil.stringDeal(file.title)
             // 图片文件名
             const picName = path.basename(src)
             // 新的保存位置
@@ -291,7 +291,7 @@ exports.pictureMdToImg = function (tray) {
                     let src = split[i].substring(start + 1, end) //图片的真实地址
                     line =
                         line.replace("!" + split[i],
-                            `<img src="${src}" referrerPolicy="no-referrer"/>`)
+                                     `<img src="${src}" referrerPolicy="no-referrer"/>`)
                 }
             }
             newValue += line + '\n'
@@ -308,8 +308,22 @@ exports.pictureMdToImg = function (tray) {
     tray.setImage(icon.iconFile)
 }
 
-// 上传一张图片（用于剪贴板）
-exports.uploadPictureToWeiBo = async (tray, image) => {
+/**
+ * 剪贴板图片上传
+ */
+exports.uploadClipboardPic = function uploadClipboardPic(tray) {
+    const nativeImage = clipboard.readImage()
+    if (nativeImage.isEmpty()) {
+        appToast.toast({title: '剪贴板未检索到图片', body: ''})
+    } else {
+        uploadPictureToWeiBo(tray, nativeImage).then()
+    }
+}
+
+/**
+ * 上传一张图片（用于剪贴板）
+ */
+async function uploadPictureToWeiBo(tray, image) {
     // 2.开启进度条图标
     tray.setImage(icon.proIconFile)
     // 3.存储到临时文件夹
@@ -341,13 +355,22 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
+exports.uploadPictureToWeiBo = uploadPictureToWeiBo
+
+/**
+ * 剪贴板转纯文字
+ */
+exports.coverToText = function coverToText() {
+    const newT = clipboard.readText()
+    appUtil.updateClipboard(newT)
+}
 
 // HTML转Md
 exports.HTMLToMd = function (tray) {
     // 1.选择本地文件
     const result = appDialog.openManyLocalFileSync([
-        {name: 'html', extensions: ['html']}
-    ])
+                                                       {name: 'html', extensions: ['html']}
+                                                   ])
     if (result.canceled) {
         return
     }
@@ -359,7 +382,7 @@ exports.HTMLToMd = function (tray) {
         // 3.HTML转Md
         const newValue = require('html-to-md')(file.content)
         // 4.保存
-        file.filepath = file.filepath.replace(path.extname(file.filepath),'.md')
+        file.filepath = file.filepath.replace(path.extname(file.filepath), '.md')
         appSave.saveNewFileOrClipboard(file, newValue, i)
         // 5.提示
         appToast.toast({title: '完成', body: file.title})

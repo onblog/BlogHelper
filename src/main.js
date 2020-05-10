@@ -1,6 +1,7 @@
 const {Menu, Tray, app} = require('electron')
 const icon = require('./app-icon')
 const appMenu = require('./app-menu')
+const appShortcut = require('./app-shortcut')
 
 app.on('ready', () => {
     // 隐藏系统任务栏
@@ -10,7 +11,7 @@ app.on('ready', () => {
     // 创建托盘
     const tray = createTray()
     // 注册快捷键
-    appMenu.initGlobalShortcut(tray)
+    appShortcut.initGlobalShortcut(tray)
 });
 
 function createTray() {
