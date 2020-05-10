@@ -124,15 +124,19 @@ function publishArticleToOsChina(title, content) {
                                         str += chunk
                                     });
                                     res.on('end', () => {
-                                        const result = JSON.parse(str);
-                                        if (result.code === 1) {
-                                            const url1 = 'https://my.oschina.net/u/'
-                                                         + getOsChinaUserId()
-                                                         + '/blog/write/draft/'
-                                                         + result.result.draft
-                                            resolve(url1)
-                                        } else {
-                                            reject('发布失败,' +result.message)
+                                        if (res.statusCode === 200) {
+                                            const result = JSON.parse(str);
+                                            if (result.code === 1) {
+                                                const url1 = 'https://my.oschina.net/u/'
+                                                             + getOsChinaUserId()
+                                                             + '/blog/write/draft/'
+                                                             + result.result.draft
+                                                resolve(url1)
+                                            } else {
+                                                reject('发布失败,' + result.message)
+                                            }
+                                        }else {
+                                            reject('发布失败:' + res.statusCode)
                                         }
                                     });
                                 }
