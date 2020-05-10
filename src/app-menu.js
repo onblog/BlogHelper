@@ -209,7 +209,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     }
                 }
                 , {
-                    label: 'Md图转Img',
+                    label: 'Md图片转Img',
                     click: function () {
                         appMenuPublish.pictureMdToImg(tray)
                     }
