@@ -24,6 +24,6 @@ function createTray() {
     return tray
 }
 
-app.on('window-all-closed', (event) => {
+app.on('window-all-closed', () => {
     // 监听即可禁止窗口关闭时被退出
 })
