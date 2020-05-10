@@ -1,4 +1,6 @@
 const path = require('path')
+const {clipboard} = require('electron')
+const appToast = require('./app-toast')
 
 // 读取每一个已插入的图片链接
 exports.readImgLink = (text, callback) => {
@@ -24,7 +26,7 @@ exports.isWebPicture = (src) => {
     return src.startsWith('http') && (src.endsWith('png') || src.endsWith('jpg')
                                       || src.endsWith('png') || src.endsWith('jpeg')
                                       || src.endsWith('gif') || src.endsWith('bmp')
-    || src.indexOf('img-blog.csdn.net')!==-1)
+                                      || src.indexOf('img-blog.csdn.net') !== -1)
 }
 
 // 是否是本地图片
@@ -85,7 +87,7 @@ exports.formatCode = (code) => {
  * 版本号比较
  * @return {number}
  */
-exports.compareVersion = function (v1, v2){
+exports.compareVersion = function (v1, v2) {
     const vv1 = v1.split('.')
     const vv2 = v2.split('.')
     const length = vv1.length >= vv2.length ? vv1.length : vv2.length
@@ -108,14 +110,14 @@ exports.compareVersion = function (v1, v2){
 //只保留汉字+英文+数字
 exports.stringDeal = function (str) {
     let result = ''
-    for (let i=0; i<str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
         let c = str.charCodeAt(i);
-        if (c>=0x4e00&&c<=0x9fa5){ //汉字
-            result+= str.charAt(i)
-        } else if (c>=0x61 && c<=0x7a || c>=0x41 && c<=0x5a){ //字母
-            result+=str.charAt(i)
-        }else if (c>=0x30&&c<=0x39){ //数字
-            result+=str.charAt(i)
+        if (c >= 0x4e00 && c <= 0x9fa5) { //汉字
+            result += str.charAt(i)
+        } else if (c >= 0x61 && c <= 0x7a || c >= 0x41 && c <= 0x5a) { //字母
+            result += str.charAt(i)
+        } else if (c >= 0x30 && c <= 0x39) { //数字
+            result += str.charAt(i)
         }
     }
     return result
@@ -131,4 +133,20 @@ exports.myGetMenuItemById = function myGetMenuItemById(id, myMenu) {
         }
     }
     return found
+}
+
+/**
+ * 更新剪贴板文字为
+ * @param newT
+ */
+exports.updateClipboard = function updateClipboard(newT) {
+    // 清空剪贴板
+    while (clipboard.readText() != null && clipboard.readText().length > 0) {
+        clipboard.clear()
+    }
+    // 写入剪贴板
+    while (clipboard.readText() !== newT) {
+        clipboard.writeText(newT)
+    }
+    appToast.toast({title: '剪贴板已更新'})
 }
