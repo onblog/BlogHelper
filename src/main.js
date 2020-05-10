@@ -2,7 +2,6 @@ const {Menu, Tray, app} = require('electron')
 const icon = require('./app-icon')
 const appMenu = require('./app-menu')
 
-
 app.on('ready', () => {
     // 隐藏系统任务栏
     process.platform === 'win32' ? Menu.setApplicationMenu(null) : app.dock.hide()
@@ -14,7 +13,6 @@ app.on('ready', () => {
     appMenu.initGlobalShortcut(tray)
 });
 
-
 function createTray() {
     // 新建系统托盘并添加图标
     const tray = new Tray(icon.iconFile)
@@ -25,22 +23,6 @@ function createTray() {
     return tray
 }
 
-
-
-
-// 创建可隐藏的窗口
-// function createWindow() {
-//     let win = new BrowserWindow({
-//                                     width: 700,
-//                                     height: 550,
-//                                     show: false,
-//                                     titleBarStyle: "hidden",
-//                                     webPreferences: {nodeIntegration: true}
-//                                 })
-//     win.on('close', (e) => {
-//         e.preventDefault()
-//         win.hide()
-//     })
-//     return win
-// }
-
+app.on('window-all-closed', (event) => {
+    // 监听即可禁止窗口关闭时被退出
+})
