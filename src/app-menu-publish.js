@@ -103,7 +103,7 @@ exports.downloadMdNetPicture = async function (tray) {
             if (util.isWebPicture(src)) {
                 // 图片文件名
                 let filepath = path.join(dirname, name,
-                                         Math.floor(Math.random() * 100000000) + '.png')
+                    Math.floor(Math.random() * 100000000) + '.png')
                 map.set(src, filepath)
             }
         })
@@ -291,7 +291,7 @@ exports.pictureMdToImg = function (tray) {
                     let src = split[i].substring(start + 1, end) //图片的真实地址
                     line =
                         line.replace("!" + split[i],
-                                     `<img src="${src}" referrerPolicy="no-referrer"/>`)
+                            `<img src="${src}" referrerPolicy="no-referrer"/>`)
                 }
             }
             newValue += line + '\n'
@@ -339,5 +339,34 @@ exports.uploadPictureToWeiBo = async (tray, image) => {
             dialog.showMessageBoxSync({message: message, type: 'error'})
         })
     // 5.关闭进度条图标
+    tray.setImage(icon.iconFile)
+}
+
+// HTML转Md
+exports.HTMLToMd = function (tray) {
+    // 1.选择本地文件
+    const result = appDialog.openManyLocalFileSync([
+        {name: 'html', extensions: ['html']}
+    ])
+    if (result.canceled) {
+        return
+    }
+    // 2.开启进度条图标
+    tray.setImage(icon.proIconFile)
+    let number = 0
+    for (let i = 0; i < result.files.length; i++) {
+        const file = result.files[i]
+        // 3.HTML转Md
+        const newValue = require('html-to-md')(file.content)
+        // 4.保存
+        file.filepath = file.filepath.replace(path.extname(file.filepath),'.md')
+        appSave.saveNewFileOrClipboard(file, newValue, i)
+        // 5.提示
+        appToast.toast({title: '完成', body: file.title})
+        // 统计
+        number = i + 1
+    }
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
+    // 6.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
