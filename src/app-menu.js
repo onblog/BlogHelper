@@ -272,7 +272,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     label: '图片上传',
                     type: 'checkbox',
                     accelerator: appShortcut.ACCELERATORS[0],
+                    checked: dataStore.isUploadClipboardPicSwitch(),
                     click: function (menuItem) {
+                        dataStore.setUploadClipboardPicSwitch(menuItem.checked)
                         appShortcut.uploadClipboardPicSwitch(tray, menuItem.checked)
                     }
                 },
@@ -280,7 +282,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     label: '转纯文字',
                     type: 'checkbox',
                     accelerator: appShortcut.ACCELERATORS[1],
+                    checked: dataStore.isCoverToTextSwitch(),
                     click: function (menuItem) {
+                        dataStore.setCoverToTextSwitch(menuItem.checked)
                         appShortcut.coverToTextSwitch(tray, menuItem.checked)
                     }
                 }
