@@ -22,6 +22,11 @@ class DataStore extends Store {
     //简书
     JianShuCookieKey = 'jianShu-cookie-key'
 
+    // 图片上传快捷键
+    uploadClipboardPicSwitch = 'uploadClipboardPicSwitch'
+    // 富文本转纯文字
+    coverToTextSwitch = 'coverToTextSwitch'
+
     constructor(settings) {
         const baseConfig = {name: 'blog-helper-2'}
         const finalConfig = {...baseConfig, ...settings};
@@ -186,6 +191,29 @@ class DataStore extends Store {
     setIMGKRFigureBedSwitch() {
         this.set(this.figureBedSwitch, this.PIC[2]+'')
     }
+
+
+    // 是否启用快捷键
+    isUploadClipboardPicSwitch() {
+        if (this.has(this.uploadClipboardPicSwitch)) {
+            return this.get(this.uploadClipboardPicSwitch)
+        }
+        return false
+    }
+    setUploadClipboardPicSwitch(check) {
+        this.set(this.uploadClipboardPicSwitch, check)
+    }
+
+    isCoverToTextSwitch() {
+        if (this.has(this.coverToTextSwitch)) {
+            return this.get(this.coverToTextSwitch)
+        }
+        return false
+    }
+    setCoverToTextSwitch(check) {
+        this.set(this.coverToTextSwitch, check)
+    }
+
 
 }
 
