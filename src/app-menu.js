@@ -8,9 +8,7 @@ const dataStore = new DataStore()
 const appToast = require('./app-toast')
 const appUpdate = require('./app-update')
 const appShortcut = require('./app-shortcut')
-
-// 图床
-const PIC = dataStore.PIC
+const picgo = require('./picture/picgo/picgo')
 
 exports.buildContextMenu = function buildContextMenu(tray) {
     // 菜单栏引用
@@ -28,7 +26,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.zhihu)
                         }
                     }]
@@ -42,7 +40,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.jianshu)
                         }
                     }]
@@ -98,7 +96,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.cnblogs)
                         }
                     }]
@@ -112,7 +110,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     }, {
                         label: '发布',
-                        click: function (menuItem, browserWindow, event) {
+                        click: function () {
                             appMenuPublish.publishArticleTo(tray, string.oschina)
                         }
                     }]
@@ -133,12 +131,12 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                         , {
                             label: '启用',
-                            id: PIC[0],
+                            id: dataStore.PIC_WEIBO,
                             type: 'checkbox',
-                            checked: dataStore.isWeiBoFigureBedSwitch(),
-                            click: function (menuItem, browserWindow, event) {
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_WEIBO),
+                            click: function (menuItem) {
                                 menuItem.checked = true
-                                dataStore.setWeiBoFigureBedSwitch()
+                                dataStore.setFigureBedSwitch(dataStore.PIC_WEIBO)
                                 appToast.toast({title: '启用成功', body: '正在使用新浪图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
@@ -150,12 +148,12 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     submenu: [
                         {
                             label: '启用',
-                            id: PIC[2],
+                            id: dataStore.PIC_IMGKR,
                             type: 'checkbox',
-                            checked: dataStore.isIMGKRFigureBedSwitch(),
-                            click: function (menuItem, browserWindow, even) {
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGKR),
+                            click: function (menuItem) {
                                 menuItem.checked = true
-                                dataStore.setIMGKRFigureBedSwitch()
+                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGKR)
                                 appToast.toast({title: '启用成功', body: '正在使用图壳图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
@@ -163,17 +161,175 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     ]
                 }
                 , {
-                    label: 'SM.MS',
+                    label: 'sm.ms',
                     submenu: [
                         {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
                             label: '启用',
-                            id: PIC[1],
+                            id: dataStore.PIC_SMMS,
                             type: 'checkbox',
-                            checked: dataStore.isSmMSFigureBedSwitch(),
-                            click: function (menuItem, browserWindow, even) {
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_SMMS),
+                            click: function (menuItem) {
                                 menuItem.checked = true
-                                dataStore.setSmMSFigureBedSwitch()
+                                dataStore.setFigureBedSwitch(dataStore.PIC_SMMS)
                                 appToast.toast({title: '启用成功', body: '正在使用SM图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: 'github',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_GITHUB,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_GITHUB),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_GITHUB)
+                                appToast.toast({title: '启用成功', body: '正在使用Github图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: 'imgur',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_IMGUR,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGUR),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGUR)
+                                appToast.toast({title: '启用成功', body: '正在使用imgur图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: '七牛云',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_QINIU,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_QINIU),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_QINIU)
+                                appToast.toast({title: '启用成功', body: '正在使用七牛云图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: '又拍云',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_UPYUN,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_UPYUN),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_UPYUN)
+                                appToast.toast({title: '启用成功', body: '正在使用又拍云图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: '阿里云',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_ALIYUN,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_ALIYUN),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_ALIYUN)
+                                appToast.toast({title: '启用成功', body: '正在使用阿里云图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: '腾讯云',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_TCYUN,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_TCYUN),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_TCYUN)
+                                appToast.toast({title: '启用成功', body: '正在使用腾讯云图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -187,7 +343,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 {
                     label: '本地图片上传',
                     click: function () {
-                        appMenuPublish.uploadAllPictureToWeiBo(tray).then()
+                        appMenuPublish.uploadAllPicture(tray).then()
                     }
                 }
                 , {
@@ -346,7 +502,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 }, {
                     label: '检查更新',
                     click: function () {
-                        checkUpdateApp(true)
+                        appUpdate.autoUpdateApp(true)
                     }
                 }
             ]
@@ -364,19 +520,10 @@ exports.buildContextMenu = function buildContextMenu(tray) {
 }
 
 /**
- * 检查更新
- */
-function checkUpdateApp(isTip) {
-    appUpdate.autoUpdateApp(isTip)
-}
-
-exports.checkUpdateApp = checkUpdateApp
-
-/**
  * 关闭除ID外的其他checked
  */
 function closeMenuChecked(id, menu) {
-    for (let pic of PIC) {
+    for (let pic of dataStore.PIC) {
         if (id !== pic) {
             appUtil.myGetMenuItemById(pic, menu).checked = false
         }

@@ -8,7 +8,7 @@ const dataStore = new DataStore()
 //登录某网站获取Cookie通用方法
 function getSiteCookie(url, callback) {
     let win = new BrowserWindow(
-        {width: 700, height: 600, icon: icon.iconName, title: '【登陆成功后关闭窗口即可完成设置】'})
+        {width: 700, height: 600, icon: icon.iconFile, title: '【登陆成功后关闭窗口即可完成设置】'})
     win.loadURL(url).then()
     win.on('close', () => {
         // 查询所有与设置的 URL 相关的所有 cookies.

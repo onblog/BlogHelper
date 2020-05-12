@@ -2,12 +2,13 @@ const {Menu, Tray, app} = require('electron')
 const icon = require('./app-icon')
 const appMenu = require('./app-menu')
 const appShortcut = require('./app-shortcut')
+const autoUpdate = require('./app-update')
 
 app.on('ready', () => {
     // 隐藏系统任务栏
     process.platform === 'win32' ? Menu.setApplicationMenu(null) : app.dock.hide()
     // 检查更新
-    appMenu.checkUpdateApp(false)
+    autoUpdate.autoUpdateApp(false)
     // 创建托盘
     const tray = createTray()
     // 注册快捷键

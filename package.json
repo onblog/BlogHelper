@@ -15,7 +15,7 @@
   ],
   "author": "Github@ystcode",
   "repository": "https://github.com/ystcode/BlogHelper",
-  "license": "GPL3.0",
+  "license": "GPL-3.0-only",
   "devDependencies": {
     "electron": "^7.1.7",
     "electron-builder": "^22.1.0",
@@ -30,6 +30,7 @@
     "jsdom": "^15.2.1",
     "marked": "^0.8.0",
     "path": "^0.12.7",
+    "picgo": "^1.4.8",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "urlencode": "^1.1.0"

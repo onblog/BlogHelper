@@ -29,7 +29,7 @@ exports.publishArticleTo = (tray, site) => {
 }
 
 // 本地图片上传
-exports.uploadAllPictureToWeiBo = async (tray) => {
+exports.uploadAllPicture = async (tray) => {
     // 1.选择本地文件
     const result = appDialog.openManyLocalFileSync()
     if (result.canceled) {
@@ -316,14 +316,14 @@ exports.uploadClipboardPic = function uploadClipboardPic(tray) {
     if (nativeImage.isEmpty()) {
         appToast.toast({title: '剪贴板未检索到图片', body: ''})
     } else {
-        uploadPictureToWeiBo(tray, nativeImage).then()
+        uploadOnePicture(tray, nativeImage)
     }
 }
 
 /**
  * 上传一张图片（用于剪贴板）
  */
-async function uploadPictureToWeiBo(tray, image) {
+async function uploadOnePicture(tray, image) {
     // 2.开启进度条图标
     tray.setImage(icon.proIconFile)
     // 3.存储到临时文件夹
@@ -350,12 +350,11 @@ async function uploadPictureToWeiBo(tray, image) {
             }
         })
         .catch(message => {
-            dialog.showMessageBoxSync({message: message, type: 'error'})
+            dialog.showMessageBoxSync({message: ""+message, type: 'error'})
         })
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
-exports.uploadPictureToWeiBo = uploadPictureToWeiBo
 
 /**
  * 剪贴板转纯文字
