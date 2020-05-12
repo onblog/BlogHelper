@@ -3,6 +3,7 @@ const icon = require('./app-icon')
 const appMenu = require('./app-menu')
 const appShortcut = require('./app-shortcut')
 const autoUpdate = require('./app-update')
+const picGo = require('./picture/picgo/picgo')
 
 app.on('ready', () => {
     // 隐藏系统任务栏
@@ -13,6 +14,8 @@ app.on('ready', () => {
     const tray = createTray()
     // 注册快捷键
     appShortcut.initGlobalShortcut(tray)
+    // 初始化picGo配置文件
+    picGo.initConfigFile()
 });
 
 function createTray() {

@@ -4,14 +4,18 @@ const Path = require('path')
 const os = require('os')
 const configPath = `${os.homedir()}/BlogHelper/BlogHelper.json`
 
-function uploadPicture(filePath, name) {
-    return new Promise((resolve, reject) => {
+function initConfigFile() {
+    if (!fs.existsSync(configPath)){
         if (!fs.existsSync(Path.dirname(configPath))) {
             fs.mkdirSync(Path.dirname(configPath))
         }
-        if (!fs.existsSync(configPath)) {
-            fs.writeFileSync(configPath, fs.readFileSync(`${__dirname}/config.json`))
-        }
+        fs.writeFileSync(configPath, fs.readFileSync(`${__dirname}/config.json`))
+    }
+}
+
+function uploadPicture(filePath, name) {
+    return new Promise((resolve, reject) => {
+        initConfigFile()
         const picgo = new PicGo(configPath)
         // 切换
         picgo.setConfig({
@@ -51,4 +55,5 @@ function deleteLog(){
 }
 
 exports.configPath = configPath
+exports.initConfigFile = initConfigFile
 exports.uploadPicture = uploadPicture

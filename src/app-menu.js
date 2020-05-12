@@ -161,81 +161,6 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     ]
                 }
                 , {
-                    label: 'sm.ms',
-                    submenu: [
-                        {
-                            label: '配置',
-                            click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
-                                    appToast.toast({title: '打开配置文件失败', body: ""})
-                                }
-                            }
-                        },
-                        {
-                            label: '启用',
-                            id: dataStore.PIC_SMMS,
-                            type: 'checkbox',
-                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_SMMS),
-                            click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_SMMS)
-                                appToast.toast({title: '启用成功', body: '正在使用SM图床'})
-                                closeMenuChecked(menuItem.id, menu)
-                            }
-                        }
-                    ]
-                }
-                , {
-                    label: 'github',
-                    submenu: [
-                        {
-                            label: '配置',
-                            click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
-                                    appToast.toast({title: '打开配置文件失败', body: ""})
-                                }
-                            }
-                        },
-                        {
-                            label: '启用',
-                            id: dataStore.PIC_GITHUB,
-                            type: 'checkbox',
-                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_GITHUB),
-                            click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_GITHUB)
-                                appToast.toast({title: '启用成功', body: '正在使用Github图床'})
-                                closeMenuChecked(menuItem.id, menu)
-                            }
-                        }
-                    ]
-                }
-                , {
-                    label: 'imgur',
-                    submenu: [
-                        {
-                            label: '配置',
-                            click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
-                                    appToast.toast({title: '打开配置文件失败', body: ""})
-                                }
-                            }
-                        },
-                        {
-                            label: '启用',
-                            id: dataStore.PIC_IMGUR,
-                            type: 'checkbox',
-                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGUR),
-                            click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGUR)
-                                appToast.toast({title: '启用成功', body: '正在使用imgur图床'})
-                                closeMenuChecked(menuItem.id, menu)
-                            }
-                        }
-                    ]
-                }
-                , {
                     label: '七牛云',
                     submenu: [
                         {
@@ -330,6 +255,81 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                                 menuItem.checked = true
                                 dataStore.setFigureBedSwitch(dataStore.PIC_TCYUN)
                                 appToast.toast({title: '启用成功', body: '正在使用腾讯云图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: 'SM.MS',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_SMMS,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_SMMS),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_SMMS)
+                                appToast.toast({title: '启用成功', body: '正在使用SM图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: 'GitHub',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_GITHUB,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_GITHUB),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_GITHUB)
+                                appToast.toast({title: '启用成功', body: '正在使用Github图床'})
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
+                , {
+                    label: 'Imgur',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openItem(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_IMGUR,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGUR),
+                            click: function (menuItem) {
+                                menuItem.checked = true
+                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGUR)
+                                appToast.toast({title: '启用成功', body: '正在使用imgur图床'})
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
