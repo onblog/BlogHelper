@@ -33,7 +33,10 @@ class DataStore extends Store {
         super(finalConfig)
     }
 
-    getJianShuCookies(){
+    /*
+     * 博客网站Cookie
+     */
+    getJianShuCookies() {
         if (this.has(this.JianShuCookieKey)) {
             return this.get(this.JianShuCookieKey)
         }
@@ -44,7 +47,7 @@ class DataStore extends Store {
         return this.set(this.JianShuCookieKey, v)
     }
 
-    getZhiHuCookies(){
+    getZhiHuCookies() {
         if (this.has(this.ZhiHuCookiekey)) {
             return this.get(this.ZhiHuCookiekey)
         }
@@ -157,49 +160,46 @@ class DataStore extends Store {
     // 启用图床Key
     figureBedSwitch = 'figureBedSwitch'
     // Value
-    PIC = ['WEIBO', 'SMMS', 'IMGKR']
+    PIC_WEIBO = 'WEIBO'
+    PIC_IMGKR = 'IMGKR'
+    PIC_SMMS = 'smms'
+    PIC_GITHUB = 'github'
+    PIC_QINIU = 'qiniu'
+    PIC_UPYUN = 'upyun'
+    PIC_TCYUN = 'tcyun'
+    PIC_ALIYUN = 'aliyun'
+    PIC_IMGUR = 'imgur'
+    // 启用的图床一定要添加到下面的数组
+    PIC = [this.PIC_IMGKR, this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR]
 
-    // 是否启用微博图床
-    isWeiBoFigureBedSwitch() {
+    // 设置当前使用的图床
+    setFigureBedSwitch(name) {
+        this.set(this.figureBedSwitch, name)
+    }
+
+    // 判断是否启用该图床
+    isFigureBedSwitch(name) {
         if (this.has(this.figureBedSwitch)) {
-            return this.get(this.figureBedSwitch) === this.PIC[0]
+            return this.get(this.figureBedSwitch) === name
         }
         return false
     }
-    setWeiBoFigureBedSwitch() {
-        this.set(this.figureBedSwitch, this.PIC[0]+'')
+
+    // 读取当前使用的图床
+    getFigureBedSwitch() {
+        return this.get(this.figureBedSwitch)
     }
 
-    // 是否启用SM.MS图床
-    isSmMSFigureBedSwitch() {
-        if (this.has(this.figureBedSwitch)) {
-            return this.get(this.figureBedSwitch) === this.PIC[1]
-        }
-        return false
-    }
-    setSmMSFigureBedSwitch() {
-        this.set(this.figureBedSwitch, this.PIC[1]+'')
-    }
-
-    // 是否启用图壳图床
-    isIMGKRFigureBedSwitch() {
-        if (this.has(this.figureBedSwitch)) {
-            return this.get(this.figureBedSwitch) === this.PIC[2]
-        }
-        return false
-    }
-    setIMGKRFigureBedSwitch() {
-        this.set(this.figureBedSwitch, this.PIC[2]+'')
-    }
-
-
-    // 是否启用快捷键
+    /**
+     * 是否启用快捷键
+     */
     isUploadClipboardPicSwitch() {
         if (this.has(this.uploadClipboardPicSwitch)) {
             return this.get(this.uploadClipboardPicSwitch)
         }
         return false
     }
+
     setUploadClipboardPicSwitch(check) {
         this.set(this.uploadClipboardPicSwitch, check)
     }
@@ -210,6 +210,7 @@ class DataStore extends Store {
         }
         return false
     }
+
     setCoverToTextSwitch(check) {
         this.set(this.coverToTextSwitch, check)
     }
