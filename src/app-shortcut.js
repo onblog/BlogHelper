@@ -4,7 +4,7 @@ const DataStore = require('./app-store')
 const dataStore = new DataStore()
 
 // 快捷键
-const ACCELERATORS = ['CmdOrCtrl+Alt+N', 'CmdOrCtrl+Alt+T']
+const ACCELERATORS = ['CmdOrCtrl+Alt+P', 'CmdOrCtrl+Alt+T']
 exports.ACCELERATORS = ACCELERATORS
 
 /**
