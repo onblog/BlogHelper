@@ -7,7 +7,7 @@ const picgo = require('./picture/picgo/picgo')
 exports.uploadPicture = async function (fullpath) {
     const Bed = dataStore.getFigureBedSwitch()
     switch (Bed) {
-        case dataStore.PIC_IMGUR:
+        case dataStore.PIC_IMGKR:
             return await imgkr.uploadPictureToImgKr(fullpath)
         case dataStore.PIC_WEIBO:
             return await weiBo.uploadPictureToWeiBo(fullpath)
@@ -23,7 +23,7 @@ exports.uploadPicture = async function (fullpath) {
             return await picgo.uploadPicture(fullpath, Bed)
         case dataStore.PIC_TCYUN:
             return await picgo.uploadPicture(fullpath, Bed)
-        case dataStore.PIC_IMGKR:
+        case dataStore.PIC_IMGUR:
             return await picgo.uploadPicture(fullpath, Bed)
         default:
             return await imgkr.uploadPictureToImgKr(fullpath)
