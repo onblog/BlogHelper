@@ -447,29 +447,6 @@ exports.buildContextMenu = function buildContextMenu(tray) {
             ]
         }
         , {
-            label: '工具集',
-            submenu: [
-                {
-                    label: '文章排版',
-                    click: function () {
-                        shell.openExternal(require('./app-constant').article).then()
-                    }
-                }
-                , {
-                    label: '图片素材',
-                    click: function () {
-                        shell.openExternal(require('./app-constant').pic).then()
-                    }
-                }
-                , {
-                    label: 'JSON美化',
-                    click: function () {
-                        shell.openExternal(require('./app-constant').json).then()
-                    }
-                }
-            ]
-        }
-        , {
             type: "separator"
         }
         , {
