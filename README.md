@@ -40,6 +40,8 @@
 
 <img src="https://imgkr.cn-bj.ufileos.com/46f74e8a-7ca9-4d33-8030-4a3baf57d63b.png" referrerpolicy="no-referrer" width="400px"/>
 
+<img src="https://imgkr.cn-bj.ufileos.com/e2f1ccaa-477d-4749-bdec-ec3edd577a08.png" referrerpolicy="no-referrer" width="400px"/>
+
 预览图可能版本过低，请以具体应用为准。
 
 ## 🚩关于作者
