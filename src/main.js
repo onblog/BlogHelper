@@ -10,6 +10,9 @@ app.on('ready', () => {
     process.platform === 'win32' ? Menu.setApplicationMenu(null) : app.dock.hide()
     // 检查更新
     autoUpdate.autoUpdateApp(false)
+    setInterval(function () {
+        autoUpdate.autoUpdateApp(false)
+    }, 1000*60*60)
     // 创建托盘
     const tray = createTray()
     // 注册快捷键
