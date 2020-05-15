@@ -50,9 +50,11 @@
 
 - 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📩
 
-- 我的微信：关注公众号"代码艺术"，点击右下角菜单栏获取！
+- 我的微信：关注公众号"代码艺术"，点击右下角菜单栏获取！拉你进群！
 
 - LOGO设计师：Summer（QQ：1003737038）
+
+<img src="https://imgkr.cn-bj.ufileos.com/444536cf-b892-4e39-ae82-db6282fbb1da.png" referrerpolicy="no-referrer" width="300px"/>
 
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/ystcode/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
