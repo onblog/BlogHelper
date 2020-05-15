@@ -38,7 +38,7 @@
 
 ## 🚩预览
 
-<img src="https://imgkr.cn-bj.ufileos.com/46f74e8a-7ca9-4d33-8030-4a3baf57d63b.png" referrerpolicy="no-referrer" width="400px"/>
+<img src="https://imgkr.cn-bj.ufileos.com/6da53b4b-c7dd-4bcc-bcca-5fe880ffa964.png" referrerpolicy="no-referrer" width="400px" />
 
 <img src="https://imgkr.cn-bj.ufileos.com/e2f1ccaa-477d-4749-bdec-ec3edd577a08.png" referrerpolicy="no-referrer" width="400px"/>
 
