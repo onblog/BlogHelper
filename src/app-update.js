@@ -40,12 +40,15 @@ function parseHtml(result, isTip) {
     if (compareVersion > 0) {
         //发现更新
         dialog.showMessageBox({
-                                  buttons: ['取消', '更新'],
+                                  buttons: ['取消', '查看', '下载'],
                                   message: `当前版本：${app.getVersion()}\n发现新版本：${version}`
                               }
         ).then(function (res) {
             if (res.response === 1) {
                 shell.openExternal(url).then()
+            }else if (res.response===2){
+                // 下载压缩包
+                shell.openExternal(require('./app-constant').download).then()
             }
         })
     } else if (isTip) {
