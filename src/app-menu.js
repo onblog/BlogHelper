@@ -311,7 +311,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     ]
                 }
                 , {
-                    label: 'Imgur',
+                    label: 'ImgUR',
                     submenu: [
                         {
                             label: '配置',
