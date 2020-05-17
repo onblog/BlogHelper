@@ -28,14 +28,19 @@ function uploadPictureToCSDN(filePath) {
             res.on('end', () => {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    // console.log(result)
                     if (result.code === 200) {
                         const url = result.data.url
-                        resolve(url.substring(0, url.indexOf('?')))
+                        resolve(url)
                     } else {
                         reject('上传图片失败,' +result.msg)
                     }
                 }else {
+                    console.log(filePath)
+                    try {
+                        const result = JSON.parse(str);
+                        reject(decodeURI(result.msg))
+                    } catch (e) {
+                    }
                     reject('上传图片失败:' + res.statusCode)
                 }
             });
