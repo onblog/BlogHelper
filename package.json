@@ -56,7 +56,10 @@
     },
     "linux": {
       "icon": "build/app.png",
-      "category": "Office"
+      "category": "Office",
+      "target": [
+        "AppImage"
+      ]
     }
   }
 }
