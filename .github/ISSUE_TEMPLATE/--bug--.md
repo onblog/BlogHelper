@@ -1,7 +1,7 @@
 ---
 name: 提交BUG专用
 about: Describe this issue template's purpose here.
-title: BUG：
+title: 请输入标题
 labels: bug
 assignees: ystcode
 
