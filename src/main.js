@@ -7,7 +7,7 @@ const picGo = require('./picture/picgo/picgo')
 
 app.on('ready', () => {
     // 隐藏系统任务栏
-    process.platform === 'win32' ? Menu.setApplicationMenu(null) : app.dock.hide()
+    hiddenTaskbar()
     // 检查更新
     autoUpdate.autoUpdateApp(false)
     setInterval(function () {
@@ -29,6 +29,17 @@ function createTray() {
     // 添加菜单到系统托盘区
     tray.setContextMenu(appMenu.buildContextMenu(tray))
     return tray
+}
+
+function hiddenTaskbar() {
+    switch (process.platform) {
+        case "win32":
+            Menu.setApplicationMenu(null)
+            break
+        case "darwin":
+            app.dock.hide()
+            break
+    }
 }
 
 app.on('window-all-closed', () => {
