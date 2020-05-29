@@ -36,9 +36,9 @@ function uploadPictureToCnBlogs(filePath) {
                     if (result.success) {
                         resolve(result.message)
                     } else {
-                        reject('上传图片失败,' +result.message)
+                        reject('上传图片失败,' + result.message)
                     }
-                }else {
+                } else {
                     reject('上传图片失败:' + res.statusCode)
                 }
             });
@@ -46,8 +46,7 @@ function uploadPictureToCnBlogs(filePath) {
         formData.pipe(request)
 
         request.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
@@ -55,7 +54,7 @@ function uploadPictureToCnBlogs(filePath) {
 let cnBlog_url = 'https://i1.cnblogs.com/EditPosts.aspx?opt=1'
 
 //发布文章到博客园
-function publishArticleToCnBlogs(title, content) {
+function publishArticleToCnBlogs(title, content, isPublish) {
     return new Promise((resolve, reject) => {
         let req = https.get(cnBlog_url, {
             headers: {
@@ -78,34 +77,38 @@ function publishArticleToCnBlogs(title, content) {
                 }
                 //真正发布文章
                 publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATOR, resolve,
-                                           reject)
+                                           reject, isPublish)
             });
         })
 
         req.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
 
 function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATOR, resolve,
-                                    reject) {
-    const data = querystring.stringify({
-                                           '__VIEWSTATE': VIEWSTATE,
-                                           '__VIEWSTATEGENERATOR': VIEWSTATEGENERATOR,
-                                           'Editor$Edit$txbTitle': title,
-                                           'Editor$Edit$EditorBody': content,
-                                           'Editor$Edit$Advanced$ckbPublished': 'on',
-                                           'Editor$Edit$Advanced$chkDisplayHomePage': 'on',
-                                           'Editor$Edit$Advanced$chkComments': 'on',
-                                           'Editor$Edit$Advanced$chkMainSyndication': 'on',
-                                           'Editor$Edit$Advanced$txbEntryName': '',
-                                           'Editor$Edit$Advanced$txbExcerpt': '',
-                                           'Editor$Edit$Advanced$txbTag': '',
-                                           'Editor$Edit$Advanced$tbEnryPassword': '',
-                                           'Editor$Edit$lkbDraft': '存为草稿'
-                                       })
+                                    reject, isPublish) {
+    const parms = {
+        '__VIEWSTATE': VIEWSTATE,
+        '__VIEWSTATEGENERATOR': VIEWSTATEGENERATOR,
+        'Editor$Edit$txbTitle': title,
+        'Editor$Edit$EditorBody': content,
+        'Editor$Edit$Advanced$ckbPublished': 'on',
+        'Editor$Edit$Advanced$chkDisplayHomePage': 'on',
+        'Editor$Edit$Advanced$chkComments': 'on',
+        'Editor$Edit$Advanced$chkMainSyndication': 'on',
+        'Editor$Edit$Advanced$txbEntryName': '',
+        'Editor$Edit$Advanced$txbExcerpt': '',
+        'Editor$Edit$Advanced$txbTag': '',
+        'Editor$Edit$Advanced$tbEnryPassword': ''
+    }
+    if (isPublish) {
+        parms['Editor$Edit$lkbPost'] = '发布'
+    } else {
+        parms['Editor$Edit$lkbDraft'] = '存为草稿'
+    }
+    const data = querystring.stringify(parms)
 
     let options = {
         method: 'POST',
@@ -124,28 +127,27 @@ function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATO
     }
 
     let req = https.request(cnBlog_url, options, function (res) {
-            res.setEncoding('utf-8')
-            let str = ''
-            res.on('data', function (chunk) {
-                str += chunk
-            });
-            res.on('end', () => {
-                if (res.statusCode === 302) {
-                    //发布成功
-                    const dom = new jsdom.JSDOM(str);
-                    const a = dom.window.document.body.getElementsByTagName('a')[0]
-                    let url = 'https://i.cnblogs.com' + a.href
-                    resolve(url)
-                } else {
-                    //发布失败
-                    reject('发布失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
-                }
-            });
+        res.setEncoding('utf-8')
+        let str = ''
+        res.on('data', function (chunk) {
+            str += chunk
+        });
+        res.on('end', () => {
+            if (res.statusCode === 302) {
+                //发布成功
+                const dom = new jsdom.JSDOM(str);
+                const a = dom.window.document.body.getElementsByTagName('a')[0]
+                let url = 'https://i.cnblogs.com' + a.href
+                resolve(url)
+            } else {
+                //发布失败
+                reject('发布失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
+            }
+        });
     })
 
     req.on('error', function (e) {
-        console.log('problem with request: ' + e.message);
-        reject('网络连接异常')
+        reject('网络连接异常'+e.message)
     });
 
     req.write(data)

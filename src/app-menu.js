@@ -20,98 +20,133 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 {
                     label: '知乎',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginZhiHu(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.zhihu, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.zhihu)
+                            appMenuPublish.publishArticleTo(tray, string.zhihu, true)
                         }
                     }]
                 }
                 , {
                     label: '简书',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginJianShu(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.jianshu, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.jianshu)
+                            appMenuPublish.publishArticleTo(tray, string.jianshu, true)
                         }
                     }]
                 }
                 , {
                     label: '掘金',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginJueJin(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.juejin, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.juejin)
+                            appMenuPublish.publishArticleTo(tray, string.juejin, true)
                         }
                     }]
                 }
                 , {
                     label: '思否',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginSegmentFault(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.segmentfault, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.segmentfault)
+                            appMenuPublish.publishArticleTo(tray, string.segmentfault, true)
                         }
                     }]
                 }
                 , {
                     label: 'CSDN',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginCSDN(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.csdn, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.csdn)
+                            appMenuPublish.publishArticleTo(tray, string.csdn, true)
                         }
                     }]
                 }
                 , {
                     label: '博客园',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginCnBlog(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.cnblogs, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.cnblogs)
+                            appMenuPublish.publishArticleTo(tray, string.cnblogs, true)
                         }
                     }]
                 }
                 , {
                     label: '开源中国',
                     submenu: [{
-                        label: '绑定',
+                        label: '登录',
                         click: function (menuItem, browserWindow, event) {
                             appLogin.loginOsChina(menuItem, browserWindow, event)
                         }
                     }, {
+                        label: '存稿',
+                        click: function () {
+                            appMenuPublish.publishArticleTo(tray, string.oschina, false)
+                        }
+                    }, {
                         label: '发布',
                         click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.oschina)
+                            appMenuPublish.publishArticleTo(tray, string.oschina, true)
                         }
                     }]
                 }
@@ -124,7 +159,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     label: '新浪',
                     submenu: [
                         {
-                            label: '绑定',
+                            label: '登录',
                             click: function (menuItem, browserWindow, event) {
                                 appLogin.loginWebBoPicture(menuItem, browserWindow, event)
                             }
