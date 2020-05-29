@@ -32,9 +32,9 @@ function uploadPictureToCSDN(filePath) {
                         const url = result.data.url
                         resolve(url)
                     } else {
-                        reject('上传图片失败,' +result.msg)
+                        reject('上传图片失败,' + result.msg)
                     }
-                }else {
+                } else {
                     console.log(filePath)
                     try {
                         const result = JSON.parse(str);
@@ -48,32 +48,44 @@ function uploadPictureToCSDN(filePath) {
         formData.pipe(request)
 
         request.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
 
 //上传文章到CSDN
-function publishArticleToCSDN(title, markdowncontent, content) {
+function publishArticleToCSDN(title, markdowncontent, content, isPublish) {
     return new Promise((resolve, reject) => {
-        const json = JSON.stringify({
-                           title: title,
-                           markdowncontent: markdowncontent,
-                           content: content,
-                           readType: "public",
-                           status: 2,
-                           not_auto_saved: "1",
-                           source: "pc_mdeditor"
-                       })
+        const parms = {
+            title: title,
+            markdowncontent: markdowncontent,
+            content: content,
+            readType: "public",
+            not_auto_saved: "1",
+            source: "pc_mdeditor"
+        }
+        if (isPublish) {
+            parms['status'] = 0
+            parms['type'] = 'original'
+            parms['Description'] = content.toString().substring(0,100)
+            parms['authorized_status'] = false
+            parms['categories'] = ''
+            parms['original_link'] = ''
+            parms['resource_url'] = ''
+            parms['tags'] = ''
+
+        }else {
+            parms['status'] = 2
+        }
+        const json = JSON.stringify(parms)
         let request = https.request({
                                         host: 'blog-console-api.csdn.net',
                                         method: 'POST',
                                         path: '/v1/mdeditor/saveArticle',
                                         headers: {
-                                            "content-type":"application/json",
-                                            "cookie":dataStore.getCSDNCookies(),
-                                            "user-agent":"Mozilla/5.0"
+                                            "content-type": "application/json",
+                                            "cookie": dataStore.getCSDNCookies(),
+                                            "user-agent": "Mozilla/5.0"
                                         }
                                     }, function (res) {
             let str = '';
@@ -83,18 +95,17 @@ function publishArticleToCSDN(title, markdowncontent, content) {
             );
             res.on('end', () => {
                 if (res.statusCode === 200) {
-                    // console.log(str)
                     const result = JSON.parse(str);
-                    // console.log(result)
                     if (result.code === 200) {
-                        // const url = result.data.url
-                        const url = 'https://editor.csdn.net/md/?articleId='+result.data.id
+                        const url = isPublish ? result.data.url
+                                              : 'https://editor.csdn.net/md/?articleId='
+                                                + result.data.id
                         resolve(url)
                     } else {
-                        reject('发布失败,' +result.msg)
+                        reject('发布失败,' + result.msg)
                     }
-                }else {
-                    reject('发布失败:' + res.statusCode)
+                } else {
+                    reject('发布失败:' + res.statusCode + '\n'+str)
                 }
             });
         });
@@ -103,8 +114,7 @@ function publishArticleToCSDN(title, markdowncontent, content) {
         request.end();
 
         request.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
