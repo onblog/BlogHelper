@@ -12,7 +12,7 @@ const appToast = require('./app-toast')
 const appUpload = require('./app-upload')
 
 // 上传文章
-exports.publishArticleTo = (tray, site) => {
+exports.publishArticleTo = (tray, site, isPublish) => {
     if (!appCheck.loginCheck(site)) {
         return
     }
@@ -20,8 +20,8 @@ exports.publishArticleTo = (tray, site) => {
         // 开启进度条图标
         tray.setImage(icon.proIconFile)
         // 上传文章
-        appPublish.publishArticleTo(title, content, dirname, site)
-            .then(() => {
+        appPublish.publishArticleTo(title, content, dirname, site, isPublish)
+            .finally(() => {
                 // 关闭进度条图标
                 tray.setImage(icon.iconFile)
             })

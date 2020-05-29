@@ -66,7 +66,7 @@ function uploadPictureToOsChina(filePath) {
                     if (result.uploaded === 1) {
                         resolve(result.url)
                     } else {
-                        reject('上传图片失败,' +result.error.message)
+                        reject('上传图片失败,' + result.error.message)
                     }
                 } else {
                     reject('上传图片失败:' + res.statusCode)
@@ -76,32 +76,32 @@ function uploadPictureToOsChina(filePath) {
         formData.pipe(request)
 
         request.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
 
 //发布文章到开源中国
-function publishArticleToOsChina(title, content) {
+function publishArticleToOsChina(title, content, isPublish) {
     return new Promise((resolve, reject) => {
-        const data = querystring.stringify({
-                                               'draft': 0,
-                                               'id': '',
-                                               'user_code': getOsChinaUserCode(),
-                                               'title': title,
-                                               'content': content,
-                                               'content_type': 3,
-                                               'catalog': 5906778,
-                                               'classification': '',
-                                               'type': 4,
-                                               'origin_url': '',
-                                               'privacy': 0,
-                                               'deny_comment': 0,
-                                               'as_top': 0,
-                                               'downloadImg': 0,
-                                               'isRecommend': 0,
-                                           })
+        const parms = {
+            'draft': 0,
+            'id': '',
+            'user_code': getOsChinaUserCode(),
+            'title': title,
+            'content': content,
+            'content_type': 3,
+            'catalog': 5906778,
+            'classification': 430381,
+            'type': 4,
+            'origin_url': '',
+            'privacy': 0,
+            'deny_comment': 0,
+            'as_top': 0,
+            'downloadImg': 0,
+            'isRecommend': 0,
+        }
+        const data = querystring.stringify(parms)
         let options = {
             method: 'POST',
             headers: {
@@ -114,6 +114,7 @@ function publishArticleToOsChina(title, content) {
                 'Cookie': dataStore.getOsChinaCookies()
             }
         }
+
         const url = 'https://my.oschina.net/u/' + getOsChinaUserId() + '/blog/save_draft'
 
         let req = https.request(url, options, function (res) {
@@ -127,15 +128,20 @@ function publishArticleToOsChina(title, content) {
                                         if (res.statusCode === 200) {
                                             const result = JSON.parse(str);
                                             if (result.code === 1) {
-                                                const url1 = 'https://my.oschina.net/u/'
-                                                             + getOsChinaUserId()
-                                                             + '/blog/write/draft/'
-                                                             + result.result.draft
-                                                resolve(url1)
+                                                if (isPublish) {
+                                                    parms['draft'] = result.result.draft
+                                                    publicArticle(parms, resolve, reject)
+                                                } else {
+                                                    const url1 = 'https://my.oschina.net/u/'
+                                                                 + getOsChinaUserId()
+                                                                 + '/blog/write/draft/'
+                                                                 + result.result.draft
+                                                    resolve(url1)
+                                                }
                                             } else {
                                                 reject('发布失败,' + result.message)
                                             }
-                                        }else {
+                                        } else {
                                             reject('发布失败:' + res.statusCode)
                                         }
                                     });
@@ -143,13 +149,60 @@ function publishArticleToOsChina(title, content) {
         )
 
         req.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常' + e.message)
         });
 
         req.write(data)
         req.end()
     })
+}
+
+function publicArticle(parms, resolve, reject) {
+    const data = querystring.stringify(parms)
+    let options = {
+        method: 'POST',
+        headers: {
+            'Accept-Encoding': 'gzip, deflate, br',
+            "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
+            'Accept': '*/*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': data.length,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0',
+            'Cookie': dataStore.getOsChinaCookies()
+        }
+    }
+
+    const url = 'https://my.oschina.net/u/' + getOsChinaUserId() + '/blog/save'
+
+    const req = https.request(url, options, function (res) {
+                                  //发布成功
+                                  res.setEncoding('utf-8')
+                                  let str = ''
+                                  res.on('data', function (chunk) {
+                                      str += chunk
+                                  });
+                                  res.on('end', () => {
+                                      if (res.statusCode === 200) {
+                                          const result = JSON.parse(str);
+                                          if (result.code === 1) {
+                                              const url1 = `https://my.oschina.net/u/${result.result.space}/blog/${result.result.id}`
+                                              resolve(url1)
+                                          } else {
+                                              reject('发布失败,' + result.message)
+                                          }
+                                      } else {
+                                          reject('发布失败:' + res.statusCode)
+                                      }
+                                  });
+                              }
+    )
+
+    req.on('error', function (e) {
+        reject('网络连接异常' + e.message)
+    });
+
+    req.write(data)
+    req.end()
 }
 
 exports.uploadPictureToOsChina = uploadPictureToOsChina

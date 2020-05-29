@@ -14,7 +14,7 @@ const zhihu = require('./blog/zhihu')
 const jianshu = require('./blog/jianshu')
 
 // 发布文章到平台
-const publishArticleTo = async (title, content, dirname, site) => {
+const publishArticleTo = async (title, content, dirname, site, isPublish) => {
     // 1.参数校验
     if (title == null || title.length < 1) {
         dialog.showMessageBoxSync({message: '文章标题为空'})
@@ -132,37 +132,37 @@ const publishArticleTo = async (title, content, dirname, site) => {
     // 3.发布文章
     switch (site) {
         case string.cnblogs:
-            await cnblogs.publishArticleToCnBlogs(title, value)
+            await cnblogs.publishArticleToCnBlogs(title, value, isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
         case string.csdn:
-            await csdn.publishArticleToCSDN(title, value, marked(value))
+            await csdn.publishArticleToCSDN(title, value, marked(value),isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
         case string.juejin:
-            await juejin.publishArticleToJueJin(title, value, marked(value))
+            await juejin.publishArticleToJueJin(title, value, marked(value), isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
         case string.oschina:
-            await oschina.publishArticleToOsChina(title, value)
+            await oschina.publishArticleToOsChina(title, value, isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
         case string.segmentfault:
-            await segmentfault.publishArticleToSegmentFault(title, value)
+            await segmentfault.publishArticleToSegmentFault(title, value, isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
         case string.zhihu:
-            await zhihu.publishArticleToZhiHu(title, value)
+            await zhihu.publishArticleToZhiHu(title, value, isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
         case string.jianshu:
-            await jianshu.publishArticleToJianshu(title, value)
+            await jianshu.publishArticleToJianshu(title, value, isPublish)
                 .then(openPublishUrl)
                 .catch(openCatchInfo)
             break
@@ -171,7 +171,7 @@ const publishArticleTo = async (title, content, dirname, site) => {
 exports.publishArticleTo = publishArticleTo
 
 const openPublishUrl = url => {
-    const number = dialog.showMessageBoxSync({message: '上传成功！是否在浏览器打开？', buttons: ['取消', '打开']})
+    const number = dialog.showMessageBoxSync({message: '发布成功！是否在浏览器打开？', buttons: ['取消', '打开']})
     if (number === 1) {
         shell.openExternal(url).then()
     }
