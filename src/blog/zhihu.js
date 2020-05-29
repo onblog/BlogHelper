@@ -37,9 +37,9 @@ exports.uploadPictureToZhiHu = function uploadPictureToZhiHu(filePath) {
                         const url = result.src
                         resolve(url)
                     } else {
-                        reject('上传图片失败,' +result)
+                        reject('上传图片失败,' + result)
                     }
-                }else {
+                } else {
                     reject('上传图片失败:' + res.statusCode)
                 }
             });
@@ -54,7 +54,7 @@ exports.uploadPictureToZhiHu = function uploadPictureToZhiHu(filePath) {
 }
 
 //上传文章到知乎
-exports.publishArticleToZhiHu = function publishArticleToZhiHu(title, content) {
+exports.publishArticleToZhiHu = function publishArticleToZhiHu(title, content, isPublish) {
     return new Promise((resolve, reject) => {
         // 创建临时文件
         const filePath = path.join(os.tmpdir(), title + '.md')
@@ -89,13 +89,11 @@ exports.publishArticleToZhiHu = function publishArticleToZhiHu(title, content) {
                     if (err) {
                         return console.error(err)
                     }
-                    // console.log("临时文件已删除" + filePath)
                 })
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    // console.log(result)
                     const html = result.html
-                    publishArticle(title, html, resolve, reject)
+                    publishArticle(title, html, resolve, reject, isPublish)
                 } else {
                     reject('发布失败:' + str)
                 }
@@ -117,7 +115,7 @@ exports.publishArticleToZhiHu = function publishArticleToZhiHu(title, content) {
  * @param resolve
  * @param reject
  */
-function publishArticle(filename, html, resolve, reject) {
+function publishArticle(filename, html, resolve, reject, isPublish) {
     const json = JSON.stringify({
                                     content: html,
                                     delta_time: 0,
@@ -141,9 +139,12 @@ function publishArticle(filename, html, resolve, reject) {
         res.on('end', () => {
             if (res.statusCode === 200) {
                 const result = JSON.parse(str);
-                // console.log(result)
                 if (result.url) {
-                    resolve(result.url + '/edit')
+                    if (isPublish) {
+                        topicArticle(result.id, resolve, reject)
+                    } else {
+                        resolve(result.url + '/edit')
+                    }
                 } else {
                     reject('发布失败,' + JSON.stringify(result))
                 }
@@ -157,7 +158,92 @@ function publishArticle(filename, html, resolve, reject) {
     request.end();
 
     request.on('error', function (e) {
-        console.log('problem with request: ' + e.message);
+        reject('网络连接异常')
+    });
+}
+
+function topicArticle(id, resolve, reject) {
+    const json = JSON.stringify({
+                                    "introduction": "",
+                                    "avatarUrl": "https://pic2.zhimg.com/80/acda162ad89c9b8995b51028d5233d1a_l.jpg",
+                                    "name": "程序员",
+                                    "url": "https://www.zhihu.com/topic/19552330",
+                                    "type": "topic",
+                                    "excerpt": "",
+                                    "id": "19552330"
+                                })
+    let request = https.request({
+                                    host: 'zhuanlan.zhihu.com',
+                                    method: 'POST',
+                                    path: `/api/articles/${id}/topics`,
+                                    headers: {
+                                        "content-type": "application/json",
+                                        "cookie": dataStore.getZhiHuCookies(),
+                                        "user-agent": "Mozilla/5.0"
+                                    }
+                                }, function (res) {
+        let str = '';
+        res.on('data', function (buffer) {
+                   str += buffer;
+               }
+        );
+        res.on('end', () => {
+            if (res.statusCode === 200) {
+                publicArticle(id, resolve, reject)
+            } else {
+                reject('发布失败:Topic:' + res.statusCode+'\n'+str)
+            }
+        });
+    });
+
+    request.write(json)
+    request.end();
+
+    request.on('error', function (e) {
+        reject('网络连接异常')
+    });
+}
+
+function publicArticle(id, resolve, reject) {
+    const json = JSON.stringify({
+                                    "column": null,
+                                    "commentPermission": "anyone",
+                                    "disclaimer_status": "close",
+                                    "disclaimer_type": "none"
+                                })
+    let request = https.request({
+                                    host: 'zhuanlan.zhihu.com',
+                                    method: 'PUT',
+                                    path: `/api/articles/${id}/publish`,
+                                    headers: {
+                                        "content-type": "application/json",
+                                        "cookie": dataStore.getZhiHuCookies(),
+                                        "user-agent": "Mozilla/5.0"
+                                    }
+                                }, function (res) {
+        let str = '';
+        res.on('data', function (buffer) {
+                   str += buffer;
+               }
+        );
+        res.on('end', () => {
+            if (res.statusCode === 200) {
+                const result = JSON.parse(str);
+                if (result.url) {
+                    resolve(result.url)
+                } else {
+                    reject('发布失败,' + JSON.stringify(result))
+                }
+            } else {
+                reject('发布失败:Public:' + res.statusCode + "\n" + str)
+            }
+        });
+    });
+
+    request.write(json)
+    request.end();
+
+    request.on('error', function (e) {
         reject('网络连接异常')
     });
 }

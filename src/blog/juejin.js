@@ -34,9 +34,9 @@ function uploadPictureToJueJin(filePath) {
                     if (result.m === 'ok') {
                         resolve(result.d.url.https)
                     } else {
-                        reject('上传图片失败,' +result.m)
+                        reject('上传图片失败,' + result.m)
                     }
-                }else {
+                } else {
                     reject('上传图片失败:' + res.statusCode)
                 }
             });
@@ -44,14 +44,13 @@ function uploadPictureToJueJin(filePath) {
         formData.pipe(request)
 
         request.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
 
 //发布文章到掘金
-function publishArticleToJueJin(title, markdown, html) {
+function publishArticleToJueJin(title, markdown, html, isPublish) {
     return new Promise((resolve, reject) => {
         let req = https.get('https://juejin.im/auth', {
             headers: {
@@ -68,36 +67,35 @@ function publishArticleToJueJin(title, markdown, html) {
             })
             res.on('end', () => {
                 const result = JSON.parse(str);
-                //上传之后result就是返回的结果
-                const data = querystring.stringify({
-                                                       'uid': result.userId,
-                                                       'device_id': result.clientId,
-                                                       'token': result.token,
-                                                       'src': 'web',
-                                                       'category': '5562b428e4b00c57d9b94b9d',
-                                                       'content': '',
-                                                       'html': html,
-                                                       'markdown': markdown,
-                                                       'screenshot': '',
-                                                       'isTitleImageFullscreen': '',
-                                                       'tags': '',
-                                                       'title': title,
-                                                       'type': 'markdown'
-                                                   })
+                const parms = {
+                    'uid': result.userId,
+                    'device_id': result.clientId,
+                    'token': result.token,
+                    'src': 'web',
+                    'category': '5562b428e4b00c57d9b94b9d',
+                    'content': '',
+                    'html': html,
+                    'markdown': markdown,
+                    'screenshot': '',
+                    'isTitleImageFullscreen': '',
+                    'tags': '55c1748160b28fd99e49ea68',
+                    'title': title,
+                    'type': 'markdown'
+                }
                 //真正完成发布文章的请求
-                publishArticleToJueJinFact(data,resolve, reject)
+                publishArticleToJueJinFact(parms, resolve, reject, isPublish)
             });
         })
 
         req.on('error', function (e) {
-            console.log('problem with request: ' + e.message);
-            reject('网络连接异常')
+            reject('网络连接异常'+e.message)
         });
     })
 }
 
-function publishArticleToJueJinFact(data,resolve, reject) {
-    let options = {
+function publishArticleToJueJinFact(parms, resolve, reject, isPublish) {
+    const data = querystring.stringify(parms)
+    const options = {
         method: 'POST',
         headers: {
             'Accept-Encoding': 'gzip, deflate, br',
@@ -113,10 +111,10 @@ function publishArticleToJueJinFact(data,resolve, reject) {
         }
     }
 
-    let req = https.request('https://post-storage-api-ms.juejin.im/v1/draftStorage',
-                            options, function (res) {
+    const req = https.request('https://post-storage-api-ms.juejin.im/v1/draftStorage',
+                              options, function (res) {
             if (res.statusCode !== 200) {
-                reject('请先登录掘金'  + res.statusCode)
+                reject('请先登录掘金' + res.statusCode)
                 return
             }
             //解决返回数据被gzip压缩
@@ -136,25 +134,79 @@ function publishArticleToJueJinFact(data,resolve, reject) {
             });
             res.on('end', () => {
                 const result = JSON.parse(str)
-                // console.log(result)
                 if (result.m === 'ok') {
-                    const url = 'https://juejin.im/editor/drafts/' + result.d[0]
-                    resolve(url)
+                    if (isPublish) {
+                        publiceArticleToJueJinFact(parms, result.d[0], resolve, reject)
+                    } else {
+                        const url = 'https://juejin.im/editor/drafts/' + result.d[0]
+                        resolve(url)
+                    }
                 } else {
-                    //发布失败
-                    reject('发布失败:' +result.m)
+                    reject('发布失败:' + result.m)
                 }
             });
         })
 
     req.on('error', function (e) {
-        console.log('problem with request: ' + e.message);
-        reject('网络连接异常')
+        reject('网络连接异常'+e.message)
     });
 
     req.write(data)
     req.end()
 }
 
-exports.uploadPictureToJueJin =uploadPictureToJueJin
-exports.publishArticleToJueJin =publishArticleToJueJin
+function publiceArticleToJueJinFact(parms, postId, resolve, reject) {
+    parms['postId'] = postId
+    const data = querystring.stringify(parms)
+    const options = {
+        method: 'POST',
+        headers: {
+            'Accept-Encoding': 'gzip, deflate, br',
+            "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
+            'Referer': 'https://juejin.im/editor/drafts/new',
+            'Accept': '*/*',
+            'Origin': 'https://juejin.im',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': data.length,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0',
+            'Cookie': dataStore.getJueJinCookies()
+
+        }
+    }
+    const req = https.request('https://post-storage-api-ms.juejin.im/v1/postPublish',
+                              options, function (res) {
+            //解决返回数据被gzip压缩
+            let output;
+            if (res.headers['content-encoding'] === 'gzip') {
+                let gzip = zlib.createGunzip();
+                res.pipe(gzip);
+                output = gzip;
+            } else {
+                output = res;
+            }
+            res = output
+
+            let body = ''
+            res.on('data', function (chunk) {
+                body += chunk
+            })
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    const url = 'https://juejin.im/post/' + postId
+                    resolve(url)
+                } else {
+                    reject('发布失败:' + res.statusCode+'\n'+body)
+                }
+            });
+        })
+
+    req.on('error', function (e) {
+        reject('网络连接异常'+e.message)
+    });
+
+    req.write(data)
+    req.end()
+}
+
+exports.uploadPictureToJueJin = uploadPictureToJueJin
+exports.publishArticleToJueJin = publishArticleToJueJin
