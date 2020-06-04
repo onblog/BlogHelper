@@ -64,7 +64,6 @@ function uploadPic(resolve, reject, parms, filePath) {
                }
         );
         res.on('end', () => {
-            // console.log(`响应主体: ${body}`);
             if (res.statusCode === 200) {
                 const result = JSON.parse(body);
                 if (result.url) {
@@ -80,7 +79,7 @@ function uploadPic(resolve, reject, parms, filePath) {
     formData.pipe(request)
 
     request.on('error', function (e) {
-        reject('网络连接异常'+e.message)
+        reject('网络连接异常' + e.message)
     });
 }
 
@@ -100,8 +99,8 @@ exports.publishArticleToJianshu = function publishArticleToJianShu(title, conten
                       }
                   },
                   (response) => {
+                      // 解决返回数据使用gzip进行压缩
                       if (response.headers['content-encoding'] === 'gzip') {
-                          console.log('解决返回数据使用gzip进行压缩')
                           const gzip = zlib.createGunzip();
                           response.pipe(gzip);
                           response = gzip;

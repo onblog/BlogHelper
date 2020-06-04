@@ -21,30 +21,31 @@ function uploadPictureToJueJin(filePath) {
                                         path: '/v1/upload?bucket=gold-user-assets',
                                         headers: headers
                                     }, function (res) {
+            //解决返回数据被gzip压缩
+            if (res.headers['content-encoding'] === 'gzip') {
+                const gzip = zlib.createGunzip();
+                res.pipe(gzip);
+                res = gzip;
+            }
+
             let str = '';
             res.on('data', function (buffer) {
                        str += buffer;
                    }
             );
             res.on('end', () => {
-                if (res.statusCode === 200) {
-                    const result = JSON.parse(str);
-                    //上传之后result就是返回的结果
-                    // console.log(result)
-                    if (result.m === 'ok') {
-                        resolve(result.d.url.https)
-                    } else {
-                        reject('上传图片失败,' + result.m)
-                    }
+                const result = JSON.parse(str);
+                if (result.s === 1) {
+                    resolve(result.d.url.https)
                 } else {
-                    reject('上传图片失败:' + res.statusCode)
+                    reject('上传图片失败,' + result.m)
                 }
             });
         });
         formData.pipe(request)
 
         request.on('error', function (e) {
-            reject('网络连接异常'+e.message)
+            reject('网络连接异常' + e.message)
         });
     })
 }
@@ -88,7 +89,7 @@ function publishArticleToJueJin(title, markdown, html, isPublish) {
         })
 
         req.on('error', function (e) {
-            reject('网络连接异常'+e.message)
+            reject('网络连接异常' + e.message)
         });
     })
 }
@@ -113,20 +114,12 @@ function publishArticleToJueJinFact(parms, resolve, reject, isPublish) {
 
     const req = https.request('https://post-storage-api-ms.juejin.im/v1/draftStorage',
                               options, function (res) {
-            if (res.statusCode !== 200) {
-                reject('请先登录掘金' + res.statusCode)
-                return
-            }
             //解决返回数据被gzip压缩
-            let output;
             if (res.headers['content-encoding'] === 'gzip') {
-                let gzip = zlib.createGunzip();
+                const gzip = zlib.createGunzip();
                 res.pipe(gzip);
-                output = gzip;
-            } else {
-                output = res;
+                res = gzip;
             }
-            res = output
 
             let str = ''
             res.on('data', function (chunk) {
@@ -134,7 +127,7 @@ function publishArticleToJueJinFact(parms, resolve, reject, isPublish) {
             });
             res.on('end', () => {
                 const result = JSON.parse(str)
-                if (result.m === 'ok') {
+                if (result.s === 1) {
                     if (isPublish) {
                         publiceArticleToJueJinFact(parms, result.d[0], resolve, reject)
                     } else {
@@ -142,13 +135,13 @@ function publishArticleToJueJinFact(parms, resolve, reject, isPublish) {
                         resolve(url)
                     }
                 } else {
-                    reject('发布失败:' + result.m)
+                    reject('发布失败:' + decodeURI(result.m))
                 }
             });
         })
 
     req.on('error', function (e) {
-        reject('网络连接异常'+e.message)
+        reject('网络连接异常' + e.message)
     });
 
     req.write(data)
@@ -176,32 +169,28 @@ function publiceArticleToJueJinFact(parms, postId, resolve, reject) {
     const req = https.request('https://post-storage-api-ms.juejin.im/v1/postPublish',
                               options, function (res) {
             //解决返回数据被gzip压缩
-            let output;
             if (res.headers['content-encoding'] === 'gzip') {
-                let gzip = zlib.createGunzip();
+                const gzip = zlib.createGunzip();
                 res.pipe(gzip);
-                output = gzip;
-            } else {
-                output = res;
+                res = gzip;
             }
-            res = output
-
             let body = ''
             res.on('data', function (chunk) {
                 body += chunk
             })
             res.on('end', () => {
-                if (res.statusCode === 200) {
+                const result = JSON.parse(body)
+                if (result.s === 1) {
                     const url = 'https://juejin.im/post/' + postId
                     resolve(url)
                 } else {
-                    reject('发布失败:' + res.statusCode+'\n'+body)
+                    reject('发布失败: ' + decodeURI(result.m))
                 }
             });
         })
 
     req.on('error', function (e) {
-        reject('网络连接异常'+e.message)
+        reject('网络连接异常' + e.message)
     });
 
     req.write(data)

@@ -227,15 +227,15 @@ function publicArticle(id, resolve, reject) {
                }
         );
         res.on('end', () => {
+            const result = JSON.parse(str);
             if (res.statusCode === 200) {
-                const result = JSON.parse(str);
                 if (result.url) {
                     resolve(result.url)
                 } else {
-                    reject('发布失败,' + JSON.stringify(result))
+                    reject('发布失败,' + str)
                 }
             } else {
-                reject('发布失败:Public:' + res.statusCode + "\n" + str)
+                reject('发布失败:Public:' + res.statusCode + "\n" + decodeURI(result.error.message))
             }
         });
     });

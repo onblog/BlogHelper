@@ -16,11 +16,13 @@ function uploadPictureToCnBlogs(filePath) {
 
         let headers = formData.getHeaders() //这个不能少
         headers.Cookie = dataStore.getCnBlogCookies() //获取Cookie
+        headers.Connection = 'close'
         //自己的headers属性在这里追加
         let request = https.request({
                                         host: 'upload.cnblogs.com',
                                         method: 'POST',
                                         path: '/imageuploader/CorsUpload',
+                                        agent: false,
                                         headers: headers
                                     }, function (res) {
             let str = '';
@@ -31,8 +33,6 @@ function uploadPictureToCnBlogs(filePath) {
             res.on('end', () => {
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    //上传之后result就是返回的结果
-                    // console.log(result)
                     if (result.success) {
                         resolve(result.message)
                     } else {
@@ -57,8 +57,11 @@ let cnBlog_url = 'https://i1.cnblogs.com/EditPosts.aspx?opt=1'
 function publishArticleToCnBlogs(title, content, isPublish) {
     return new Promise((resolve, reject) => {
         let req = https.get(cnBlog_url, {
+            agent: false,
             headers: {
-                'Cookie': dataStore.getCnBlogCookies()
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0',
+                'Cookie': dataStore.getCnBlogCookies(),
+                'Connection': 'close'
             }
         }, res => {
             let str = '';
@@ -112,8 +115,10 @@ function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATO
 
     let options = {
         method: 'POST',
+        agent: false,
         headers: {
             'Accept-Encoding': 'deflate, br',
+            'Connection': 'close',
             "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
             'Referer': 'https://i.cnblogs.com',
             'Accept': '*/*',
@@ -141,7 +146,7 @@ function publishArticleToCnBlogFact(title, content, VIEWSTATE, VIEWSTATEGENERATO
                 resolve(url)
             } else {
                 //发布失败
-                reject('发布失败！可能是因为：\n1.文章标题已存在\n2.尚未登录博客园')
+                reject('发布失败！\n1.文章标题已存在\n2.尚未登录博客园\n3.发布频繁请稍后再试\n4.超过当日100篇限制')
             }
         });
     })

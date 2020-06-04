@@ -12,21 +12,63 @@ const appToast = require('./app-toast')
 const appUpload = require('./app-upload')
 
 // 上传文章
-exports.publishArticleTo = (tray, site, isPublish) => {
+function publishArticleTo(tray, site, isPublish, sleep) {
     if (!appCheck.loginCheck(site)) {
         return
     }
-    appDialog.openManyLocalFile((title, content, dirname) => {
-        // 开启进度条图标
-        tray.setImage(icon.proIconFile)
-        // 上传文章
-        appPublish.publishArticleTo(title, content, dirname, site, isPublish)
-            .finally(() => {
-                // 关闭进度条图标
-                tray.setImage(icon.iconFile)
+    // 1.选择本地文件
+    const result = appDialog.openManyLocalFileSync()
+    if (result.canceled) {
+        return
+    }
+    // 2.开启进度条图标
+    tray.setImage(icon.proIconFile)
+    // 3.上传文章
+    const files = result.files
+    let number = 0
+    // 定时任务
+    let i = 0
+    let handler = function () {
+        if (i < files.length) {
+            const title = files[i].title
+            const content = files[i].content
+            const dirname = files[i].dirname
+            i++;
+            appPublish.publishArticleTo(title, content, dirname, site, isPublish)
+                .then(url => {
+                    console.log('发布文章成功：' + title)
+                    number++
+                    appToast.openPublishUrl(url, title)
+                    // 调用自身
+                    setTimeout(handler, sleep ? sleep : 1000)
+                }).catch(reason => {
+                console.log('发布文章失败：' + title)
+                // 是否重试
+                const n = dialog.showMessageBoxSync({
+                                                        message: `《${title}》\n${reason.toString()}`,
+                                                        buttons: ['取消', '跳过', '重试']
+                                                    })
+                if (n === 1) {
+                    setTimeout(handler, sleep ? sleep : 1000)
+                } else if (n === 2) {
+                    i--;
+                    setTimeout(handler, sleep ? sleep : 1000)
+                } else {
+                    // 4.关闭进度条图标
+                    tray.setImage(icon.iconFile)
+                    appToast.toast({title: `预处理${files.length}个,实际处理${number}个`})
+                }
             })
-    })
+        } else {
+            // 4.关闭进度条图标
+            tray.setImage(icon.iconFile)
+            appToast.toast({title: `预处理${files.length}个,实际处理${number}个`})
+        }
+    }
+    handler()
 }
+
+exports.publishArticleTo = publishArticleTo
 
 // 本地图片上传
 exports.uploadAllPicture = async (tray) => {
@@ -50,18 +92,17 @@ exports.uploadAllPicture = async (tray) => {
         let value = file.content
         let mark = {next: true}
         for (let [src, fullPath] of map.entries()) {
-            if (path.isAbsolute(fullPath) && fs.existsSync(fullPath) && appUtil.isLocalPicture(
-                fullPath)) {
+            if (mark.next && path.isAbsolute(fullPath) && fs.existsSync(fullPath)
+                && appUtil.isLocalPicture(
+                    fullPath)) {
                 await appUpload.uploadPicture(fullPath)
                     .then(href => {
                         value = value.replace(src, href)
                     })
                     .catch(message => {
-                        if (mark.next) {
-                            dialog.showMessageBoxSync(
-                                {message: file.filepath + '\n' + message, type: 'error'})
-                            mark.next = false
-                        }
+                        mark.next = false
+                        dialog.showMessageBoxSync(
+                            {message: file.filepath + '\n' + message, type: 'error'})
                     })
             }
         }
@@ -111,6 +152,9 @@ exports.downloadMdNetPicture = async function (tray) {
         let newValue = file.content
         let mark = {next: true}
         for (let [src, filepath] of map.entries()) {
+            if (!mark.next) {
+                break
+            }
             await appDownload.downloadPicture(src, filepath)
                 .then(value => {
                     // 相对路径
@@ -118,11 +162,9 @@ exports.downloadMdNetPicture = async function (tray) {
                     newValue = newValue.replace(src, relativePath)
                 })
                 .catch(reason => {
-                    if (mark.next) {
-                        dialog.showMessageBoxSync(
-                            {message: file.filepath + '\n' + reason, type: 'error'})
-                        mark.next = false
-                    }
+                    mark.next = false
+                    dialog.showMessageBoxSync(
+                        {message: file.filepath + '\n' + reason, type: 'error'})
                 })
         }
         // 5.上传失败全部停止
@@ -316,7 +358,7 @@ exports.uploadClipboardPic = function uploadClipboardPic(tray) {
     if (nativeImage.isEmpty()) {
         appToast.toast({title: '剪贴板未检索到图片', body: ''})
     } else {
-        uploadOnePicture(tray, nativeImage)
+        uploadOnePicture(tray, nativeImage).then()
     }
 }
 
@@ -350,7 +392,7 @@ async function uploadOnePicture(tray, image) {
             }
         })
         .catch(message => {
-            dialog.showMessageBoxSync({message: ""+message, type: 'error'})
+            dialog.showMessageBoxSync({message: "" + message, type: 'error'})
         })
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
