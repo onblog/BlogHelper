@@ -32,7 +32,7 @@ function uploadPictureToSegmentFault(filePath) {
                     if (result[0] === 0) {
                         resolve(result[1])
                     } else {
-                        reject('上传图片失败,' + str)
+                        reject('上传图片失败,' + decodeURI(result[1]))
                     }
                 } else {
                     reject('上传图片失败:' + res.statusCode)
@@ -149,7 +149,7 @@ function publishArticleToSegmentFaultFact(title, text, resolve, reject, isPublis
                             resolve(url)
                         }
                     } else {
-                        reject('发布失败,' + result.message)
+                        reject('发布失败,' + unescape(str.replace(/\\u/g, '%u')))
                     }
                 } else {
                     reject('发布失败，可能未登录思否！' + res.statusCode)
@@ -183,10 +183,10 @@ function publicArticleToSegmentFault(formData, headers, resolve, reject) {
                     const url = 'https://segmentfault.com' + result.data.url
                     resolve(url)
                 } else {
-                    reject('发布失败,' + result.data)
+                    reject('发布失败,' + unescape(str.replace(/\\u/g, '%u')))
                 }
             } else {
-                reject('发布失败:' + res.statusCode + "\n" + str)
+                reject('发布失败:' + res.statusCode + "\n" + unescape(str.replace(/\\u/g, '%u')))
             }
         });
     })

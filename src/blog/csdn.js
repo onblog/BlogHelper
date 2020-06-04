@@ -94,8 +94,8 @@ function publishArticleToCSDN(title, markdowncontent, content, isPublish) {
                    }
             );
             res.on('end', () => {
+                const result = JSON.parse(str);
                 if (res.statusCode === 200) {
-                    const result = JSON.parse(str);
                     if (result.code === 200) {
                         const url = isPublish ? result.data.url
                                               : 'https://editor.csdn.net/md/?articleId='
@@ -105,7 +105,7 @@ function publishArticleToCSDN(title, markdowncontent, content, isPublish) {
                         reject('发布失败,' + result.msg)
                     }
                 } else {
-                    reject('发布失败:' + res.statusCode + '\n'+str)
+                    reject('发布失败: ' + res.statusCode + '\n'+decodeURI(result.msg))
                 }
             });
         });

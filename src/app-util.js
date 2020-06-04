@@ -150,3 +150,10 @@ exports.updateClipboard = function updateClipboard(newT) {
     }
     appToast.toast({title: '剪贴板已更新'})
 }
+
+/**
+ * 休眠函数
+ */
+exports.sleep = function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
