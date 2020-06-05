@@ -26,6 +26,8 @@ class DataStore extends Store {
     uploadClipboardPicSwitch = 'uploadClipboardPicSwitch'
     // 富文本转纯文字
     coverToTextSwitch = 'coverToTextSwitch'
+    // tts语言合成开关
+    TTSSwitch = 'TTSSwitch'
 
     constructor(settings) {
         const baseConfig = {name: 'blog-helper-2'}
@@ -214,7 +216,20 @@ class DataStore extends Store {
     setCoverToTextSwitch(check) {
         this.set(this.coverToTextSwitch, check)
     }
+    
+    /**
+     * 是否启用博客阅读快捷键 
+     */
+    isTTSSwitch() {
+        if (this.has(this.TTSSwitch)) {
+            return this.get(this.TTSSwitch)
+        }
+        return false
+    }
 
+    setTTSSwitch(check) {
+        this.set(this.TTSSwitch, check)
+    }
 
 }
 

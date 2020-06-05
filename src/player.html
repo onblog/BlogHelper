@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <title>语音和合成博客朗读器</title>
+    <script type="text/javascript">
+      const {clipboard,remote} = require('electron');
+      let content = encodeURI(clipboard.readText());
+      let url = "http://fanyi.baidu.com/gettts?spd=3&lan=zh&text=" + content + "&source=web";
+      var mp3 = new Audio(url);
+      mp3.play();
+  	</script>
+  </head>
+  
+  <body></body>
+
+</html>

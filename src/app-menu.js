@@ -478,6 +478,16 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         dataStore.setCoverToTextSwitch(menuItem.checked)
                         appShortcut.coverToTextSwitch(tray, menuItem.checked)
                     }
+                },
+                {
+                    label: 'CtrlQ阅读剪切板',
+                    type: 'checkbox',
+                    accelerator: appShortcut.ACCELERATORS[2],
+                    checked: dataStore.isTTSSwitch(),
+                    click: function (menuItem) {
+                        dataStore.setTTSSwitch(menuItem.checked)
+                        appShortcut.TTSSwitch(tray, menuItem.checked)
+                    }
                 }
             ]
         }

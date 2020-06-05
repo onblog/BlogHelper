@@ -1,4 +1,4 @@
-const {dialog, app, clipboard} = require('electron')
+const {dialog, app, clipboard, BrowserWindow} = require('electron')
 const appPublish = require('./app-publish')
 const appUtil = require('./app-util')
 const path = require('path')
@@ -391,4 +391,20 @@ exports.HTMLToMd = function (tray) {
     appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
     // 6.关闭进度条图标
     tray.setImage(icon.iconFile)
+}
+
+/**
+ * 阅读博客
+ */
+let playWindow = null;
+exports.TTS = function TTS() {
+    if (playWindow!=null) {
+        playWindow.close();
+        playWindow = null;
+    }
+    playWindow = new BrowserWindow({ width: 10, height: 10,webPreferences:{nodeIntegration:true}, show: false });
+    playWindow.on('closed', function() {
+      playWindow = null;
+    });
+    playWindow.loadURL('file://' + __dirname + '/player.html');
 }

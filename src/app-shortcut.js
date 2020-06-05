@@ -4,7 +4,7 @@ const DataStore = require('./app-store')
 const dataStore = new DataStore()
 
 // 快捷键
-const ACCELERATORS = ['CmdOrCtrl+Shift+P', 'CmdOrCtrl+Alt+T']
+const ACCELERATORS = ['CmdOrCtrl+Shift+P', 'CmdOrCtrl+Alt+T','CmdOrCtrl+Q']
 exports.ACCELERATORS = ACCELERATORS
 
 /**
@@ -13,6 +13,7 @@ exports.ACCELERATORS = ACCELERATORS
 exports.initGlobalShortcut = function initGlobalShortcut(tray) {
     uploadClipboardPicSwitch(tray, dataStore.isUploadClipboardPicSwitch())
     coverToTextSwitch(tray, dataStore.isCoverToTextSwitch())
+    TTSSwitch(tray, dataStore.isTTSSwitch())
 }
 
 /**
@@ -43,4 +44,18 @@ function coverToTextSwitch(tray, check) {
 }
 exports.coverToTextSwitch = coverToTextSwitch
 
-
+/**
+ * Ctrl+Q朗读剪切板内容(👉帮你阅读博客呦)
+ * time:2020_6_5
+ * auther: https://github.com/dahuoyzs
+ */
+function TTSSwitch(tray, check) {
+    if (check) {
+        globalShortcut.register(ACCELERATORS[2], () => {
+            appMenuPublish.TTS()
+        })
+    } else if (globalShortcut.isRegistered(ACCELERATORS[2])) {
+        globalShortcut.unregister(ACCELERATORS[2])
+    }
+}
+exports.TTSSwitch = TTSSwitch
