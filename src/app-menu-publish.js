@@ -10,6 +10,7 @@ const appDownload = require('./app-download')
 const appSave = require('./app-save')
 const appToast = require('./app-toast')
 const appUpload = require('./app-upload')
+const logger = require('logger2x').createLogger(`${require('os').homedir()}/BlogHelper/publish.log`)
 
 // 上传文章
 function publishArticleTo(tray, site, isPublish, sleep) {
@@ -36,13 +37,13 @@ function publishArticleTo(tray, site, isPublish, sleep) {
             i++;
             appPublish.publishArticleTo(title, content, dirname, site, isPublish)
                 .then(url => {
-                    console.log('发布文章成功：' + title)
+                    logger.log('发布文章到', site, '成功：', title)
                     number++
                     appToast.openPublishUrl(url, title)
                     // 调用自身
                     setTimeout(handler, sleep ? sleep : 1000)
                 }).catch(reason => {
-                console.log('发布文章失败：' + title)
+                logger.log('发布文章到', site, '失败：', title, reason.toString())
                 // 是否重试
                 const n = dialog.showMessageBoxSync({
                                                         message: `《${title}》\n${reason.toString()}`,

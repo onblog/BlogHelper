@@ -30,13 +30,13 @@ function uploadPicture(filePath, name) {
                 // [{fileName, width, height, extname, imgUrl}]
                 // console.log(ctx.output)
             }
-            deleteLog()
+            // deleteLog()
         })
         // 监听错误
         picgo.on('failed', error => {
             // console.log(error) //错误信息
             reject(error)
-            deleteLog()
+            // deleteLog()
         })
     })
 }
