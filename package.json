@@ -1,6 +1,6 @@
 {
   "name": "blog-helper",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "",
   "productName": "BlogHelper",
   "main": "src/main.js",
@@ -29,6 +29,7 @@
     "jquery": "^3.4.1",
     "jsdom": "^15.2.1",
     "lodash": "^4.17.15",
+    "logger2x": "0.0.2",
     "marked": "^0.8.0",
     "mime-types": "^2.1.27",
     "path": "^0.12.7",
