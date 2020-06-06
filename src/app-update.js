@@ -23,6 +23,7 @@ function autoUpdateApp(isTip) {
     });
     req.end();
 }
+
 exports.autoUpdateApp = autoUpdateApp
 
 //解析html获取内容
@@ -39,7 +40,7 @@ function parseHtml(result, isTip) {
     const version = element.getAttribute('title')
     const compareVersion = util.compareVersion(version, app.getVersion())
     if (compareVersion > 0) {
-        //发现更新
+        //需要更新
         dialog.showMessageBox({
                                   buttons: ['取消', '查看', '下载'],
                                   message: `当前版本：${app.getVersion()}\n发现新版本：${version}`
@@ -47,17 +48,23 @@ function parseHtml(result, isTip) {
         ).then(function (res) {
             if (res.response === 1) {
                 shell.openExternal(url).then()
-            }else if (res.response===2){
+            } else if (res.response === 2) {
                 // 下载压缩包
                 shell.openExternal(require('./app-constant').download).then()
             }
             // 自动检查更新
-            setInterval(function () {
+            setTimeout(function () {
                 autoUpdateApp(false)
             }, 1000*60*60)
         })
-    } else if (isTip) {
-        appToast.toast({title: '已经是最新版本', body: '最新发布版本 '+version})
-
+    } else {
+        // 不需要更新
+        if (isTip) {
+            appToast.toast({title: '已经是最新版本', body: '最新发布版本 ' + version})
+        }
+        // 自动检查更新
+        setTimeout(function () {
+            autoUpdateApp(false)
+        }, 1000*60*60)
     }
 }
