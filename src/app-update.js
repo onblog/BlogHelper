@@ -7,7 +7,7 @@ const appToast = require('./app-toast')
 const url = require('./app-constant').url
 
 // 自动检查更新（bool：是否主动操作）
-exports.autoUpdateApp = function autoUpdateApp(isTip) {
+function autoUpdateApp(isTip) {
     const req = https.request(url, {}, function (req) {
         let result = '';
         req.on('data', function (data) {
@@ -23,6 +23,7 @@ exports.autoUpdateApp = function autoUpdateApp(isTip) {
     });
     req.end();
 }
+exports.autoUpdateApp = autoUpdateApp
 
 //解析html获取内容
 function parseHtml(result, isTip) {
@@ -50,6 +51,10 @@ function parseHtml(result, isTip) {
                 // 下载压缩包
                 shell.openExternal(require('./app-constant').download).then()
             }
+            // 自动检查更新
+            setInterval(function () {
+                autoUpdateApp(false)
+            }, 1000*60*60)
         })
     } else if (isTip) {
         appToast.toast({title: '已经是最新版本', body: '最新发布版本 '+version})
