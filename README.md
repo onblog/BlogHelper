@@ -40,7 +40,7 @@
 
 <img src="https://imgkr.cn-bj.ufileos.com/c63683bc-5879-4cbf-941d-75bae971c64a.png" referrerpolicy="no-referrer" width="400px" />
 
-<img src="https://imgkr.cn-bj.ufileos.com/e2f1ccaa-477d-4749-bdec-ec3edd577a08.png" referrerpolicy="no-referrer" width="400px"/>
+<img src="https://imgkr.cn-bj.ufileos.com/38e06304-f5b1-46f1-a290-bbe451398bf1.png" referrerpolicy="no-referrer" width="400px"/>
 
 预览图可能版本过低，请以具体应用为准。
 
