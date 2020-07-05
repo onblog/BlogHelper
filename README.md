@@ -54,8 +54,6 @@
 
 - LOGO设计师：Summer（QQ：1003737038）
 
-<img src="https://imgkr.cn-bj.ufileos.com/9735c660-ecc0-40be-9cf1-21c1986b8059.png" referrerpolicy="no-referrer" width="300px"/>
-
 #### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/ystcode/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
 <img src="https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png" width="300px" referrerpolicy="no-referrer">
