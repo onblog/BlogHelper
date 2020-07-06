@@ -1,4 +1,4 @@
-const {Menu, Tray, app} = require('electron')
+const {Menu, Tray, app, nativeTheme} = require('electron')
 const icon = require('./app-icon')
 const appMenu = require('./app-menu')
 const appShortcut = require('./app-shortcut')
@@ -25,6 +25,8 @@ function createTray() {
     tray.setToolTip('你今天真好看')
     // 添加菜单到系统托盘区
     tray.setContextMenu(appMenu.buildContextMenu(tray))
+    // 添加主题监听
+    listenThemeChange(tray)
     return tray
 }
 
@@ -36,6 +38,16 @@ function hiddenTaskbar() {
         case "darwin":
             app.dock.hide()
             break
+    }
+}
+
+function listenThemeChange(tray){
+    //判断是否为OSX
+    if(process.platform==="darwin"){
+        //当桌面主题更新时，自动刷新托盘图标
+        nativeTheme.on('updated',()=>{
+            tray.setImage(icon.icon().iconFile)
+        })
     }
 }
 
