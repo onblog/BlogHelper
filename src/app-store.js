@@ -1,9 +1,11 @@
 const Store = require('electron-store')
-
+const string = require('./app-string')
 class DataStore extends Store {
     //新浪微博图床设置
     weiBoCookiesKey = 'wei-Bo-cookies-key'
 
+    //所有已经登录平台的cookies
+    allLoginBlogPlatformKey = 'all-login-blog-cookie-key'
     //博客园Cookie
     cnBlogCookieKey = 'cn-blog-cookie-key'
     //CSDN
@@ -27,10 +29,30 @@ class DataStore extends Store {
     // 富文本转纯文字
     coverToTextSwitch = 'coverToTextSwitch'
 
+    allLoginPlatform = []
+
     constructor(settings) {
         const baseConfig = {name: 'blog-helper-2'}
         const finalConfig = {...baseConfig, ...settings};
         super(finalConfig)
+    }
+
+   /**
+   * 保存已经登录的博客平台
+   */
+   saveAllLoginPlatform(v){
+        this.allLoginPlatform.push(v)
+        this.set(this.allLoginBlogPlatformKey,this.allLoginPlatform)
+    }
+
+   /**
+   * 获取已经登录的博客平台
+   */
+   getAllLoginPlatform(){
+      if (this.has(this.allLoginBlogPlatformKey)) {
+        return this.get(this.allLoginBlogPlatformKey)
+      }
+      return null
     }
 
     /*
@@ -44,6 +66,7 @@ class DataStore extends Store {
     }
 
     setJianShuCookies(v) {
+        this.saveAllLoginPlatform(string.jianshu)
         return this.set(this.JianShuCookieKey, v)
     }
 
@@ -55,6 +78,7 @@ class DataStore extends Store {
     }
 
     setZhiHuCookies(v) {
+        this.saveAllLoginPlatform(string.zhihu)
         return this.set(this.ZhiHuCookiekey, v)
     }
 
@@ -66,6 +90,7 @@ class DataStore extends Store {
     }
 
     setCnBlogCookie(v) {
+        this.saveAllLoginPlatform(string.cnblogs)
         return this.set(this.cnBlogCookieKey, v)
     }
 
@@ -77,6 +102,7 @@ class DataStore extends Store {
     }
 
     setCSDNCookie(v) {
+        this.saveAllLoginPlatform(string.csdn)
         return this.set(this.CSDNCookieKey, v)
     }
 
@@ -88,6 +114,7 @@ class DataStore extends Store {
     }
 
     setJueJinCookie(v) {
+        this.saveAllLoginPlatform(string.juejin)
         return this.set(this.JueJinCookieKey, v)
     }
 
@@ -99,6 +126,7 @@ class DataStore extends Store {
     }
 
     setOsChinaCookie(v) {
+        this.saveAllLoginPlatform(string.oschina)
         return this.set(this.OsChinaCookieKey, v)
     }
 
@@ -132,6 +160,7 @@ class DataStore extends Store {
     }
 
     setSegmentFaultCookie(v) {
+        this.saveAllLoginPlatform(string.segmentfault)
         return this.set(this.SegmentFaultCookieKey, v)
     }
 

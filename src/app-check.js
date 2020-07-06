@@ -6,6 +6,13 @@ const appToast = require('./app-toast')
 // cookie登录校验
 exports.loginCheck = (site) => {
     switch (site) {
+        case string.all:
+            if (dataStore.getAllLoginPlatform() !== null) {
+                return true
+            }
+            appToast.toast({title: '至少登录一个平台'})
+            return false
+            break
         case string.cnblogs:
             if (!dataStore.getCnBlogCookies()) {
                 appToast.toast({title: '请先登录博客园'})
@@ -20,31 +27,31 @@ exports.loginCheck = (site) => {
             break
         case string.juejin:
             if (!dataStore.getJueJinCookies()) {
-                appToast.toast({title: '请先登录掘金',body:''})
+                appToast.toast({title: '请先登录掘金', body: ''})
                 return false
             }
             break
         case string.oschina:
             if (!dataStore.getOsChinaCookies()) {
-                appToast.toast({title: '请先登录开源中国',body:''})
+                appToast.toast({title: '请先登录开源中国', body: ''})
                 return false
             }
             break
         case string.segmentfault:
             if (!dataStore.getSegmentFaultCookie()) {
-                appToast.toast({title: '请先登录思否',body:''})
+                appToast.toast({title: '请先登录思否', body: ''})
                 return false
             }
             break
         case string.zhihu:
             if (!dataStore.getZhiHuCookies()) {
-                appToast.toast({title: '请先登录知乎',body:''})
+                appToast.toast({title: '请先登录知乎', body: ''})
                 return false
             }
             break
         case string.jianshu:
             if (!dataStore.getJianShuCookies()) {
-                appToast.toast({title: '请先登录简书',body:''})
+                appToast.toast({title: '请先登录简书', body: ''})
                 return false
             }
             break

@@ -10,6 +10,9 @@ const appDownload = require('./app-download')
 const appSave = require('./app-save')
 const appToast = require('./app-toast')
 const appUpload = require('./app-upload')
+const string = require('./app-string')
+const DataStore = require('./app-store')
+const dataStore = new DataStore()
 const logger = require('logger2x').createLogger(`${require('os').homedir()}/BlogHelper/publish.log`)
 
 // 上传文章
@@ -26,40 +29,60 @@ function publishArticleTo(tray, site, isPublish, sleep) {
     tray.setImage(icon.proIconFile)
     // 3.上传文章
     const files = result.files
+
+
     let number = 0
     // 定时任务
     let i = 0
+
+    function publish(title, content, dirname, site) {
+        appPublish.publishArticleTo(title, content, dirname, site, isPublish)
+        .then(url => {
+            logger.log('发布文章到', site, '成功：', title)
+            number++
+            appToast.openPublishUrl(url, title)
+            // 调用自身
+            setTimeout(handler, sleep ? sleep : 1000)
+        }).catch(reason => {
+            logger.log('发布文章到', site, '失败：', title, reason.toString())
+            // 是否重试
+            const n = dialog.showMessageBoxSync({
+                message: `《${title}》\n${reason.toString()}`,
+                buttons: ['取消', '跳过', '重试']
+            })
+            if (n === 1) {
+                setTimeout(handler, sleep ? sleep : 1000)
+            } else if (n === 2) {
+                i--;
+                setTimeout(handler, sleep ? sleep : 1000)
+            } else {
+                // 4.关闭进度条图标
+                tray.setImage(icon.iconFile)
+                appToast.toast({title: `预处理${files.length}个,实际处理${number}个`})
+            }
+        })
+    }
+
     let handler = function () {
         if (i < files.length) {
             const title = files[i].title
             const content = files[i].content
             const dirname = files[i].dirname
             i++;
-            appPublish.publishArticleTo(title, content, dirname, site, isPublish)
-                .then(url => {
-                    logger.log('发布文章到', site, '成功：', title)
-                    number++
-                    appToast.openPublishUrl(url, title)
-                    // 调用自身
-                    setTimeout(handler, sleep ? sleep : 1000)
-                }).catch(reason => {
-                logger.log('发布文章到', site, '失败：', title, reason.toString())
-                // 是否重试
-                const n = dialog.showMessageBoxSync({
-                                                        message: `《${title}》\n${reason.toString()}`,
-                                                        buttons: ['取消', '跳过', '重试']
-                                                    })
-                if (n === 1) {
-                    setTimeout(handler, sleep ? sleep : 1000)
-                } else if (n === 2) {
-                    i--;
-                    setTimeout(handler, sleep ? sleep : 1000)
-                } else {
-                    // 4.关闭进度条图标
-                    tray.setImage(icon.iconFile)
-                    appToast.toast({title: `预处理${files.length}个,实际处理${number}个`})
+            // 4.是否是全部发布
+            if (site === string.all) {
+                if (dataStore.getAllLoginPlatform() !== null) {
+                    for (let i = 0; i < dataStore.getAllLoginPlatform().length; i++) {
+                        const s = dataStore.getAllLoginPlatform()[i];
+                        appToast.toast({title: s})
+                        publish(title, content, dirname, s);
+                    }
+                }else {
+                    appToast.toast({title: '至少登录一个平台'})
                 }
-            })
+            } else {
+                publish(title, content, dirname, site);
+            }
         } else {
             // 4.关闭进度条图标
             tray.setImage(icon.iconFile)
@@ -97,14 +120,14 @@ exports.uploadAllPicture = async (tray) => {
                 && appUtil.isLocalPicture(
                     fullPath)) {
                 await appUpload.uploadPicture(fullPath)
-                    .then(href => {
-                        value = value.replace(src, href)
-                    })
-                    .catch(message => {
-                        mark.next = false
-                        dialog.showMessageBoxSync(
-                            {message: file.filepath + '\n' + message, type: 'error'})
-                    })
+                .then(href => {
+                    value = value.replace(src, href)
+                })
+                .catch(message => {
+                    mark.next = false
+                    dialog.showMessageBoxSync(
+                        {message: file.filepath + '\n' + message, type: 'error'})
+                })
             }
         }
         // 5.上传失败全部停止
@@ -145,7 +168,7 @@ exports.downloadMdNetPicture = async function (tray) {
             if (appUtil.isWebPicture(src)) {
                 // 图片文件名
                 let filepath = path.join(dirname, name,
-                                         Math.floor(Math.random() * 100000000) + '.png')
+                    Math.floor(Math.random() * 100000000) + '.png')
                 map.set(src, filepath)
             }
         })
@@ -157,16 +180,16 @@ exports.downloadMdNetPicture = async function (tray) {
                 break
             }
             await appDownload.downloadPicture(src, filepath)
-                .then(value => {
-                    // 相对路径
-                    const relativePath = './' + path.join(name, path.basename(filepath))
-                    newValue = newValue.replace(src, relativePath)
-                })
-                .catch(reason => {
-                    mark.next = false
-                    dialog.showMessageBoxSync(
-                        {message: file.filepath + '\n' + reason, type: 'error'})
-                })
+            .then(value => {
+                // 相对路径
+                const relativePath = './' + path.join(name, path.basename(filepath))
+                newValue = newValue.replace(src, relativePath)
+            })
+            .catch(reason => {
+                mark.next = false
+                dialog.showMessageBoxSync(
+                    {message: file.filepath + '\n' + reason, type: 'error'})
+            })
         }
         // 5.上传失败全部停止
         if (!mark.next) {
@@ -334,7 +357,7 @@ exports.pictureMdToImg = function (tray) {
                     let src = split[i].substring(start + 1, end) //图片的真实地址
                     line =
                         line.replace("!" + split[i],
-                                     `<img src="${src}" referrerPolicy="no-referrer"/>`)
+                            `<img src="${src}" referrerPolicy="no-referrer"/>`)
                 }
             }
             newValue += line + '\n'
@@ -375,26 +398,26 @@ async function uploadOnePicture(tray, image) {
     fs.writeFileSync(filePath, buffer)
     // 4.上传本地图片
     await appUpload.uploadPicture(filePath)
-        .then(href => {
-            let number = dialog.showMessageBoxSync(
-                {message: '图片链接已获取，拷贝格式为', buttons: ['Markdown', 'HTML', 'URL']})
-            if (number === 0) {
-                while (!clipboard.readImage().isEmpty()) {
-                    clipboard.writeText('![](' + href + ')')
-                }
-            } else if (number === 1) {
-                while (!clipboard.readImage().isEmpty()) {
-                    clipboard.writeText(`<img src="${href}" referrerpolicy="no-referrer"/>`)
-                }
-            } else if (number === 2) {
-                while (!clipboard.readImage().isEmpty()) {
-                    clipboard.writeText(href)
-                }
+    .then(href => {
+        let number = dialog.showMessageBoxSync(
+            {message: '图片链接已获取，拷贝格式为', buttons: ['Markdown', 'HTML', 'URL']})
+        if (number === 0) {
+            while (!clipboard.readImage().isEmpty()) {
+                clipboard.writeText('![](' + href + ')')
             }
-        })
-        .catch(message => {
-            dialog.showMessageBoxSync({message: "" + message, type: 'error'})
-        })
+        } else if (number === 1) {
+            while (!clipboard.readImage().isEmpty()) {
+                clipboard.writeText(`<img src="${href}" referrerpolicy="no-referrer"/>`)
+            }
+        } else if (number === 2) {
+            while (!clipboard.readImage().isEmpty()) {
+                clipboard.writeText(href)
+            }
+        }
+    })
+    .catch(message => {
+        dialog.showMessageBoxSync({message: "" + message, type: 'error'})
+    })
     // 5.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
@@ -411,8 +434,8 @@ exports.coverToText = function coverToText() {
 exports.HTMLToMd = function (tray) {
     // 1.选择本地文件
     const result = appDialog.openManyLocalFileSync([
-                                                       {name: 'html', extensions: ['html']}
-                                                   ])
+        {name: 'html', extensions: ['html']}
+    ])
     if (result.canceled) {
         return
     }
