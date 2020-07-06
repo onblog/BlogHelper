@@ -19,17 +19,24 @@ exports.buildContextMenu = function buildContextMenu(tray) {
             submenu: [
                 {
                     label: '已登录的平台',
-                    submenu: [ {
-                        label: '存稿所有',
-                        click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.all, false, 5000)
-                        }
-                    }, {
-                        label: '发布所有',
-                        click: function () {
-                            appMenuPublish.publishArticleTo(tray, string.all, true, 5000)
-                        }
-                    }]
+                    submenu: [
+                        {
+                            label: '查看已登录',
+                            click: function () {
+                                appToast.toast({title:'已登录：'+dataStore.getAllLoginPlatform().toString()})
+                            }
+                        },
+                        {
+                            label: '存稿所有',
+                            click: function () {
+                                appMenuPublish.publishArticleTo(tray, string.all, false, 5000)
+                            }
+                        }, {
+                            label: '发布所有',
+                            click: function () {
+                                appMenuPublish.publishArticleTo(tray, string.all, true, 5000)
+                            }
+                        }]
                 },
                 {
                     label: '知乎',
@@ -511,7 +518,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     label: '我要反馈',
                     click: function () {
                         shell.openExternal(require('./app-constant').issues)
-                            .catch()
+                        .catch()
                     }
                 }
                 , {
