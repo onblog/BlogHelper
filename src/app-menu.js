@@ -1,4 +1,4 @@
-const {Menu, app, clipboard, shell} = require('electron')
+const {Menu, MenuItem, app, clipboard, shell} = require('electron')
 const appLogin = require('./app-login')
 const string = require('./app-string')
 const appMenuPublish = require('./app-menu-publish')
@@ -457,7 +457,8 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     }
                 }
             ]
-        }, {
+        }
+        , {
             label: '快捷键',
             submenu: [
                 {
@@ -530,7 +531,11 @@ exports.buildContextMenu = function buildContextMenu(tray) {
     ]
     menu = Menu.buildFromTemplate(template)
     // 插件化
-    plugins.customMenu(menu,tray)
+    const pluginsMenu = new Menu();
+    plugins.customMenu(pluginsMenu, tray)
+    if (pluginsMenu.items.length > 0) {
+        menu.insert(menu.items.length - 2, new MenuItem({label: '扩展功能', submenu: pluginsMenu}));
+    }
     return menu
 }
 
