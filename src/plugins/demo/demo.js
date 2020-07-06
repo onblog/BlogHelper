@@ -8,5 +8,5 @@ exports.status = function (menu, tray) {
                                      toast.toast({title: '插件化测试成功！'})
                                  }
                              }))
-    tray.setTitle('插件测试消息')
+    tray.setTitle('插件')
 }
