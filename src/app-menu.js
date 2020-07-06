@@ -9,6 +9,7 @@ const appToast = require('./app-toast')
 const appUpdate = require('./app-update')
 const appShortcut = require('./app-shortcut')
 const picgo = require('./picture/picgo/picgo')
+const plugins = require('./plugins/app-plugins')
 
 exports.buildContextMenu = function buildContextMenu(tray) {
     // 菜单栏引用
@@ -528,6 +529,8 @@ exports.buildContextMenu = function buildContextMenu(tray) {
         }
     ]
     menu = Menu.buildFromTemplate(template)
+    // 插件化
+    plugins.customMenu(menu,tray)
     return menu
 }
 
