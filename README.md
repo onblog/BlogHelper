@@ -54,7 +54,7 @@
 
 - 薛勤，一个就爱瞎鼓捣的程序猿🐒 欢迎关注个人技术公众号：代码艺术
 
-- 我的邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)📩
+- 我的邮箱：[codeblog@qq.com](mailto:codeblog@qq.com)📩
 
 - 我的微信：关注公众号"代码艺术"，点击右下角菜单栏获取！拉你进群！
 
