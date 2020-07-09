@@ -5,5 +5,6 @@
  */
 exports.customMenu = function (menu, tray) {
     // 示例：一行代码注册一个插件
-    //require('./demo/demo').status(menu, tray)
+    // require('./demo/demo').status(menu, tray)
+    require('./publish-all/publish-all').status(menu, tray)
 }
