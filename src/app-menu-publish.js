@@ -238,7 +238,7 @@ exports.movePictureToFolder = function (tray) {
         // 统计
         number = i + 1
     }
-    appToast.toast({body: `预处理${result.files.length}个,实际处理${number}个`})
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
     // 7.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
@@ -269,7 +269,8 @@ exports.movePictureAndMdToFolder = function (tray) {
         // 4.复制整理
         let value = file.content
         // 移动至新目录
-        const output = path.join(file.dirname, 'OUTPUT')
+        const OUTPUT = 'OUTPUT';
+        const output = path.join(file.dirname, OUTPUT)
         if (!fs.existsSync(output)) {
             fs.mkdirSync(output, {recursive: true})
         }
@@ -295,15 +296,15 @@ exports.movePictureAndMdToFolder = function (tray) {
                 }
             }
         }
-        // 5.保存
+        // 5.保存到新文件
         file.filepath = path.join(output, path.basename(file.filepath))
-        appSave.saveNewFileOrClipboard(file, value, i)
+        fs.writeFileSync(file.filepath, value)
         // 6.提示
-        appToast.toast({title: '完成', body: file.title})
+        appToast.toast({title: `保存到${OUTPUT}文件夹`, body: file.title})
         // 统计
         number = i + 1
     }
-    appToast.toast({body: `预处理${result.files.length}个,实际处理${number}个`})
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`})
     // 7.关闭进度条图标
     tray.setImage(icon.iconFile)
 }
