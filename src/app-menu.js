@@ -7,9 +7,9 @@ const DataStore = require('./app-store')
 const dataStore = new DataStore()
 const appToast = require('./app-toast')
 const appUpdate = require('./app-update')
-const appShortcut = require('./app-shortcut')
 const picgo = require('./picture/picgo/picgo')
 const plugins = require('./plugins/app-plugins')
+const appShortcut = require('./shortcutkey/app-shortcutkey')
 
 exports.buildContextMenu = function buildContextMenu(tray) {
     // 菜单栏引用
@@ -462,23 +462,22 @@ exports.buildContextMenu = function buildContextMenu(tray) {
             label: '快捷键',
             submenu: [
                 {
-                    label: '图片上传',
-                    type: 'checkbox',
-                    accelerator: appShortcut.ACCELERATORS[0],
-                    checked: dataStore.isUploadClipboardPicSwitch(),
-                    click: function (menuItem) {
-                        dataStore.setUploadClipboardPicSwitch(menuItem.checked)
-                        appShortcut.uploadClipboardPicSwitch(tray, menuItem.checked)
+                    label: '编辑',
+                    click: function () {
+                        appShortcut.openConfigFile()
                     }
                 },
                 {
-                    label: '转纯文字',
-                    type: 'checkbox',
-                    accelerator: appShortcut.ACCELERATORS[1],
-                    checked: dataStore.isCoverToTextSwitch(),
-                    click: function (menuItem) {
-                        dataStore.setCoverToTextSwitch(menuItem.checked)
-                        appShortcut.coverToTextSwitch(tray, menuItem.checked)
+                    label: '重载',
+                    click: function () {
+                        appShortcut.loadShortcutKey(menu)
+                        appToast.toast({title: '重载快捷键成功'})
+                    }
+                },
+                {
+                    label: '帮助',
+                    click: function () {
+                        appShortcut.openHelpFile()
                     }
                 }
             ]
@@ -536,6 +535,8 @@ exports.buildContextMenu = function buildContextMenu(tray) {
     if (pluginsMenu.items.length > 0) {
         menu.insert(menu.items.length - 2, new MenuItem({label: '扩展功能', submenu: pluginsMenu}));
     }
+    // 初始化快捷键
+    appShortcut.loadShortcutKey(menu)
     return menu
 }
 

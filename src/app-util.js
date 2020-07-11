@@ -135,6 +135,18 @@ exports.myGetMenuItemById = function myGetMenuItemById(id, myMenu) {
     return found
 }
 
+exports.myGetMenuItemByLabelPath = function myGetMenuItemByLabelPath(path, myMenu) {
+    let fount
+    for (const label of path) {
+        fount = myMenu.items.find(item => item.label === label)
+        if (!fount) {
+            break
+        }
+        myMenu = fount.submenu
+    }
+    return fount
+}
+
 /**
  * 更新剪贴板文字为
  * @param newT

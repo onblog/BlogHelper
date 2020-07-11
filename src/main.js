@@ -1,7 +1,6 @@
 const {Menu, Tray, app, nativeTheme} = require('electron')
 const icon = require('./app-icon')
 const appMenu = require('./app-menu')
-const appShortcut = require('./app-shortcut')
 const autoUpdate = require('./app-update')
 const picGo = require('./picture/picgo/picgo')
 
@@ -11,9 +10,7 @@ app.on('ready', () => {
     // 检查更新
     autoUpdate.autoUpdateApp(false)
     // 创建托盘
-    const tray = createTray()
-    // 注册快捷键
-    appShortcut.initGlobalShortcut(tray)
+    createTray()
     // 初始化picGo配置文件
     picGo.initConfigFile()
 });
@@ -24,10 +21,11 @@ function createTray() {
     // 悬停通知
     tray.setToolTip('你今天真好看')
     // 添加菜单到系统托盘区
-    tray.setContextMenu(appMenu.buildContextMenu(tray))
+    const menu = appMenu.buildContextMenu(tray);
+    tray.setContextMenu(menu)
     // 添加主题监听
     listenThemeChange(tray)
-    return tray
+    return {tray, menu}
 }
 
 function hiddenTaskbar() {
@@ -41,11 +39,11 @@ function hiddenTaskbar() {
     }
 }
 
-function listenThemeChange(tray){
+function listenThemeChange(tray) {
     //判断是否为OSX
-    if(process.platform==="darwin"){
+    if (process.platform === "darwin") {
         //当桌面主题更新时，自动刷新托盘图标
-        nativeTheme.on('updated',()=>{
+        nativeTheme.on('updated', () => {
             tray.setImage(icon.icon().iconFile)
         })
     }
