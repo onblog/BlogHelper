@@ -1,18 +1,18 @@
-const {globalShortcut, shell} = require('electron')
+const {globalShortcut, shell, app} = require('electron')
 const appUtil = require('../app-util')
 const appToast = require('../app-toast')
 const fs = require('fs')
 const Path = require('path')
 const OS = require('os')
-const configPath = `${OS.homedir()}/BlogHelper/ShortcutKey.json`
-const helpFile = Path.join(__dirname, 'help.md')
+const configPath = Path.join(OS.homedir(), app.name, 'ShortcutKey.json')
+const helpFile = Path.join(OS.homedir(), app.name, 'shortcutKey-help.md')
 
 function initConfigFile() {
     if (!fs.existsSync(configPath)) {
         if (!fs.existsSync(Path.dirname(configPath))) {
             fs.mkdirSync(Path.dirname(configPath))
         }
-        fs.writeFileSync(configPath, fs.readFileSync(`${__dirname}/config.json`))
+        fs.writeFileSync(configPath, fs.readFileSync(Path.join(__dirname, Path.basename(configPath))))
     }
 }
 
@@ -47,6 +47,12 @@ function openConfigFile() {
 }
 
 function openHelpFile() {
+    if (!fs.existsSync(helpFile)) {
+        if (!fs.existsSync(Path.dirname(helpFile))) {
+            fs.mkdirSync(Path.dirname(helpFile))
+        }
+        fs.writeFileSync(helpFile, fs.readFileSync(Path.join(__dirname, Path.basename(helpFile))))
+    }
     shell.openItem(helpFile)
 }
 

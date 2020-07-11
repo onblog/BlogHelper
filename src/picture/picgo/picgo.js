@@ -1,15 +1,16 @@
+const {app} = require('electron')
 const PicGo = require('picgo')
 const fs = require('fs')
 const Path = require('path')
-const os = require('os')
-const configPath = `${os.homedir()}/BlogHelper/BlogHelper.json`
+const OS = require('os')
+const configPath = Path.join(OS.homedir(), app.name, 'BlogHelper.json')
 
 function initConfigFile() {
     if (!fs.existsSync(configPath)){
         if (!fs.existsSync(Path.dirname(configPath))) {
             fs.mkdirSync(Path.dirname(configPath))
         }
-        fs.writeFileSync(configPath, fs.readFileSync(`${__dirname}/config.json`))
+        fs.writeFileSync(configPath, fs.readFileSync(Path.join(__dirname, Path.basename(configPath))))
     }
 }
 
@@ -28,15 +29,13 @@ function uploadPicture(filePath, name) {
             if (ctx.output[0].imgUrl) {
                 resolve(ctx.output[0].imgUrl)
                 // [{fileName, width, height, extname, imgUrl}]
-                // console.log(ctx.output)
             }
-            // deleteLog()
+            deleteLog()
         })
         // 监听错误
         picgo.on('failed', error => {
-            // console.log(error) //错误信息
             reject(error)
-            // deleteLog()
+            deleteLog()
         })
     })
 }
@@ -46,10 +45,6 @@ function deleteLog(){
         const packageFile = Path.join(Path.dirname(configPath), 'package.json')
         if (fs.existsSync(packageFile)) {
             fs.unlinkSync(packageFile)
-        }
-        const picgoLog = Path.join(Path.dirname(configPath), 'picgo.log')
-        if (fs.existsSync(picgoLog)) {
-            fs.unlinkSync(picgoLog)
         }
     }, 1000)
 }
