@@ -5,7 +5,7 @@ const fs = require('fs')
 const Path = require('path')
 const OS = require('os')
 const configPath = Path.join(OS.homedir(), app.name, 'ShortcutKey.json')
-const helpFile = Path.join(OS.homedir(), app.name, 'shortcutKey-help.md')
+const helpFile = Path.join(OS.tmpdir(), 'shortcutKey-help.md')
 
 function initConfigFile() {
     if (!fs.existsSync(configPath)) {
