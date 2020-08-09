@@ -3,7 +3,7 @@ name: 我要提问题（BUG）
 about: 请在此描述此问题模板的目的。
 title: ''
 labels: bug
-assignees: ystcode
+assignees: ''
 
 ---
 
