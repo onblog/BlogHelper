@@ -1,5 +1,5 @@
 const {MenuItem} = require('electron');
-const toast = require('../../app-toast');
+const toast = require('../../common/app-toast');
 
 exports.status = function (menu, tray) {
     menu.append(new MenuItem({

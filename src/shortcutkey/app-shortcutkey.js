@@ -1,11 +1,11 @@
 const {globalShortcut, shell, app} = require('electron');
-const appUtil = require('../app-util');
-const appToast = require('../app-toast');
+const appUtil = require('../common/app-util');
+const appToast = require('../common/app-toast');
 const fs = require('fs');
 const Path = require('path');
 const OS = require('os');
-const configPath = Path.join(OS.homedir(), app.name, 'ShortcutKey.json');
-const helpFile = Path.join(OS.tmpdir(), 'shortcutKey-help.md');
+const configPath = Path.join(OS.homedir(), app.name, 'shortcut-key.json');
+const helpFile = Path.join(OS.tmpdir(), 'shortcut-key-help.md');
 
 function initConfigFile() {
     if (!fs.existsSync(configPath)) {

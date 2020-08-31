@@ -1,5 +1,5 @@
-const util = require('./app-util');
-const string = require('./app-string');
+const util = require('./common/app-util');
+const string = require('./common/app-string');
 const marked = require('marked');
 const fs = require('fs');
 const appUpload = require('./app-upload');

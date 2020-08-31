@@ -1,5 +1,5 @@
 const {Menu, Tray, app, nativeTheme} = require('electron');
-const icon = require('./app-icon');
+const icon = require('./common/app-icon');
 const appMenu = require('./app-menu');
 const autoUpdate = require('./app-update');
 const picGo = require('./picture/picgo/picgo');

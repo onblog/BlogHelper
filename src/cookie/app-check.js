@@ -1,7 +1,7 @@
-const string = require('./app-string');
-const DataStore = require('./app-store');
+const string = require('../common/app-string');
+const DataStore = require('../app-store');
 const dataStore = new DataStore();
-const appToast = require('./app-toast');
+const appToast = require('../common/app-toast');
 
 // cookie登录校验
 exports.loginCheck = (site) => {

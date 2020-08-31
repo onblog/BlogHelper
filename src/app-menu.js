@@ -1,11 +1,11 @@
 const {Menu, MenuItem, app, clipboard, shell} = require('electron');
-const appLogin = require('./app-login');
-const string = require('./app-string');
+const appLogin = require('./cookie/app-login');
+const string = require('./common/app-string');
 const appMenuPublish = require('./app-menu-publish');
-const appUtil = require('./app-util');
+const appUtil = require('./common/app-util');
 const DataStore = require('./app-store');
 const dataStore = new DataStore();
-const appToast = require('./app-toast');
+const appToast = require('./common/app-toast');
 const appUpdate = require('./app-update');
 const picgo = require('./picture/picgo/picgo');
 const plugins = require('./plugins/app-plugins');
@@ -174,23 +174,6 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                                 menuItem.checked = true;
                                 dataStore.setFigureBedSwitch(dataStore.PIC_WEIBO);
                                 appToast.toast({title: '启用成功', body: '正在使用新浪图床'});
-                                closeMenuChecked(menuItem.id, menu)
-                            }
-                        }
-                    ]
-                }
-                , {
-                    label: '图壳',
-                    submenu: [
-                        {
-                            label: '启用',
-                            id: dataStore.PIC_IMGKR,
-                            type: 'checkbox',
-                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGKR),
-                            click: function (menuItem) {
-                                menuItem.checked = true;
-                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGKR);
-                                appToast.toast({title: '启用成功', body: '正在使用图壳图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -491,20 +474,20 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 {
                     label: '官方网站',
                     click: function () {
-                        shell.openExternal(require('./app-constant').link).catch()
+                        shell.openExternal(require('./common/app-link').link).catch()
                     }
                 }
                 , {
                     label: '我要反馈',
                     click: function () {
-                        shell.openExternal(require('./app-constant').issues)
+                        shell.openExternal(require('./common/app-link').issues)
                             .catch()
                     }
                 }
                 , {
                     label: '给我写信',
                     click: function () {
-                        shell.openExternal(require('./app-constant').mail).catch()
+                        shell.openExternal(require('./common/app-link').mail).catch()
                     }
                 }
                 , {

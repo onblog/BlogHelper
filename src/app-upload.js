@@ -1,5 +1,4 @@
 const weiBo = require('./picture/wei-bo');
-const imgkr = require('./picture/imgkr');
 const DataStore = require('./app-store');
 const dataStore = new DataStore();
 const picgo = require('./picture/picgo/picgo');
@@ -7,8 +6,6 @@ const picgo = require('./picture/picgo/picgo');
 exports.uploadPicture = async function (fullpath) {
     const Bed = dataStore.getFigureBedSwitch();
     switch (Bed) {
-        case dataStore.PIC_IMGKR:
-            return await imgkr.uploadPictureToImgKr(fullpath);
         case dataStore.PIC_WEIBO:
             return await weiBo.uploadPictureToWeiBo(fullpath);
         case dataStore.PIC_SMMS:
@@ -26,6 +23,12 @@ exports.uploadPicture = async function (fullpath) {
         case dataStore.PIC_IMGUR:
             return await picgo.uploadPicture(fullpath, Bed);
         default:
-            return await imgkr.uploadPictureToImgKr(fullpath)
+            return await uploadPicture();
     }
 };
+
+function uploadPicture() {
+    return new Promise((resolve, reject) => {
+        reject("未启用任何图床！")
+    })
+}

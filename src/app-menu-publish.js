@@ -1,14 +1,14 @@
 const {dialog, app, clipboard} = require('electron');
 const appPublish = require('./app-publish');
-const appUtil = require('./app-util');
+const appUtil = require('./common/app-util');
 const path = require('path');
 const fs = require('fs');
-const icon = require('./app-icon');
-const appDialog = require('./app-localFile');
-const appCheck = require('./app-check');
-const appDownload = require('./app-download');
-const appSave = require('./app-save');
-const appToast = require('./app-toast');
+const icon = require('./common/app-icon');
+const appDialog = require('./common/app-localFile');
+const appCheck = require('./cookie/app-check');
+const appDownload = require('./common/app-download');
+const appSave = require('./common/app-save');
+const appToast = require('./common/app-toast');
 const appUpload = require('./app-upload');
 const logger = require('logger2x').createLogger(`${require('os').homedir()}/BlogHelper/publish.log`);
 

@@ -28,7 +28,7 @@ class DataStore extends Store {
     coverToTextSwitch = 'coverToTextSwitch';
 
     constructor(settings) {
-        const baseConfig = {name: 'blog-helper-2'};
+        const baseConfig = {name: 'blog-helper'};
         const finalConfig = {...baseConfig, ...settings};
         super(finalConfig)
     }
@@ -161,7 +161,6 @@ class DataStore extends Store {
     figureBedSwitch = 'figureBedSwitch';
     // Value
     PIC_WEIBO = 'WEIBO';
-    PIC_IMGKR = 'IMGKR';
     PIC_SMMS = 'smms';
     PIC_GITHUB = 'github';
     PIC_QINIU = 'qiniu';
@@ -170,7 +169,7 @@ class DataStore extends Store {
     PIC_ALIYUN = 'aliyun';
     PIC_IMGUR = 'imgur';
     // 启用的图床一定要添加到下面的数组
-    PIC = [this.PIC_IMGKR, this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR];
+    PIC = [this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR];
 
     // 设置当前使用的图床
     setFigureBedSwitch(name) {

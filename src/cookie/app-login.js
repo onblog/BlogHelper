@@ -1,8 +1,8 @@
 const {BrowserWindow, session} = require('electron');
 const https = require('https');
 const jsDom = require("jsdom");
-const icon = require('./app-icon');
-const DataStore = require('./app-store');
+const icon = require('../common/app-icon');
+const DataStore = require('../app-store');
 const dataStore = new DataStore();
 
 //登录某网站获取Cookie通用方法

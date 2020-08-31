@@ -1,10 +1,10 @@
 const {shell, dialog, app} = require('electron');
-const util = require('./app-util');
+const util = require('./common/app-util');
 const https = require('https');
 const jsdom = require('jsdom');
-const appToast = require('./app-toast');
+const appToast = require('./common/app-toast');
 
-const url = require('./app-constant').url;
+const url = require('./common/app-link').url;
 
 // 自动检查更新（bool：是否主动操作）
 function autoUpdateApp(isTip) {
@@ -50,7 +50,7 @@ function parseHtml(result, isTip) {
                 shell.openExternal(url).then()
             } else if (res.response === 2) {
                 // 下载压缩包
-                shell.openExternal(require('./app-constant').download).then()
+                shell.openExternal(require('./common/app-link').download).then()
             }
             // 自动检查更新
             setTimeout(function () {
