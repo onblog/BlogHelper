@@ -500,6 +500,11 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     click: function () {
                         appUpdate.autoUpdateApp(true)
                     }
+                }, {
+                    label: '打开日志',
+                    click: function () {
+                        shell.openItem(require('path').join(require('os').homedir(), app.name));
+                    }
                 }
             ]
         }
