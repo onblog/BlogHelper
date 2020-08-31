@@ -1,11 +1,11 @@
-const {globalShortcut, shell, app} = require('electron')
-const appUtil = require('../app-util')
-const appToast = require('../app-toast')
-const fs = require('fs')
-const Path = require('path')
-const OS = require('os')
-const configPath = Path.join(OS.homedir(), app.name, 'ShortcutKey.json')
-const helpFile = Path.join(OS.tmpdir(), 'shortcutKey-help.md')
+const {globalShortcut, shell, app} = require('electron');
+const appUtil = require('../app-util');
+const appToast = require('../app-toast');
+const fs = require('fs');
+const Path = require('path');
+const OS = require('os');
+const configPath = Path.join(OS.homedir(), app.name, 'ShortcutKey.json');
+const helpFile = Path.join(OS.tmpdir(), 'shortcutKey-help.md');
 
 function initConfigFile() {
     if (!fs.existsSync(configPath)) {
@@ -18,15 +18,15 @@ function initConfigFile() {
 
 function loadShortcutKey(menu) {
     // 初始化配置文件
-    initConfigFile()
+    initConfigFile();
     // 卸载全部注册的快捷键
-    globalShortcut.unregisterAll()
+    globalShortcut.unregisterAll();
     // 注册快捷键
     fs.readFile(configPath, {encoding: "utf8"}, (err, data) => {
         if (err) {
             return console.error(err)
         }
-        const params = JSON.parse(data)
+        const params = JSON.parse(data);
         for (const param of params) {
             if (param.switch) {
                 globalShortcut.register(param.accelerator, () => {
@@ -56,6 +56,6 @@ function openHelpFile() {
     shell.openItem(helpFile)
 }
 
-exports.openHelpFile = openHelpFile
-exports.openConfigFile = openConfigFile
-exports.loadShortcutKey = loadShortcutKey
+exports.openHelpFile = openHelpFile;
+exports.openConfigFile = openConfigFile;
+exports.loadShortcutKey = loadShortcutKey;

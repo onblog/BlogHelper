@@ -1,10 +1,10 @@
 const https = require('https');
-const DataStore = require('../app-store')
-const dataStore = new DataStore()
-const FormData = require('form-data')
-const fs = require('fs')
-const Path = require('path')
-const zlib = require('zlib')
+const DataStore = require('../app-store');
+const dataStore = new DataStore();
+const FormData = require('form-data');
+const fs = require('fs');
+const Path = require('path');
+const zlib = require('zlib');
 
 /**
  * 上传图片到简书
@@ -40,17 +40,17 @@ exports.uploadPictureToJianShu = function uploadPictureToJianShu(filePath) {
             reject(e.message)
         });
     })
-}
+};
 
 function uploadPic(resolve, reject, parms, filePath) {
-    const formData = new FormData()
-    formData.append('file', fs.createReadStream(filePath))
-    formData.append("token", parms.token)
-    formData.append("key", parms.key)
-    formData.append("x:protocol", "https")
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(filePath));
+    formData.append("token", parms.token);
+    formData.append("key", parms.key);
+    formData.append("x:protocol", "https");
 
-    const headers = formData.getHeaders() //这个不能少
-    headers.Cookie = dataStore.getCnBlogCookies() //获取Cookie
+    const headers = formData.getHeaders(); //这个不能少
+    headers.Cookie = dataStore.getCnBlogCookies(); //获取Cookie
     //自己的headers属性在这里追加
     let request = https.request({
                                     host: 'upload.qiniup.com',
@@ -76,7 +76,7 @@ function uploadPic(resolve, reject, parms, filePath) {
             }
         });
     });
-    formData.pipe(request)
+    formData.pipe(request);
 
     request.on('error', function (e) {
         reject('网络连接异常' + e.message)
@@ -124,17 +124,17 @@ exports.publishArticleToJianshu = function publishArticleToJianShu(title, conten
             reject(e.message)
         });
     })
-}
+};
 
 function createNote(resolve, reject, parms, title, content, isPublish) {
-    const notebookId = parms[0].id
-    const myDate = new Date()
+    const notebookId = parms[0].id;
+    const myDate = new Date();
     const json = JSON.stringify({
                                     title: `${myDate.getFullYear()}-${myDate.getMonth()
                                                                       + 1}-${myDate.getDate()}`,
                                     notebook_id: notebookId,
                                     at_bottom: true
-                                })
+                                });
     let request = https.request({
                                     host: 'www.jianshu.com',
                                     method: 'POST',
@@ -148,7 +148,7 @@ function createNote(resolve, reject, parms, title, content, isPublish) {
                                     }
                                 }, function (res) {
         if (res.headers['content-encoding'] === 'gzip') {
-            console.log('解决返回数据使用gzip进行压缩')
+            console.log('解决返回数据使用gzip进行压缩');
             let gzip = zlib.createGunzip();
             res.pipe(gzip);
             res = gzip;
@@ -172,7 +172,7 @@ function createNote(resolve, reject, parms, title, content, isPublish) {
         });
     });
 
-    request.write(json)
+    request.write(json);
     request.end();
 
     request.on('error', function (e) {
@@ -186,7 +186,7 @@ function updateNote(resolve, reject, notebookId, id, title, content, isPublish) 
                                     title: title,
                                     content: content,
                                     autosave_control: 1
-                                })
+                                });
     let request = https.request({
                                     host: 'www.jianshu.com',
                                     method: 'PUT',
@@ -200,7 +200,7 @@ function updateNote(resolve, reject, notebookId, id, title, content, isPublish) 
                                     }
                                 }, function (res) {
         if (res.headers['content-encoding'] === 'gzip') {
-            console.log('解决返回数据使用gzip进行压缩')
+            console.log('解决返回数据使用gzip进行压缩');
             const gzip = zlib.createGunzip();
             res.pipe(gzip);
             res = gzip;
@@ -217,7 +217,7 @@ function updateNote(resolve, reject, notebookId, id, title, content, isPublish) 
                     if (isPublish) {
                         publicNote(id, notebookId, resolve, reject)
                     } else {
-                        const url = `https://www.jianshu.com/writer#/notebooks/${notebookId}/notes/${id}`
+                        const url = `https://www.jianshu.com/writer#/notebooks/${notebookId}/notes/${id}`;
                         resolve(url)
                     }
                 } else {
@@ -229,7 +229,7 @@ function updateNote(resolve, reject, notebookId, id, title, content, isPublish) 
         });
     });
 
-    request.write(json)
+    request.write(json);
     request.end();
 
     request.on('error', function (e) {
@@ -251,7 +251,7 @@ function publicNote(id, notebookId, resolve, reject) {
                                     }
                                 }, function (res) {
         if (res.headers['content-encoding'] === 'gzip') {
-            console.log('解决返回数据使用gzip进行压缩')
+            console.log('解决返回数据使用gzip进行压缩');
             const gzip = zlib.createGunzip();
             res.pipe(gzip);
             res = gzip;
@@ -263,7 +263,7 @@ function publicNote(id, notebookId, resolve, reject) {
         );
         res.on('end', () => {
             if (res.statusCode === 200) {
-                const url = `https://www.jianshu.com/writer#/notebooks/${notebookId}/notes/${id}`
+                const url = `https://www.jianshu.com/writer#/notebooks/${notebookId}/notes/${id}`;
                 resolve(url)
             } else {
                 reject('发布失败:' + str)

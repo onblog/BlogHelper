@@ -1,22 +1,22 @@
 const https = require('https');
-const DataStore = require('../app-store')
-const dataStore = new DataStore()
-const FormData = require('form-data')
-const fs = require('fs')
-const path = require('path')
-const os = require('os')
+const DataStore = require('../app-store');
+const dataStore = new DataStore();
+const FormData = require('form-data');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 
 //上传图片到知乎
 exports.uploadPictureToZhiHu = function uploadPictureToZhiHu(filePath) {
     return new Promise((resolve, reject) => {
         let formData = new FormData();
-        formData.append('url', filePath)
-        formData.append('source', 'article')
+        formData.append('url', filePath);
+        formData.append('source', 'article');
 
-        let headers = formData.getHeaders()
-        headers.Cookie = dataStore.getZhiHuCookies() //获取Cookie
-        headers["user-agent"] = "Mozilla/5.0"
-        headers['x-requested-with'] = 'Fetch'
+        let headers = formData.getHeaders();
+        headers.Cookie = dataStore.getZhiHuCookies(); //获取Cookie
+        headers["user-agent"] = "Mozilla/5.0";
+        headers['x-requested-with'] = 'Fetch';
         //自己的headers属性在这里追加
         let request = https.request({
                                         host: 'zhuanlan.zhihu.com',
@@ -34,7 +34,7 @@ exports.uploadPictureToZhiHu = function uploadPictureToZhiHu(filePath) {
                     const result = JSON.parse(str);
                     // console.log(result)
                     if (result.src) {
-                        const url = result.src
+                        const url = result.src;
                         resolve(url)
                     } else {
                         reject('上传图片失败,' + result)
@@ -44,31 +44,31 @@ exports.uploadPictureToZhiHu = function uploadPictureToZhiHu(filePath) {
                 }
             });
         });
-        formData.pipe(request)
+        formData.pipe(request);
 
         request.on('error', function (e) {
             console.log('problem with request: ' + e.message);
             reject('网络连接异常')
         });
     })
-}
+};
 
 //上传文章到知乎
 exports.publishArticleToZhiHu = function publishArticleToZhiHu(title, content, isPublish) {
     return new Promise((resolve, reject) => {
         // 创建临时文件
-        const filePath = path.join(os.tmpdir(), title + '.md')
-        fs.writeFileSync(filePath, content)
+        const filePath = path.join(os.tmpdir(), title + '.md');
+        fs.writeFileSync(filePath, content);
 
         let formData = new FormData();
-        formData.append('document', fs.createReadStream(filePath))
+        formData.append('document', fs.createReadStream(filePath));
 
-        let headers = formData.getHeaders()
-        headers.Cookie = dataStore.getZhiHuCookies() //获取Cookie
-        headers["user-agent"] = "Mozilla/5.0"
-        headers['referer'] = 'https://zhuanlan.zhihu.com/write'
-        headers['origin'] = 'https://zhuanlan.zhihu.com'
-        headers['x-requested-with'] = 'Fetch'
+        let headers = formData.getHeaders();
+        headers.Cookie = dataStore.getZhiHuCookies(); //获取Cookie
+        headers["user-agent"] = "Mozilla/5.0";
+        headers['referer'] = 'https://zhuanlan.zhihu.com/write';
+        headers['origin'] = 'https://zhuanlan.zhihu.com';
+        headers['x-requested-with'] = 'Fetch';
         //自己的headers属性在这里追加
         let request = https.request({
                                         host: 'www.zhihu.com',
@@ -89,24 +89,24 @@ exports.publishArticleToZhiHu = function publishArticleToZhiHu(title, content, i
                     if (err) {
                         return console.error(err)
                     }
-                })
+                });
                 if (res.statusCode === 200) {
                     const result = JSON.parse(str);
-                    const html = result.html
+                    const html = result.html;
                     publishArticle(title, html, resolve, reject, isPublish)
                 } else {
                     reject('发布失败:' + str)
                 }
             });
         });
-        formData.pipe(request)
+        formData.pipe(request);
 
         request.on('error', function (e) {
             console.log('problem with request: ' + e.message);
             reject('网络连接异常')
         });
     })
-}
+};
 
 /**
  * 转换完成发布
@@ -120,7 +120,7 @@ function publishArticle(filename, html, resolve, reject, isPublish) {
                                     content: html,
                                     delta_time: 0,
                                     title: filename,
-                                })
+                                });
     let request = https.request({
                                     host: 'zhuanlan.zhihu.com',
                                     method: 'POST',
@@ -154,7 +154,7 @@ function publishArticle(filename, html, resolve, reject, isPublish) {
         });
     });
 
-    request.write(json)
+    request.write(json);
     request.end();
 
     request.on('error', function (e) {
@@ -171,7 +171,7 @@ function topicArticle(id, resolve, reject) {
                                     "type": "topic",
                                     "excerpt": "",
                                     "id": "19552330"
-                                })
+                                });
     let request = https.request({
                                     host: 'zhuanlan.zhihu.com',
                                     method: 'POST',
@@ -196,7 +196,7 @@ function topicArticle(id, resolve, reject) {
         });
     });
 
-    request.write(json)
+    request.write(json);
     request.end();
 
     request.on('error', function (e) {
@@ -210,7 +210,7 @@ function publicArticle(id, resolve, reject) {
                                     "commentPermission": "anyone",
                                     "disclaimer_status": "close",
                                     "disclaimer_type": "none"
-                                })
+                                });
     let request = https.request({
                                     host: 'zhuanlan.zhihu.com',
                                     method: 'PUT',
@@ -240,7 +240,7 @@ function publicArticle(id, resolve, reject) {
         });
     });
 
-    request.write(json)
+    request.write(json);
     request.end();
 
     request.on('error', function (e) {

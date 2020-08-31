@@ -1,5 +1,5 @@
-const {MenuItem} = require('electron')
-const toast = require('../../app-toast')
+const {MenuItem} = require('electron');
+const toast = require('../../app-toast');
 
 exports.status = function (menu, tray) {
     menu.append(new MenuItem({
@@ -7,6 +7,6 @@ exports.status = function (menu, tray) {
                                  click() {
                                      toast.toast({title: '插件化测试成功！'})
                                  }
-                             }))
+                             }));
     tray.setTitle('插件')
-}
+};
