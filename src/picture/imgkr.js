@@ -1,6 +1,6 @@
 const https = require('https');
-const fs = require('fs')
-const FormData = require('form-data')
+const fs = require('fs');
+const FormData = require('form-data');
 
 /**
  * 上传图片到图壳
@@ -8,12 +8,12 @@ const FormData = require('form-data')
  */
 function uploadPictureToImgKr(filePath) {
     return new Promise((resolve, reject) => {
-        let formData = new FormData()
-        formData.append('file',fs.createReadStream(filePath))
+        let formData = new FormData();
+        formData.append('file',fs.createReadStream(filePath));
 
-        let headers = formData.getHeaders()
+        let headers = formData.getHeaders();
         // headers.Cookie =
-        headers['user-agent'] = 'Mozilla/5.0'
+        headers['user-agent'] = 'Mozilla/5.0';
         let request = https.request({
             host: 'imgkr.com',
             method: 'POST',
@@ -40,7 +40,7 @@ function uploadPictureToImgKr(filePath) {
                 }
             });
         });
-        formData.pipe(request)
+        formData.pipe(request);
 
         request.on('error', function (e) {
             console.log('problem with request: ' + e.message);
@@ -49,4 +49,4 @@ function uploadPictureToImgKr(filePath) {
     })
 }
 
-exports.uploadPictureToImgKr = uploadPictureToImgKr
+exports.uploadPictureToImgKr = uploadPictureToImgKr;

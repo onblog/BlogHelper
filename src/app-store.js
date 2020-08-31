@@ -1,34 +1,34 @@
-const Store = require('electron-store')
+const Store = require('electron-store');
 
 class DataStore extends Store {
     //新浪微博图床设置
-    weiBoCookiesKey = 'wei-Bo-cookies-key'
+    weiBoCookiesKey = 'wei-Bo-cookies-key';
 
     //博客园Cookie
-    cnBlogCookieKey = 'cn-blog-cookie-key'
+    cnBlogCookieKey = 'cn-blog-cookie-key';
     //CSDN
-    CSDNCookieKey = 'csdn-cookie-key'
+    CSDNCookieKey = 'csdn-cookie-key';
     //掘金
-    JueJinCookieKey = 'jueJin-cookie-key'
+    JueJinCookieKey = 'jueJin-cookie-key';
     //知乎
-    ZhiHuCookiekey = 'zhihu-cookie-key'
+    ZhiHuCookiekey = 'zhihu-cookie-key';
     //开源中国
-    OsChinaCookieKey = 'OsChina-cookie-key'
-    OsChinaUserCodeKey = 'osChina-user-code-key'
-    OsChinaUserIdKey = 'osChina-user-id-key'
+    OsChinaCookieKey = 'OsChina-cookie-key';
+    OsChinaUserCodeKey = 'osChina-user-code-key';
+    OsChinaUserIdKey = 'osChina-user-id-key';
     //思否
-    SegmentFaultCookieKey = 'segmentFault-cookie-key'
-    SegmentFaultTokenKey = 'segmentFault-token-key'
+    SegmentFaultCookieKey = 'segmentFault-cookie-key';
+    SegmentFaultTokenKey = 'segmentFault-token-key';
     //简书
-    JianShuCookieKey = 'jianShu-cookie-key'
+    JianShuCookieKey = 'jianShu-cookie-key';
 
     // 图片上传快捷键
-    uploadClipboardPicSwitch = 'uploadClipboardPicSwitch'
+    uploadClipboardPicSwitch = 'uploadClipboardPicSwitch';
     // 富文本转纯文字
-    coverToTextSwitch = 'coverToTextSwitch'
+    coverToTextSwitch = 'coverToTextSwitch';
 
     constructor(settings) {
-        const baseConfig = {name: 'blog-helper-2'}
+        const baseConfig = {name: 'blog-helper-2'};
         const finalConfig = {...baseConfig, ...settings};
         super(finalConfig)
     }
@@ -158,19 +158,19 @@ class DataStore extends Store {
     }
 
     // 启用图床Key
-    figureBedSwitch = 'figureBedSwitch'
+    figureBedSwitch = 'figureBedSwitch';
     // Value
-    PIC_WEIBO = 'WEIBO'
-    PIC_IMGKR = 'IMGKR'
-    PIC_SMMS = 'smms'
-    PIC_GITHUB = 'github'
-    PIC_QINIU = 'qiniu'
-    PIC_UPYUN = 'upyun'
-    PIC_TCYUN = 'tcyun'
-    PIC_ALIYUN = 'aliyun'
-    PIC_IMGUR = 'imgur'
+    PIC_WEIBO = 'WEIBO';
+    PIC_IMGKR = 'IMGKR';
+    PIC_SMMS = 'smms';
+    PIC_GITHUB = 'github';
+    PIC_QINIU = 'qiniu';
+    PIC_UPYUN = 'upyun';
+    PIC_TCYUN = 'tcyun';
+    PIC_ALIYUN = 'aliyun';
+    PIC_IMGUR = 'imgur';
     // 启用的图床一定要添加到下面的数组
-    PIC = [this.PIC_IMGKR, this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR]
+    PIC = [this.PIC_IMGKR, this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR];
 
     // 设置当前使用的图床
     setFigureBedSwitch(name) {
@@ -218,4 +218,4 @@ class DataStore extends Store {
 
 }
 
-module.exports = DataStore
+module.exports = DataStore;

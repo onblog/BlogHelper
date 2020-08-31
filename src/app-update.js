@@ -1,10 +1,10 @@
-const {shell, dialog, app} = require('electron')
-const util = require('./app-util')
-const https = require('https')
-const jsdom = require('jsdom')
-const appToast = require('./app-toast')
+const {shell, dialog, app} = require('electron');
+const util = require('./app-util');
+const https = require('https');
+const jsdom = require('jsdom');
+const appToast = require('./app-toast');
 
-const url = require('./app-constant').url
+const url = require('./app-constant').url;
 
 // 自动检查更新（bool：是否主动操作）
 function autoUpdateApp(isTip) {
@@ -16,7 +16,7 @@ function autoUpdateApp(isTip) {
         req.on('end', function () {
             parseHtml(result, isTip);
         });
-    })
+    });
     req.on('error', (e) => {
         console.error(e);
         dialog.showMessageBoxSync({message: '网络连接异常'})
@@ -24,21 +24,21 @@ function autoUpdateApp(isTip) {
     req.end();
 }
 
-exports.autoUpdateApp = autoUpdateApp
+exports.autoUpdateApp = autoUpdateApp;
 
 //解析html获取内容
 function parseHtml(result, isTip) {
     const dom = new jsdom.JSDOM(result);
-    const element = dom.window.document.body.querySelector('div.release-header > ul> li > a[title]')
+    const element = dom.window.document.body.querySelector('div.release-header > ul> li > a[title]');
     if (!(element && element.getAttribute('title'))) {
         if (isTip) {
-            appToast.toast({title: '检查更新失败, 请前去官网查看', body: ''})
+            appToast.toast({title: '检查更新失败, 请前去官网查看', body: ''});
             shell.openExternal(url).then()
         }
         return
     }
-    const version = element.getAttribute('title')
-    const compareVersion = util.compareVersion(version, app.getVersion())
+    const version = element.getAttribute('title');
+    const compareVersion = util.compareVersion(version, app.getVersion());
     if (compareVersion > 0) {
         //需要更新
         dialog.showMessageBox({

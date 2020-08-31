@@ -1,6 +1,6 @@
 const https = require('https');
-const fs = require('fs')
-const FormData = require('form-data')
+const fs = require('fs');
+const FormData = require('form-data');
 
 /**
  * 上传图片到SM.MS
@@ -9,12 +9,12 @@ const FormData = require('form-data')
 function uploadPictureToSmMs(filePath) {
     return new Promise((resolve, reject) => {
         let formData = new FormData();
-        formData.append('smfile', fs.createReadStream(filePath))
-        formData.append('file_id',0)
+        formData.append('smfile', fs.createReadStream(filePath));
+        formData.append('file_id',0);
 
-        let headers = formData.getHeaders()
+        let headers = formData.getHeaders();
         // headers.Cookie =
-        headers['user-agent'] = 'Mozilla/5.0'
+        headers['user-agent'] = 'Mozilla/5.0';
         let request = https.request({
                                         host: 'sm.ms',
                                         method: 'POST',
@@ -41,7 +41,7 @@ function uploadPictureToSmMs(filePath) {
                 }
             });
         });
-        formData.pipe(request)
+        formData.pipe(request);
 
         request.on('error', function (e) {
             console.log('problem with request: ' + e.message);
@@ -49,4 +49,4 @@ function uploadPictureToSmMs(filePath) {
         });
     })
 }
-exports.uploadPictureToSmMs = uploadPictureToSmMs
+exports.uploadPictureToSmMs = uploadPictureToSmMs;

@@ -1,6 +1,6 @@
-const request = require('request')
-const fs = require('fs')
-const path = require('path')
+const request = require('request');
+const fs = require('fs');
+const path = require('path');
 
 exports.downloadPicture = function (uri, filepath) {
     return new Promise((resolve, reject) => {
@@ -9,13 +9,13 @@ exports.downloadPicture = function (uri, filepath) {
         }
         request.head(uri, function (err, res, body) {
             if (err) {
-                reject(err)
+                reject(err);
                 return console.error(err)
             }
             request(uri).pipe(fs.createWriteStream(filepath)).on('error', function () {
                 reject('下载图片失败')
-            })
+            });
             resolve(true)
         })
     })
-}
+};

@@ -1,8 +1,8 @@
-const {shell, dialog, clipboard} = require('electron')
-const fs = require('fs')
+const {shell, dialog, clipboard} = require('electron');
+const fs = require('fs');
 
-let numOne = 0
-let numTwo = 0
+let numOne = 0;
+let numTwo = 0;
 
 // 操作完成，保存在新文件还是剪贴板？
 exports.saveNewFileOrClipboard = function saveNewFileOrClipboard(file, content, i) {
@@ -15,7 +15,7 @@ exports.saveNewFileOrClipboard = function saveNewFileOrClipboard(file, content, 
     }
     if (numOne === 0) {
         // 2.写入新文档
-        fs.writeFileSync(file.filepath, content)
+        fs.writeFileSync(file.filepath, content);
         if (i === 0) {
             numTwo = dialog.showMessageBoxSync({message: '保存成功，是否打开新文档？', buttons: ['不了,谢谢', '打开']})
         }
@@ -28,4 +28,4 @@ exports.saveNewFileOrClipboard = function saveNewFileOrClipboard(file, content, 
             clipboard.writeText(content)
         }
     }
-}
+};

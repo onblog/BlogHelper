@@ -1,19 +1,19 @@
-const {Menu, MenuItem, app, clipboard, shell} = require('electron')
-const appLogin = require('./app-login')
-const string = require('./app-string')
-const appMenuPublish = require('./app-menu-publish')
-const appUtil = require('./app-util')
-const DataStore = require('./app-store')
-const dataStore = new DataStore()
-const appToast = require('./app-toast')
-const appUpdate = require('./app-update')
-const picgo = require('./picture/picgo/picgo')
-const plugins = require('./plugins/app-plugins')
-const appShortcut = require('./shortcutkey/app-shortcutkey')
+const {Menu, MenuItem, app, clipboard, shell} = require('electron');
+const appLogin = require('./app-login');
+const string = require('./app-string');
+const appMenuPublish = require('./app-menu-publish');
+const appUtil = require('./app-util');
+const DataStore = require('./app-store');
+const dataStore = new DataStore();
+const appToast = require('./app-toast');
+const appUpdate = require('./app-update');
+const picgo = require('./picture/picgo/picgo');
+const plugins = require('./plugins/app-plugins');
+const appShortcut = require('./shortcutkey/app-shortcutkey');
 
 exports.buildContextMenu = function buildContextMenu(tray) {
     // 菜单栏引用
-    let menu
+    let menu;
     const template = [
         {
             label: '博客',
@@ -171,9 +171,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_WEIBO),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_WEIBO)
-                                appToast.toast({title: '启用成功', body: '正在使用新浪图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_WEIBO);
+                                appToast.toast({title: '启用成功', body: '正在使用新浪图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -188,9 +188,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGKR),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGKR)
-                                appToast.toast({title: '启用成功', body: '正在使用图壳图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGKR);
+                                appToast.toast({title: '启用成功', body: '正在使用图壳图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -213,9 +213,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_QINIU),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_QINIU)
-                                appToast.toast({title: '启用成功', body: '正在使用七牛云图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_QINIU);
+                                appToast.toast({title: '启用成功', body: '正在使用七牛云图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -238,9 +238,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_UPYUN),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_UPYUN)
-                                appToast.toast({title: '启用成功', body: '正在使用又拍云图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_UPYUN);
+                                appToast.toast({title: '启用成功', body: '正在使用又拍云图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -263,9 +263,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_ALIYUN),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_ALIYUN)
-                                appToast.toast({title: '启用成功', body: '正在使用阿里云图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_ALIYUN);
+                                appToast.toast({title: '启用成功', body: '正在使用阿里云图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -288,9 +288,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_TCYUN),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_TCYUN)
-                                appToast.toast({title: '启用成功', body: '正在使用腾讯云图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_TCYUN);
+                                appToast.toast({title: '启用成功', body: '正在使用腾讯云图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -313,9 +313,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_SMMS),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_SMMS)
-                                appToast.toast({title: '启用成功', body: '正在使用SM图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_SMMS);
+                                appToast.toast({title: '启用成功', body: '正在使用SM图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -338,9 +338,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_GITHUB),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_GITHUB)
-                                appToast.toast({title: '启用成功', body: '正在使用Github图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_GITHUB);
+                                appToast.toast({title: '启用成功', body: '正在使用Github图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -363,9 +363,9 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                             type: 'checkbox',
                             checked: dataStore.isFigureBedSwitch(dataStore.PIC_IMGUR),
                             click: function (menuItem) {
-                                menuItem.checked = true
-                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGUR)
-                                appToast.toast({title: '启用成功', body: '正在使用imgur图床'})
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_IMGUR);
+                                appToast.toast({title: '启用成功', body: '正在使用imgur图床'});
                                 closeMenuChecked(menuItem.id, menu)
                             }
                         }
@@ -425,8 +425,8 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 , {
                     label: '代码对齐',
                     click: function () {
-                        const oldT = clipboard.readText()
-                        const newT = appUtil.formatCode(oldT)
+                        const oldT = clipboard.readText();
+                        const newT = appUtil.formatCode(oldT);
                         appUtil.updateClipboard(newT)
                     }
                 }, {
@@ -437,22 +437,22 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 }, {
                     label: '删除换行',
                     click: function () {
-                        const oldT = clipboard.readText()
-                        const newT = oldT.replace(/\n/g, '')
+                        const oldT = clipboard.readText();
+                        const newT = oldT.replace(/\n/g, '');
                         appUtil.updateClipboard(newT)
                     }
                 }, {
                     label: '删除空格',
                     click: function () {
-                        const oldT = clipboard.readText()
-                        const newT = oldT.replace(/\s+/g, '')
+                        const oldT = clipboard.readText();
+                        const newT = oldT.replace(/\s+/g, '');
                         appUtil.updateClipboard(newT)
                     }
                 }, {
                     label: 'HTML转Md',
                     click: function () {
-                        const oldT = clipboard.readText()
-                        const newT = require('html-to-md')(oldT)
+                        const oldT = clipboard.readText();
+                        const newT = require('html-to-md')(oldT);
                         appUtil.updateClipboard(newT)
                     }
                 }
@@ -470,7 +470,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 {
                     label: '重载',
                     click: function () {
-                        appShortcut.loadShortcutKey(menu)
+                        appShortcut.loadShortcutKey(menu);
                         appToast.toast({title: '重载快捷键成功'})
                     }
                 },
@@ -523,22 +523,22 @@ exports.buildContextMenu = function buildContextMenu(tray) {
         , {
             label: '退出程序',
             click: () => {
-                tray.destroy()
+                tray.destroy();
                 app.quit()
             }
         }
-    ]
-    menu = Menu.buildFromTemplate(template)
+    ];
+    menu = Menu.buildFromTemplate(template);
     // 插件化
     const pluginsMenu = new Menu();
-    plugins.customMenu(pluginsMenu, tray)
+    plugins.customMenu(pluginsMenu, tray);
     if (pluginsMenu.items.length > 0) {
         menu.insert(menu.items.length - 2, new MenuItem({label: '扩展功能', submenu: pluginsMenu}));
     }
     // 初始化快捷键
-    appShortcut.loadShortcutKey(menu)
+    appShortcut.loadShortcutKey(menu);
     return menu
-}
+};
 
 /**
  * 关闭除ID外的其他checked
