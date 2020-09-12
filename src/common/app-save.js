@@ -11,7 +11,7 @@ exports.saveNewFileOrClipboard = function saveNewFileOrClipboard(file, content, 
     }
     if (i === 0) {
         // 1.提示保存
-        numOne = dialog.showMessageBoxSync({message: '操作完成，保存在', buttons: ['原文件', '剪贴板']})
+        numOne = dialog.showMessageBoxSync({message: '操作完成，保存在', buttons: ['文件', '剪贴板']})
     }
     if (numOne === 0) {
         // 2.写入新文档
