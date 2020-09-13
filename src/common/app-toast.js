@@ -1,7 +1,9 @@
 const {Notification, shell, dialog} = require('electron');
+const logger = require('logger2x').createLogger(`${require('os').homedir()}/BlogHelper/toast.log`);
 
 // 异步弹出提示消息
 exports.toast = function toast(config) {
+    logger.log(JSON.stringify(config));
     if (Notification.isSupported()) {
         new Notification(config).show()
     } else {

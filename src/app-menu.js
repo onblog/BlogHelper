@@ -393,6 +393,11 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     click: function () {
                         appMenuPublish.HTMLToMd(tray)
                     }
+                }, {
+                    label: '合并Md文件',
+                    click: function () {
+                        appMenuPublish.ManyMdToOne(tray)
+                    }
                 }
             ]
         }
@@ -485,12 +490,6 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                     }
                 }
                 , {
-                    label: '给我写信',
-                    click: function () {
-                        shell.openExternal(require('./common/app-link').mail).catch()
-                    }
-                }
-                , {
                     label: '版本查询',
                     click: function () {
                         appToast.toast({title: '当前版本 ' + app.getVersion(), body: ''})
@@ -501,7 +500,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         appUpdate.autoUpdateApp(true)
                     }
                 }, {
-                    label: '打开日志',
+                    label: '查看日志',
                     click: function () {
                         shell.openItem(require('path').join(require('os').homedir(), app.name));
                     }

@@ -46,9 +46,9 @@ function publishArticleTo(tray, site, isPublish, sleep) {
                 logger.log('发布文章到', site, '失败：', title, reason.toString());
                 // 是否重试
                 const n = dialog.showMessageBoxSync({
-                                                        message: `《${title}》\n${reason.toString()}`,
-                                                        buttons: ['取消', '跳过', '重试']
-                                                    });
+                    message: `《${title}》\n${reason.toString()}`,
+                    buttons: ['取消', '跳过', '重试']
+                });
                 if (n === 1) {
                     setTimeout(handler, sleep ? sleep : 1000)
                 } else if (n === 2) {
@@ -145,7 +145,7 @@ exports.downloadMdNetPicture = async function (tray) {
             if (appUtil.isWebPicture(src)) {
                 // 图片文件名
                 let filepath = path.join(dirname, name,
-                                         Math.floor(Math.random() * 100000000) + '.png');
+                    Math.floor(Math.random() * 100000000) + '.png');
                 map.set(src, filepath)
             }
         });
@@ -335,7 +335,7 @@ exports.pictureMdToImg = function (tray) {
                     let src = split[i].substring(start + 1, end); //图片的真实地址
                     line =
                         line.replace("!" + split[i],
-                                     `<img src="${src}" referrerPolicy="no-referrer"/>`)
+                            `<img src="${src}" referrerPolicy="no-referrer"/>`)
                 }
             }
             newValue += line + '\n'
@@ -412,8 +412,8 @@ exports.coverToText = function coverToText() {
 exports.HTMLToMd = function (tray) {
     // 1.选择本地文件
     const result = appDialog.openManyLocalFileSync([
-                                                       {name: 'html', extensions: ['html']}
-                                                   ]);
+        {name: 'html', extensions: ['html']}
+    ]);
     if (result.canceled) {
         return
     }
@@ -427,6 +427,34 @@ exports.HTMLToMd = function (tray) {
         // 4.保存
         file.filepath = file.filepath.replace(path.extname(file.filepath), '.md');
         appSave.saveNewFileOrClipboard(file, newValue, i);
+        // 5.提示
+        appToast.toast({title: '完成', body: file.title});
+        // 统计
+        number = i + 1
+    }
+    appToast.toast({title: `预处理${result.files.length}个,实际处理${number}个`});
+    // 6.关闭进度条图标
+    tray.setImage(icon.iconFile)
+};
+
+// 合并Md文件
+exports.ManyMdToOne = function (tray) {
+    // 1.选择本地文件
+    const result = appDialog.openManyLocalFileSync();
+    if (result.canceled) {
+        return
+    }
+    // 2.开启进度条图标
+    tray.setImage(icon.proIconFile);
+    let number = 0;
+    const fileName = "写作助手-合并md文件-" + new Date().getTime() + ".md";
+    for (let i = 0; i < result.files.length; i++) {
+        const file = result.files[i];
+        // 3.新内容
+        const newValue = "\n# " + appUtil.getTitle(file.filepath) + "\n\n" +file.content;
+        // 4.保存
+        file.filepath = file.filepath.replace(path.basename(file.filepath), fileName);
+        appSave.appendFileOrClipboard(file, newValue, i);
         // 5.提示
         appToast.toast({title: '完成', body: file.title});
         // 统计
