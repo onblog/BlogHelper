@@ -112,12 +112,18 @@ const publishArticleTo = (title, content, dirname, site, isPublish) => {
                         break;
                     case string.juejin:
                         await appUpload.uploadPicture(all_src)
-                            .then(value => {
-                                text = text.replace(src, value.toString())
+                            .then(async value => {
+                                await juejin.uploadPictureToJueJin(value.toString())
+                                    .then(value1 => {
+                                        text = text.replace(src, value1.toString())
+                                    }).catch(reason => {
+                                        mark.next = false;
+                                        reject(reason.toString())
+                                    })
                             })
                             .catch(reason => {
                                 mark.next = false;
-                                reject(reason.toString()+ "【因掘金的特殊性，请尝试切换其它图床】")
+                                reject(reason.toString() + "【因掘金的特殊性，请尝试切换其它图床】")
                             });
                         break;
                 }

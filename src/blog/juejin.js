@@ -198,7 +198,7 @@ function uploadPictureToJueJin(filePath) {
 //     req.end()
 // }
 
-exports.uploadPictureToJueJin = uploadPictureToJueJin;
+exports.uploadPictureToJueJin = savePictureUrlToJueJin;
 exports.publishArticleToJueJin = createArticleToJueJin;
 
 // 掘金:创建新文章
@@ -294,7 +294,7 @@ function publishArticleToJueJin(draftId, resolve, reject) {
             }
         );
         res.on('end', () => {
-            console.log(str);
+            const result = JSON.parse(str);
             if (res.statusCode === 200) {
                 if (result.err_no === 0) {
                     const articleId = result.data.article_id;
@@ -314,4 +314,57 @@ function publishArticleToJueJin(draftId, resolve, reject) {
     request.on('error', function (e) {
         reject('网络连接异常')
     });
+}
+
+// 掘金:图片url保存
+function savePictureUrlToJueJin(picUrl) {
+    return new Promise((resolve, reject) => {
+        const json = JSON.stringify({
+            "url": picUrl
+        });
+        let request = https.request({
+            host: 'juejin.cn',
+            method: 'POST',
+            path: '/image/urlSave',
+            headers: {
+                "content-type": "application/json",
+                "cookie": dataStore.getJueJinCookies(),
+                "user-agent": "Mozilla/5.0",
+                "referer": "https://juejin.cn/editor/drafts/new?v=2"
+            }
+        }, function (res) {
+            //解决返回数据被gzip压缩
+            if (res.headers['content-encoding'] === 'gzip') {
+                const gzip = zlib.createGunzip();
+                res.pipe(gzip);
+                res = gzip;
+            }
+            let str = '';
+            res.on('data', function (buffer) {
+                    str += buffer;
+                }
+            );
+            res.on('end', () => {
+                const result = JSON.parse(str);
+                if (res.statusCode === 200) {
+                    if (result.err_no === 0) {
+                        const data = result.data;
+                        resolve(data);
+                    } else {
+                        reject('发布失败,' + result.err_msg);
+                    }
+                } else {
+                    reject('发布失败:' + res.statusCode + "\n" + str);
+                }
+            });
+        });
+
+        request.write(json);
+        request.end();
+
+        request.on('error', function (e) {
+            reject('网络连接异常')
+        });
+
+    })
 }
