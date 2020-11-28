@@ -65,16 +65,6 @@ const publishArticleTo = (title, content, dirname, site, isPublish) => {
                                 reject(reason.toString())
                             });
                         break;
-                    case string.juejin:
-                        await juejin.uploadPictureToJueJin(all_src)
-                            .then(value => {
-                                text = text.replace(src, value.toString())
-                            })
-                            .catch(reason => {
-                                mark.next = false;
-                                reject(reason.toString())
-                            });
-                        break;
                     case string.oschina:
                         await oschina.uploadPictureToOsChina(all_src)
                             .then(value => {
@@ -87,6 +77,16 @@ const publishArticleTo = (title, content, dirname, site, isPublish) => {
                         break;
                     case string.segmentfault:
                         await segmentfault.uploadPictureToSegmentFault(all_src)
+                            .then(value => {
+                                text = text.replace(src, value.toString())
+                            })
+                            .catch(reason => {
+                                mark.next = false;
+                                reject(reason.toString())
+                            });
+                        break;
+                    case string.jianshu:
+                        await jianshu.uploadPictureToJianShu(all_src)
                             .then(value => {
                                 text = text.replace(src, value.toString())
                             })
@@ -110,16 +110,16 @@ const publishArticleTo = (title, content, dirname, site, isPublish) => {
                                 reject(reason.toString() + "【因知乎的特殊性，请尝试切换其它图床】")
                             });
                         break;
-                    case string.jianshu:
-                        await jianshu.uploadPictureToJianShu(all_src)
+                    case string.juejin:
+                        await appUpload.uploadPicture(all_src)
                             .then(value => {
                                 text = text.replace(src, value.toString())
                             })
                             .catch(reason => {
                                 mark.next = false;
-                                reject(reason.toString())
+                                reject(reason.toString()+ "【因掘金的特殊性，请尝试切换其它图床】")
                             });
-                        break
+                        break;
                 }
             }
         }

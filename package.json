@@ -33,7 +33,7 @@
     "marked": "^0.8.0",
     "mime-types": "^2.1.27",
     "path": "^0.12.7",
-    "picgo": "^1.4.8",
+    "picgo": "^1.4.12",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "urlencode": "^1.1.0"

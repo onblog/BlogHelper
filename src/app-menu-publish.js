@@ -57,7 +57,9 @@ function publishArticleTo(tray, site, isPublish, sleep) {
                 } else {
                     // 4.关闭进度条图标
                     tray.setImage(icon.iconFile);
-                    appToast.toast({title: `预处理${files.length}个,实际处理${number}个`})
+                    if (files.length!==1) {
+                        appToast.toast({title: `预处理${files.length}个,实际处理${number}个`})
+                    }
                 }
             })
         } else {

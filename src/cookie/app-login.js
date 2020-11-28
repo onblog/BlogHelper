@@ -56,7 +56,7 @@ exports.loginCSDN = loginCSDN;
 
 // 登录掘金
 const loginJueJin = function (item, focusedWindow, event) {
-    getSiteCookie('https://juejin.im/', (cookie) => {
+    getSiteCookie('https://juejin.cn/', (cookie) => {
         dataStore.setJueJinCookie(cookie)
     })
 };
