@@ -38,9 +38,9 @@
 
 ## 🚩预览
 
-<img src="https://imgkr.cn-bj.ufileos.com/c63683bc-5879-4cbf-941d-75bae971c64a.png" referrerpolicy="no-referrer" width="400px" />
+<img src="//user-images.githubusercontent.com/31175877/102894223-bdcfd280-449d-11eb-9992-4ba1d8e27f9a.jpg" referrerpolicy="no-referrer" width="400px" />
 
-<img src="https://imgkr.cn-bj.ufileos.com/38e06304-f5b1-46f1-a290-bbe451398bf1.png" referrerpolicy="no-referrer" width="400px"/>
+<img src="//user-images.githubusercontent.com/31175877/102894199-b6102e00-449d-11eb-873d-ceafdf514e0c.jpg" referrerpolicy="no-referrer" width="400px"/>
 
 预览图可能版本过低，请以具体应用为准。
 
