@@ -1,6 +1,6 @@
 <div align="center">
 <h1>📝写作助手</h1>
-<img src="https://img.shields.io/github/license/ystcode/BlogHelper"/>
+<img src="https://img.shields.io/github/license/onblog/BlogHelper"/>
 <img src="https://img.shields.io/static/v1?label=electron&message=7.1.7&color="/>
 <img src="https://img.shields.io/static/v1?label=mac|win|linux&message=7.1.7&color=yellow"/>
 </div>
@@ -30,11 +30,11 @@
 
 ## 🚩更多功能
 
-- 🙋[我要提需求](https://github.com/ystcode/BlogHelper/issues)
+- 🙋[我要提需求](https://github.com/onblog/BlogHelper/issues)
 
 ## 🚩下载我吧
 
-- 📥[点击下载](https://github.com/ystcode/BlogHelper/releases)
+- 📥[点击下载](https://github.com/onblog/BlogHelper/releases)
 
 ## 🚩预览
 
@@ -60,7 +60,7 @@
 
 - LOGO设计师：Summer（QQ：1003737038）
 
-#### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/ystcode/BlogHelper)右上角小星星，这将是我持续更新的动力！
+#### 📣如果帮助到你了，请帮忙点亮[Github](https://github.com/onblog/BlogHelper)右上角小星星，这将是我持续更新的动力！
 
 <img src="https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png" width="300px" referrerpolicy="no-referrer">
 

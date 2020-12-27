@@ -1,6 +1,6 @@
 {
   "name": "blog-helper",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "description": "",
   "productName": "BlogHelper",
   "main": "src/main.js",
@@ -13,8 +13,8 @@
     "pc",
     "util"
   ],
-  "author": "Github@ystcode",
-  "repository": "https://github.com/ystcode/BlogHelper",
+  "author": "Github@onblog",
+  "repository": "https://github.com/onblog/BlogHelper",
   "license": "GPL-3.0-only",
   "devDependencies": {
     "electron": "^7.1.7",
@@ -39,7 +39,7 @@
     "urlencode": "^1.1.0"
   },
   "build": {
-    "appId": "com.github.ystcode.bloghelper",
+    "appId": "com.github.onblog.bloghelper",
     "productName": "写作助手",
     "mac": {
       "icon": "build/app.icns",
