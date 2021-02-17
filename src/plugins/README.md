@@ -36,10 +36,6 @@ exports.status = function (menu, tray) {
 }
 ```
 
-3. 运行效果
-
-![](https://imgkr.cn-bj.ufileos.com/4e702654-609f-48d4-be72-c0ae615f5126.png)
-
 如果你需要一些媒体文件，也需要在你的插件目录下新建目录并添加。
 
 教程结束，到此你就可以新建你的插件了！
