@@ -21,15 +21,15 @@ class DataStore extends Store {
     SegmentFaultTokenKey = 'segmentFault-token-key';
     //简书
     JianShuCookieKey = 'jianShu-cookie-key';
-
+    CnblogsToken = 'CnblogsToken'
     // 图片上传快捷键
     uploadClipboardPicSwitch = 'uploadClipboardPicSwitch';
     // 富文本转纯文字
     coverToTextSwitch = 'coverToTextSwitch';
 
     constructor(settings) {
-        const baseConfig = {name: 'blog-helper'};
-        const finalConfig = {...baseConfig, ...settings};
+        const baseConfig = { name: 'blog-helper' };
+        const finalConfig = { ...baseConfig, ...settings };
         super(finalConfig)
     }
 
@@ -152,7 +152,16 @@ class DataStore extends Store {
         }
         return null
     }
+    SetCnblogsToken(v) {
+        return this.set(this.CnblogsToken, v)
 
+    }
+    GetCnblogsToken() {
+        if (this.has(this.CnblogsToken)) {
+            return this.get(this.CnblogsToken)
+        }
+        return null
+    }
     setOsChinaUserId(v) {
         return this.set(this.OsChinaUserIdKey, v)
     }
