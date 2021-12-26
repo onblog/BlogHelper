@@ -1,0 +1,68 @@
+{
+  "name": "blog-helper",
+  "version": "1.0.28",
+  "description": "",
+  "productName": "BlogHelper",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "ico": "png-to-ico build/app.png > build/app.ico"
+  },
+  "keywords": [
+    "pc",
+    "util"
+  ],
+  "author": "Github@onblog",
+  "repository": "https://github.com/onblog/BlogHelper",
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "console": "^0.7.2",
+    "electron": "11.5.0",
+    "electron-builder": "^22.1.0",
+    "png-to-ico": "^2.1.0"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "bootstrap": "^3.4.1",
+    "electron-store": "^5.1.0",
+    "form-data": "^3.0.0",
+    "html-to-md": "^0.3.2",
+    "jquery": "^3.4.1",
+    "jsdom": "^15.2.1",
+    "lodash": "^4.17.15",
+    "logger2x": "0.0.3",
+    "marked": "^0.8.0",
+    "mime-types": "^2.1.27",
+    "path": "^0.12.7",
+    "picgo": "^1.4.12",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0",
+    "urlencode": "^1.1.0"
+  },
+  "build": {
+    "appId": "com.github.onblog.bloghelper",
+    "productName": "写作助手",
+    "mac": {
+      "icon": "build/app.icns",
+      "type": "development",
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "build/app.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "build/app.png",
+      "category": "Office",
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}
