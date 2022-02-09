@@ -1,55 +1,81 @@
 const https = require('https');
+const fetch = require('node-fetch');
 const DataStore = require('../app-store');
 const dataStore = new DataStore();
 const FormData = require('form-data');
 const fs = require('fs');
 
+const extMap = {
+  'jpg': 'jpeg',
+  'jpeg': 'jpeg',
+  'png': 'png',
+  'gif': 'gif',
+}
+
 //上传图片到CSDN
 function uploadPictureToCSDN(filePath) {
     return new Promise((resolve, reject) => {
-        let formData = new FormData();
-        formData.append('file', fs.createReadStream(filePath));
+        const ext = extMap[filePath.split('.').pop().toLowerCase()] || 'png';
 
-        let headers = formData.getHeaders();
-        headers.Cookie = dataStore.getCSDNCookies(); //获取Cookie
-        headers["user-agent"] = "Mozilla/5.0";
-        //自己的headers属性在这里追加
-        let request = https.request({
-                                        host: 'blog-console-api.csdn.net',
-                                        method: 'POST',
-                                        path: '/v1/upload/img?shuiyin=2',
-                                        headers: headers
-                                    }, function (res) {
-            let str = '';
-            res.on('data', function (buffer) {
-                       str += buffer;
-                   }
-            );
-            res.on('end', () => {
-                if (res.statusCode === 200) {
-                    const result = JSON.parse(str);
-                    if (result.code === 200) {
-                        const url = result.data.url;
-                        resolve(url)
-                    } else {
-                        reject('上传图片失败,' + result.msg)
-                    }
-                } else {
-                    console.log(filePath);
-                    try {
-                        const result = JSON.parse(str);
-                        reject(decodeURI(result.msg))
-                    } catch (e) {
-                    }
-                    reject('上传图片失败:' + res.statusCode)
-                }
-            });
-        });
-        formData.pipe(request);
+        fetch("https://imgservice.csdn.net/direct/v1.0/image/upload?watermark=&type=blog&rtype=markdown", {
+          "headers": {
+            "content-type": "application/json",
+            "x-image-app": "direct_blog",
+            "x-image-dir": "direct",
+            "x-image-suffix": ext,
+            "cookie": dataStore.getCSDNCookies(),
+            "Referer": "https://editor.csdn.net/",
+          }
+        }).then(result => result.json())
+          .then(result => {
+            console.log('get access info:', result);
+            if (result.code === 200) {
+              const accessId = result.data.accessId;
+              const callbackUrl = result.data.callbackUrl;
+              const remoteFilePath = result.data.filePath;
+              const url = result.data.host;
+              const policy = result.data.policy;
+              const signature = result.data.signature;
 
-        request.on('error', function (e) {
-            reject('网络连接异常'+e.message)
-        });
+              let formData = new FormData();
+              formData.append('key', remoteFilePath);
+              formData.append('OSSAccessKeyId', accessId);
+              formData.append('policy', policy);
+              formData.append('signature', signature);
+              formData.append('success_action_status', '200');
+              formData.append('callback', callbackUrl);
+              formData.append('file', fs.createReadStream(filePath));
+
+              let headers = formData.getHeaders();
+              headers.Cookie = dataStore.getCSDNCookies();
+              headers["user-agent"] = "Mozilla/5.0";
+              headers.Referer = "https://editor.csdn.net/";
+              headers.ContentType = 'multipart/form-data';
+              headers.Accept = 'application/json';
+              
+              // post formData to host
+              fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: headers
+              }).then(result => result.json())
+                .then(result => {
+                  if (result.code === 200) {
+                    resolve(result.data.imageUrl)
+                  } else {
+                    reject('上传图片失败,' + result.msg)
+                  }
+                })
+                .catch(error => {
+                  reject('上传图片失败,' + error)
+                })
+            } else {
+              reject('上传图片失败,' + result.msg)
+            }
+          })
+          .catch(error => {
+            reject('上传图片失败,' + error)
+          })
     })
 }
 
