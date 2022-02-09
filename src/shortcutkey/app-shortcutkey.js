@@ -43,7 +43,7 @@ function loadShortcutKey(menu) {
 }
 
 function openConfigFile() {
-    shell.openItem(configPath)
+    shell.openPath(configPath)
 }
 
 function openHelpFile() {
@@ -53,7 +53,7 @@ function openHelpFile() {
         }
         fs.writeFileSync(helpFile, fs.readFileSync(Path.join(__dirname, Path.basename(helpFile))))
     }
-    shell.openItem(helpFile)
+    shell.openPath(helpFile)
 }
 
 exports.openHelpFile = openHelpFile;

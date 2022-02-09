@@ -20,7 +20,7 @@ exports.saveNewFileOrClipboard = function saveNewFileOrClipboard(file, content, 
             numTwo = dialog.showMessageBoxSync({message: '保存成功，是否打开新文档？', buttons: ['不了,谢谢', '打开']})
         }
         if (numTwo === 1) {
-            shell.openItem(file.filepath)
+            shell.openPath(file.filepath)
         }
     } else if (numOne === 1) {
         // 3.写入剪贴板
@@ -45,7 +45,7 @@ exports.appendFileOrClipboard = function appendFileOrClipboard(file, content, i)
             numTwo = dialog.showMessageBoxSync({message: '保存成功，是否打开新文档？', buttons: ['不了,谢谢', '打开']})
         }
         if (numTwo === 1) {
-            shell.openItem(file.filepath)
+            shell.openPath(file.filepath)
         }
     } else if (numOne === 1) {
         // 3.写入剪贴板
