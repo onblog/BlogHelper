@@ -185,7 +185,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -210,7 +210,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -235,7 +235,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -260,7 +260,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -285,7 +285,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -310,7 +310,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -335,7 +335,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         {
                             label: '配置',
                             click: function () {
-                                if (!shell.openItem(picgo.configPath)) {
+                                if (!shell.openPath(picgo.configPath)) {
                                     appToast.toast({title: '打开配置文件失败', body: ""})
                                 }
                             }
@@ -502,7 +502,7 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                 }, {
                     label: '查看日志',
                     click: function () {
-                        shell.openItem(require('path').join(require('os').homedir(), app.name));
+                        shell.openPath(require('path').join(require('os').homedir(), app.name));
                     }
                 }
             ]

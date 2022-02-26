@@ -14,6 +14,12 @@ function getSiteCookie(url, callback) {
         // 查询所有与设置的 URL 相关的所有 cookies.
         if (url == 'https://www.cnblogs.com/') {
             url = '.cnblogs.com'
+        } else if (url == 'https://blog.csdn.net/') {
+            url = '.csdn.net'
+        } else if (url.indexOf('jianshu') != -1) {
+            url = '.jianshu.com'
+        } else if (url.indexOf('oschina') != -1) {
+            url = '.oschina.net'
         }
         session.defaultSession.cookies.get({ domain: url })
             .then((cookies) => {
