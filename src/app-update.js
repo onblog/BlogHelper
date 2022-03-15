@@ -6,6 +6,8 @@ const appToast = require('./common/app-toast');
 
 const url = require('./common/app-link').url;
 
+const versionPrefix = require('./common/app-link').versionPrefix;
+
 // 自动检查更新（bool：是否主动操作）
 function autoUpdateApp(isTip) {
     const req = https.request(url, {}, function (req) {
@@ -29,22 +31,24 @@ exports.autoUpdateApp = autoUpdateApp;
 //解析html获取内容
 function parseHtml(result, isTip) {
     const dom = new jsdom.JSDOM(result);
-    const element = dom.window.document.body.querySelector('div.release-header > ul> li > a[title]');
-    if (!(element && element.getAttribute('title'))) {
+    const startIndex = dom.window.document.body.innerHTML.indexOf(versionPrefix);
+    const endIndex = dom.window.document.body.innerHTML.indexOf('"', startIndex);
+    const version = dom.window.document.body.innerHTML.substring(startIndex + versionPrefix.length, endIndex);
+
+    if (!version) {
         if (isTip) {
-            appToast.toast({title: '检查更新失败, 请前去官网查看', body: ''});
+            appToast.toast({title: '最新版本号获取失败, 请前去官网查看', body: ''});
             shell.openExternal(url).then()
         }
         return
     }
-    const version = element.getAttribute('title');
     const compareVersion = util.compareVersion(version, app.getVersion());
     if (compareVersion > 0) {
         //需要更新
         dialog.showMessageBox({
-                                  buttons: ['取消', '查看', '下载'],
-                                  message: `当前版本：${app.getVersion()}\n发现新版本：${version}`
-                              }
+                buttons: ['取消', '查看', '下载'],
+                message: `当前版本：${app.getVersion()}\n发现新版本：${version}`
+            }
         ).then(function (res) {
             if (res.response === 1) {
                 shell.openExternal(url).then()
@@ -55,7 +59,7 @@ function parseHtml(result, isTip) {
             // 自动检查更新
             setTimeout(function () {
                 autoUpdateApp(false)
-            }, 1000*60*60)
+            }, 1000 * 60 * 60)
         })
     } else {
         // 不需要更新
@@ -65,6 +69,6 @@ function parseHtml(result, isTip) {
         // 自动检查更新
         setTimeout(function () {
             autoUpdateApp(false)
-        }, 1000*60*60)
+        }, 1000 * 60 * 60)
     }
 }
