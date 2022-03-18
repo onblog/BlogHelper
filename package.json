@@ -7,7 +7,8 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
-    "ico": "png-to-ico build/app.png > build/app.ico"
+    "ico": "png-to-ico build/app.png > build/app.ico",
+    "mirror": "npm config set registry https://mirrors.huaweicloud.com/repository/npm/ && npm config set electron_mirror https://mirrors.huaweicloud.com/electron/ && npm config set electron_builder_binaries_mirror https://mirrors.huaweicloud.com/electron-builder-binaries/"
   },
   "keywords": [
     "pc",
