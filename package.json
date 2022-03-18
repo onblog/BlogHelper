@@ -48,9 +48,12 @@
       "icon": "build/app.icns",
       "type": "development",
       "category": "public.app-category.productivity",
-      "target": [
-        "dmg"
-      ]
+      "target": {
+        "target": "dmg",
+        "arch": [
+          "x64"
+        ]
+      }
     },
     "win": {
       "icon": "build/app.ico",
@@ -61,9 +64,12 @@
     "linux": {
       "icon": "build/app.png",
       "category": "Office",
-      "target": [
-        "AppImage"
-      ]
+      "target": {
+        "target": "AppImage",
+        "arch": [
+          "x64"
+        ]
+      }
     }
   }
 }
