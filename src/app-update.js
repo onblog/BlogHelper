@@ -1,12 +1,9 @@
 const {shell, dialog, app} = require('electron');
 const util = require('./common/app-util');
 const https = require('https');
-const jsdom = require('jsdom');
 const appToast = require('./common/app-toast');
 
-const url = require('./common/app-link').url;
-
-const versionPrefix = require('./common/app-link').versionPrefix;
+const url = require('./common/app-link').package;
 
 // 自动检查更新（bool：是否主动操作）
 function autoUpdateApp(isTip) {
@@ -21,19 +18,17 @@ function autoUpdateApp(isTip) {
     });
     req.on('error', (e) => {
         console.error(e);
-        dialog.showMessageBoxSync({message: '网络连接异常'})
+        if (isTip) {
+            dialog.showMessageBoxSync({message: '网络链接异常'})
+        }
     });
     req.end();
 }
 
-exports.autoUpdateApp = autoUpdateApp;
-
 //解析html获取内容
 function parseHtml(result, isTip) {
-    const dom = new jsdom.JSDOM(result);
-    const startIndex = dom.window.document.body.innerHTML.indexOf(versionPrefix);
-    const endIndex = dom.window.document.body.innerHTML.indexOf('"', startIndex);
-    const version = dom.window.document.body.innerHTML.substring(startIndex + versionPrefix.length, endIndex);
+    const packageJson = JSON.parse(result);
+    const version = packageJson.version;
 
     if (!version) {
         if (isTip) {
@@ -72,3 +67,5 @@ function parseHtml(result, isTip) {
         }, 1000 * 60 * 60)
     }
 }
+
+exports.autoUpdateApp = autoUpdateApp;

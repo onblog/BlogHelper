@@ -1,5 +1,4 @@
-exports.url = 'https://github.com/onblog/BlogHelper/releases';
 exports.link = 'https://github.com/onblog/BlogHelper';
 exports.issues = 'https://github.com/onblog/BlogHelper/issues';
 exports.download = 'https://github.com/onblog/BlogHelper/releases';
-exports.versionPrefix = '/onblog/BlogHelper/tree/';
+exports.package = 'https://cdn.jsdelivr.net/gh/onblog/BlogHelper@master/package.json';
