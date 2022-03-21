@@ -5,7 +5,6 @@ const jsdom = require("jsdom");
 const querystring = require('querystring');
 const FormData = require('form-data');
 const fs = require('fs');
-const {Console} = require('console');
 const axios = require('axios')
 const {session} = require('electron')
 
