@@ -5,9 +5,10 @@ const jsdom = require("jsdom");
 const querystring = require('querystring');
 const FormData = require('form-data');
 const fs = require('fs');
-const { Console } = require('console');
+const {Console} = require('console');
 const axios = require('axios')
-const { session } = require('electron')
+const {session} = require('electron')
+
 //上传图片到博客园
 function uploadPictureToCnBlogs(filePath) {
     return new Promise((resolve, reject) => {
@@ -29,8 +30,8 @@ function uploadPictureToCnBlogs(filePath) {
         }, function (res) {
             let str = '';
             res.on('data', function (buffer) {
-                str += buffer;//用字符串拼接
-            }
+                    str += buffer;//用字符串拼接
+                }
             );
             res.on('end', () => {
                 if (res.statusCode === 200) {
@@ -80,35 +81,68 @@ function publishArticleToCnBlogs(title, content, isPublish) {
 }
 
 function publishArticleToCnBlogFact(title, content, resolve,
-    reject, isPublish) {
-    let params = {
+                                    reject, isPublish) {
+    const params = {
         "id": null,
         "postType": 1,
+        "accessPermission": 0,
         "title": title,
+        "url": null,
         "postBody": content,
+        "categoryIds": null,
+        "inSiteCandidate": false,
+        "inSiteHome": false,
+        "siteCategoryId": null,
+        "blogTeamIds": null,
+        "isPublished": true,
+        "displayOnHomePage": true,
+        "isAllowComments": true,
+        "includeInMainSyndication": true,
+        "isPinned": false,
+        "isOnlyForRegisterUser": false,
+        "isUpdateDateAdded": false,
+        "entryName": null,
+        "description": null,
+        "featuredImage": null,
+        "tags": null,
+        "password": null,
+        "datePublished": new Date(),
+        "isMarkdown": true,
+        "isDraft": true,
+        "autoDesc": null,
+        "changePostType": false,
+        "blogId": 0,
+        "author": null,
+        "removeScript": false,
+        "clientInfo": null,
+        "changeCreatedTime": false,
+        "canChangeCreatedTime": false,
+        "isContributeToImpressiveBugActivity": false
     }
     axios({
         method: 'post',
         url: 'https://i.cnblogs.com/api/posts',
         data: JSON.stringify(params),
         headers: {
-            "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
-            'Referer': 'https://i.cnblogs.com',
-            'Accept': '*/*',
-            'Origin': 'https://i.cnblogs.com',
-            'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0',
-            'Cookie': dataStore.getCnBlogCookies(),
+            "accept-language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
+            'referer': 'https://i.cnblogs.com',
+            'accept': '*/*',
+            'origin': 'https://i.cnblogs.com',
+            'content-type': 'application/json',
+            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0',
+            'cookie': dataStore.getCnBlogCookies(),
             'x-xsrf-token': dataStore.GetCnblogsToken()
         }
     }).then(res => {
-        if (res.status == 200) {
+        if (res.status === 200) {
             resolve(res.data.url)
         }
         // console.log(res)
-    }).catch(res => {
-        reject('发布失败！\n1.文章标题已存在\n2.尚未登录博客园\n3.发布频繁请稍后再试\n4.超过当日100篇限制')
-
+    }).catch(reason => {
+        reject('发布失败！\n' + JSON.stringify(reason.response.data))
+        console.log("cookie: " + dataStore.getCnBlogCookies())
+        console.log('x-xsrf-token: ' + dataStore.GetCnblogsToken())
+        console.log(reason.response.data)
     })
 
 

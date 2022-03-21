@@ -1,4 +1,4 @@
-const { BrowserWindow, session } = require('electron');
+const {BrowserWindow, session} = require('electron');
 const https = require('https');
 const jsDom = require("jsdom");
 const icon = require('../common/app-icon');
@@ -8,33 +8,25 @@ const dataStore = new DataStore();
 //登录某网站获取Cookie通用方法
 function getSiteCookie(url, callback) {
     let win = new BrowserWindow(
-        { width: 700, height: 600, icon: icon.iconFile, title: '【登陆成功后关闭窗口即可完成设置】' });
+        {width: 700, height: 600, icon: icon.iconFile, title: '【登陆成功后关闭窗口即可完成设置】'});
     win.loadURL(url).then();
     win.on('close', () => {
         // 查询所有与设置的 URL 相关的所有 cookies.
-        if (url == 'https://www.cnblogs.com/') {
-            url = '.cnblogs.com'
-        } else if (url == 'https://blog.csdn.net/') {
-            url = '.csdn.net'
-        } else if (url.indexOf('jianshu') != -1) {
-            url = '.jianshu.com'
-        } else if (url.indexOf('oschina') != -1) {
-            url = '.oschina.net'
-        }
-        session.defaultSession.cookies.get({ domain: url })
+        session.defaultSession.cookies.get({url: url})
             .then((cookies) => {
                 let cookieString = '';
                 for (let cookie of cookies) {
-                    if (cookie.name == 'XSRF-TOKEN') {
+                    if (cookie.name === 'XSRF-TOKEN') {
                         dataStore.SetCnblogsToken(cookie.value)
                     }
                     cookieString += cookie.name + '=' + cookie.value + '; '
                 }
+                console.log("cookie: " + cookieString.trim())
                 callback(cookieString.trim())
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 console.log(error)
-            });
-
+            })
         win = null
     });
     win.on('page-title-updated', (e) => {
@@ -53,7 +45,7 @@ exports.loginWebBoPicture = loginWebBoPicture;
 
 // 登录博客园
 const loginCnBlog = function (item, focusedWindow, event) {
-    getSiteCookie('https://www.cnblogs.com/', (cookie) => {
+    getSiteCookie('https://i.cnblogs.com/', (cookie) => {
         dataStore.setCnBlogCookie(cookie)
     })
 };
