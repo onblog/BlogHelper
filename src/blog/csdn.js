@@ -52,7 +52,7 @@ function uploadPictureToCSDN(filePath) {
               headers.Referer = "https://editor.csdn.net/";
               headers.ContentType = 'multipart/form-data';
               headers.Accept = 'application/json';
-              
+
               // post formData to host
               fetch(url, {
                 method: 'POST',
@@ -88,7 +88,8 @@ function publishArticleToCSDN(title, markdowncontent, content, isPublish) {
             content: content,
             readType: "public",
             not_auto_saved: "1",
-            source: "pc_mdeditor"
+            source: "pc_mdeditor",
+            level: 1
         };
         if (isPublish) {
             parms['status'] = 0;
@@ -98,8 +99,7 @@ function publishArticleToCSDN(title, markdowncontent, content, isPublish) {
             parms['categories'] = '';
             parms['original_link'] = '';
             parms['resource_url'] = '';
-            parms['tags'] = ''
-
+            parms['tags'] = '经验分享'
         }else {
             parms['status'] = 2
         }

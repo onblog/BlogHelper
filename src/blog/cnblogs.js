@@ -94,7 +94,7 @@ function publishArticleToCnBlogFact(title, content, resolve,
         "inSiteHome": false,
         "siteCategoryId": null,
         "blogTeamIds": null,
-        "isPublished": true,
+        "isPublished": isPublish,
         "displayOnHomePage": true,
         "isAllowComments": true,
         "includeInMainSyndication": true,
@@ -133,25 +133,28 @@ function publishArticleToCnBlogFact(title, content, resolve,
             'cookie': dataStore.getCnBlogCookies(),
             'x-xsrf-token': dataStore.GetCnblogsToken()
         }
-    }).then(res => {
-        if (res.status === 200) {
-            resolve(res.data.url)
+    }).then(response => {
+        // console.log(response)
+        // console.log("data: " + JSON.stringify(response.data))
+        // console.log("status: " + response.status)
+        if (response.status === 200) {
+            let openUrl = response.data.url;
+            if (openUrl.indexOf('//') === 0) {
+                openUrl = "https:" + openUrl
+            }
+            resolve(openUrl)
         }
-        // console.log(res)
-    }).catch(reason => {
-        reject('发布失败！\n' + JSON.stringify(reason.response.data))
-        console.log("cookie: " + dataStore.getCnBlogCookies())
-        console.log('x-xsrf-token: ' + dataStore.GetCnblogsToken())
-        console.log(reason.response.data)
+    }).catch(error => {
+        // console.log("cookie: " + dataStore.getCnBlogCookies())
+        // console.log('x-xsrf-token: ' + dataStore.GetCnblogsToken())
+        if (error.response && error.response.data) {
+            reject('发布失败！\n' + JSON.stringify(error.response.data))
+        } else if (error.response) {
+            reject('发布失败！\n' + JSON.stringify(error.response))
+        } else {
+            reject('发布失败！\n' + error.message)
+        }
     })
-
-
-    // const dom = new jsdom.JSDOM(str);
-    // const a = dom.window.document.body.getElementsByTagName('a')[0];
-    // let url = 'https://i.cnblogs.com' + a.href;
-
-
-    // //发布失败
 
 }
 
