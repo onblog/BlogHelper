@@ -50,6 +50,17 @@
 
 - [插件开发指南](./src/plugins/README.md)
 
+## 🚩本地运行
+
+环境：
+- node -v 17.7.1
+- npm -v  8.5.4
+
+终端：
+```shell
+git clone https://github.com/onblog/BlogHelper.git && cd BlogHelper && npm run mirror && npm install && npm run start
+```
+
 ## 🚩代码贡献
 
 各位路过的同行，使用该软件的用户们！这个软件最大的成本在于不断的维护，原因是各个博客网站的API接口总是在变，需要不断的适配并更新代码，非常期待更多的 JavaScript / nodeJs 爱好者加入进来一起维护！
