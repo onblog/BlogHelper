@@ -7,11 +7,11 @@ const iconDir = path.normalize(path.join(__dirname , '..' ,'resource'));
 function icon() {
     // 按平台选择图标的文件名，mac是18px的倍数，win是16px的倍数
     const iconName = process.platform === 'win32' ? 'star-win.png' : nativeTheme.shouldUseDarkColors
-                                                                     ? 'star-mac.png'
-                                                                     : 'star-mac-dark.png';
+        ? 'star-mac.png'
+        : 'star-mac.png';
     const proIconName = process.platform === 'win32' ? 'process-win.png'
-                                                     : nativeTheme.shouldUseDarkColors
-                                                       ? 'process-mac.png' : 'process-mac-dark.png';
+        : nativeTheme.shouldUseDarkColors
+            ? 'process-mac.png' : 'process-mac.png';
     // 图标的绝对路径
     const iconFile = path.normalize(path.join(iconDir, iconName));
     const proIconFile = path.normalize(path.join(iconDir, proIconName));
