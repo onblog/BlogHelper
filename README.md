@@ -30,11 +30,11 @@
 
 ## 🚩更多功能
 
-- 🙋[我要提需求](https://github.com/onblog/BlogHelper/issues)
+- 🙋[我要提需求](https://github.com/onblogs/BlogHelper/issues)
 
 ## 🚩下载我吧
 
-- 📥[点击下载](https://github.com/onblog/BlogHelper/releases)
+- 📥[点击下载](https://github.com/onblogs/BlogHelper/releases)
 
 ## 🚩预览
 
@@ -58,7 +58,7 @@
 
 终端：
 ```shell
-git clone https://github.com/onblog/BlogHelper.git && cd BlogHelper && npm run mirror && npm install && npm run start
+git clone https://github.com/onblogs/BlogHelper.git && cd BlogHelper && npm run mirror && npm install && npm run start
 ```
 
 ## 🚩代码贡献
