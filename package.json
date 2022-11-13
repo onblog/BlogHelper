@@ -19,7 +19,7 @@
   "license": "GPL-3.0-only",
   "devDependencies": {
     "electron": "11.5.0",
-    "electron-builder": "^22.1.0",
+    "electron-builder": "^22.14.13",
     "png-to-ico": "^2.1.0"
   },
   "dependencies": {
