@@ -16,7 +16,7 @@ function initConfigFile() {
 
 function uploadPicture(filePath, name) {
     return new Promise((resolve, reject) => {
-        
+        initConfigFile();
         const picgo = new PicGo(configPath);
         // 切换
         picgo.setConfig({
