@@ -16,7 +16,7 @@ function initConfigFile() {
 
 function uploadPicture(filePath, name) {
     return new Promise((resolve, reject) => {
-        initConfigFile();
+        
         const picgo = new PicGo(configPath);
         // 切换
         picgo.setConfig({
@@ -40,6 +40,19 @@ function uploadPicture(filePath, name) {
     })
 }
 
+function useSelf(filePath ) {
+    return new Promise((resolve, reject) => {
+        initConfigFile();
+        const picgo = new PicGo(configPath);
+        let config = picgo.getConfig('picBed')
+        let urlPath = config.selfImage.urlPath
+        let arr = filePath.split('\\');
+        let imageFile = urlPath + arr[arr.length-1]
+        //console.log(imageFile);
+        resolve(imageFile)
+    })
+}
+
 function deleteLog(){
     setTimeout(function () {
         const packageFile = Path.join(Path.dirname(configPath), 'package.json');
@@ -52,3 +65,4 @@ function deleteLog(){
 exports.configPath = configPath;
 exports.initConfigFile = initConfigFile;
 exports.uploadPicture = uploadPicture;
+exports.useSelf = useSelf;

@@ -22,6 +22,8 @@ exports.uploadPicture = async function (fullpath) {
             return await picgo.uploadPicture(fullpath, Bed);
         case dataStore.PIC_IMGUR:
             return await picgo.uploadPicture(fullpath, Bed);
+        case dataStore.PIC_SELF:
+            return await picgo.useSelf(fullpath);
         default:
             return await uploadPicture();
     }

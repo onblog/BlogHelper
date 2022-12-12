@@ -49,6 +49,9 @@
     "imgur": {
       "clientId": "imgur 的 clientId",
       "proxy": "代理地址，仅支持 http 代理"
+    },
+    "selfImage":{
+      "urlPath": "请输入urlpath"
     }
   },
   "picgoPlugins": {}
