@@ -354,6 +354,31 @@ exports.buildContextMenu = function buildContextMenu(tray) {
                         }
                     ]
                 }
+                ,{
+                    label: 'selfImage',
+                    submenu: [
+                        {
+                            label: '配置',
+                            click: function () {
+                                if (!shell.openPath(picgo.configPath)) {
+                                    appToast.toast({title: '打开配置文件失败', body: ""})
+                                }
+                            }
+                        },
+                        {
+                            label: '启用',
+                            id: dataStore.PIC_SELF,
+                            type: 'checkbox',
+                            checked: dataStore.isFigureBedSwitch(dataStore.PIC_SELF),
+                            click: function (menuItem) {
+                                menuItem.checked = true;
+                                dataStore.setFigureBedSwitch(dataStore.PIC_SELF);
+                                appToast.toast({title: '启用成功', body: '正在使用自有服务器图床'});
+                                closeMenuChecked(menuItem.id, menu)
+                            }
+                        }
+                    ]
+                }
             ]
         }
         , {

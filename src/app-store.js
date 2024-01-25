@@ -177,8 +177,9 @@ class DataStore extends Store {
     PIC_TCYUN = 'tcyun';
     PIC_ALIYUN = 'aliyun';
     PIC_IMGUR = 'imgur';
+    PIC_SELF = 'selfImage';
     // 启用的图床一定要添加到下面的数组
-    PIC = [this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR];
+    PIC = [this.PIC_SMMS, this.PIC_WEIBO, this.PIC_GITHUB, this.PIC_QINIU, this.PIC_UPYUN, this.PIC_TCYUN, this.PIC_ALIYUN, this.PIC_IMGUR, this.PIC_SELF ];
 
     // 设置当前使用的图床
     setFigureBedSwitch(name) {
