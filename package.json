@@ -18,7 +18,7 @@
   "repository": "https://github.com/onblog/BlogHelper",
   "license": "GPL-3.0-only",
   "devDependencies": {
-    "electron": "11.5.0",
+    "electron": "18.3.7",
     "electron-builder": "^22.1.0",
     "png-to-ico": "^2.1.0"
   },
