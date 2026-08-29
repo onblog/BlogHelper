@@ -1,0 +1,55 @@
+{
+  "picBed": {
+    "smms": {
+      "token": "登陆https://sm.ms/home/apitoken获取"
+    },
+    "qiniu": {
+      "accessKey": "",
+      "secretKey": "",
+      "bucket": "存储空间名",
+      "url": "自定义域名",
+      "area": "z0 | z1 | z2 | na0 | as0, 存储区域编号",
+      "options": "网址后缀，比如？imgslim",
+      "path": "自定义存储路径，比如 img/"
+    },
+    "upyun": {
+      "bucket": "存储空间名，及你的服务名",
+      "operator": "操作员",
+      "password": "密码",
+      "options": "针对图片的一些后缀处理参数",
+      "path": "自定义存储路径，比如 img/",
+      "url": "加速域名，注意要加 http://或者 https://"
+    },
+    "tcyun": {
+      "secretId": "",
+      "secretKey": "",
+      "bucket": "存储桶名，v4 和 v5 版本不一样",
+      "appId": "",
+      "area": "存储区域，例如 ap-beijing-1",
+      "path": "自定义存储路径，比如 img/",
+      "customUrl": "自定义域名，注意要加 http://或者 https://",
+      "version": "v5 | v4 , COS 版本，v4 或者 v5"
+    },
+    "github": {
+      "repo": "仓库名，格式是 username/reponame",
+      "token": "github token",
+      "path": "自定义存储路径，比如 img/",
+      "customUrl": "自定义域名，注意要加 http://或者 https://",
+      "branch": "分支名，默认是 master"
+    },
+    "aliyun": {
+      "accessKeyId": "",
+      "accessKeySecret": "",
+      "bucket": "存储空间名",
+      "area": "存储区域代号",
+      "path": "自定义存储路径",
+      "customUrl": "自定义域名，注意要加 http://或者 https://",
+      "options": "针对图片的一些后缀处理参数 PicGo 2.2.0+ PicGo-Core 1.4.0+"
+    },
+    "imgur": {
+      "clientId": "imgur 的 clientId",
+      "proxy": "代理地址，仅支持 http 代理"
+    }
+  },
+  "picgoPlugins": {}
+}

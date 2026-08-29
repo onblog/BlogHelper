@@ -1,0 +1,12 @@
+[
+  {
+    "name": "剪贴板-图片上传",
+    "accelerator": "CmdOrCtrl+Shift+P",
+    "switch": true
+  },
+  {
+    "name": "剪贴板-转纯文字",
+    "accelerator": "CmdOrCtrl+Alt+T",
+    "switch": true
+  }
+]
