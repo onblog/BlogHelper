@@ -36,7 +36,7 @@
     "mime-types": "^2.1.27",
     "node-fetch": "2",
     "path": "^0.12.7",
-    "picgo": "^1.4.12",
+    "picgo": "^3.1.0",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "urlencode": "^1.1.0"
