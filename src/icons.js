@@ -77,6 +77,10 @@ const ICONS = {
     `<rect x="6.5" y="3.5" width="9" height="11" rx="2"/><path d="M13.5 6.5H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h7.5" stroke="${AMBER}"/>`,
     { accent: AMBER },
   ),
+  'image.open': svg(
+    `<path d="M2.6 10S5.4 5.6 10 5.6 17.4 10 17.4 10 14.6 14.4 10 14.4 2.6 10 2.6 10z"/><circle cx="10" cy="10" r="2.3" stroke="${SKY}"/>`,
+    { accent: SKY },
+  ),
   'image.restore': svg(
     `<rect x="3" y="4.5" width="9.5" height="9.5" rx="2"/><path d="M8 9.2h5.5a2.3 2.3 0 0 1 2.3 2.3v2.2a2.3 2.3 0 0 1-2.3 2.3H9.5" stroke="${CORAL}"/><path d="M11.6 14.2L9.6 16l2 1.8" stroke="${CORAL}"/>`,
     { accent: CORAL },

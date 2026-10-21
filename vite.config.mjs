@@ -17,7 +17,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         panel: path.join(src, 'index.html'),
-        editor: path.join(src, 'editor.html'),
       },
     },
   },

@@ -183,13 +183,13 @@ test('registry', async (t) => {
     const image = { kind: 'image', width: 1, height: 1, dataUrl: 'data:', buffer: Buffer.from('x') };
 
     const withBucket = actions.listFor(image, { hasBucket: true }).map((action) => action.id);
-    assert.deepEqual(withBucket, ['image.edit', 'image.upload', 'image.restore', 'image.save']);
+    assert.deepEqual(withBucket, ['image.open', 'image.upload', 'image.restore', 'image.save']);
 
     const withoutBucket = actions.listFor(image, { hasBucket: false }).map((action) => action.id);
-    assert.deepEqual(withoutBucket, ['image.edit', 'image.restore', 'image.save'], 'no bucket means no upload offer');
+    assert.deepEqual(withoutBucket, ['image.open', 'image.restore', 'image.save'], 'no bucket means no upload offer');
 
     const none = actions.listFor(image).map((action) => action.id);
-    assert.deepEqual(none, ['image.edit', 'image.restore', 'image.save']);
+    assert.deepEqual(none, ['image.open', 'image.restore', 'image.save']);
   });
 
   await t.test('empty clipboard offers nothing', () => {

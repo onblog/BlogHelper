@@ -38,28 +38,6 @@ const { ClipboardWatcher } = require('./watcher.cjs');
 const { BucketStore } = require('./storage.cjs');
 const sigv4 = require('./sigv4.cjs');
 
-const execFileAsync = promisify(execFile);
-const SCREENSHOT_BIN = '/usr/sbin/screencapture';
-const CAPTURE_SHORTCUT = 'Command+Shift+S';
-const SCREENSHOT_SETTINGS_URL =
-  'x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture';
-
-/** Labels for the capture overlay's annotation toolbar. */
-const SCREENSHOT_LANG = {
-  magnifier_position_label: '位置',
-  operation_ok_title: '完成',
-  operation_cancel_title: '取消',
-  operation_save_title: '保存',
-  operation_undo_title: '撤销',
-  operation_redo_title: '重做',
-  operation_mosaic_title: '马赛克',
-  operation_text_title: '文字',
-  operation_brush_title: '画笔',
-  operation_arrow_title: '箭头',
-  operation_ellipse_title: '椭圆',
-  operation_rectangle_title: '矩形',
-};
-
 const PANEL_WIDTH = 420;
 const PANEL_HEIGHT = 700;
 const PANEL_MARGIN = 6;
@@ -85,14 +63,6 @@ let settings = null;
 let watcher = null;
 /** @type {BucketStore | null} */
 let buckets = null;
-/** @type {BrowserWindow | null} */
-let editorWindow = null;
-let capturing = false;
-/** Buffer from the overlay, held until the overlay has actually hidden. */
-let pendingCapture = null;
-/** @type {import('electron-screenshots').default | null} */
-let screenshotTool = null;
-let screenshotToolBroken = false;
 
 function trayImage() {
   const image = nativeImage.createFromPath(path.join(__dirname, 'assets', 'trayTemplate.png'));
@@ -192,7 +162,6 @@ function togglePanel() {
 function contextMenu() {
   return Menu.buildFromTemplate([
     { label: '打开吧台', click: showPanel },
-    { label: '截图到剪贴板', accelerator: CAPTURE_SHORTCUT, click: () => runCapture() },
     { label: '设置…', click: () => openSettings() },
     { type: 'separator' },
     {
@@ -282,297 +251,24 @@ async function restoreHistory(id) {
   return { ok: true };
 }
 
-/* ---------- screenshots ---------- */
-
-function notifyPanel(key, detail) {
-  showPanel();
-  panel?.webContents.send('panel:notice', { key, detail });
-}
+/* ---------- open in Preview ---------- */
 
 /**
- * The annotation overlay, ported rather than written.
- *
- * `electron-screenshots` freezes every display, lets you drag a region and
- * annotate it (rectangle, ellipse, arrow, brush, text, mosaic, undo/redo) and
- * hands back a PNG buffer — the part that is genuinely hard to get right across
- * multiple displays and Retina scaling.
+ * No editor window any more: Preview already annotates, crops and rotates, and
+ * whatever the user copies there comes straight back to the clipboard. We only
+ * need to drop the pixels in a temp file and ask macOS to open it.
  */
-/** Overlay toolbar, recoloured to the panel's light theme. */
-const OVERLAY_CSS = `
-  .screenshots-operations-buttons {
-    background-color: #fff7e8 !important;
-    border: 2px solid #3a2e23 !important;
-    border-radius: 12px !important;
-  }
-  .screenshots-operations-divider { background-color: #e3d6bf !important; }
-  .screenshots-canvas-size { background-color: rgba(58, 46, 35, 0.82) !important; }
-`;
-
-function stamp() {
-  const t = new Date();
-  const pad = (value) => String(value).padStart(2, '0');
-  return `${t.getFullYear()}${pad(t.getMonth() + 1)}${pad(t.getDate())}-${pad(t.getHours())}${pad(t.getMinutes())}${pad(t.getSeconds())}`;
-}
-
-function getScreenshotTool() {
-  if (screenshotTool) return screenshotTool;
-  if (screenshotToolBroken) return null;
-
+async function openInPreview(image) {
   try {
-    const Screenshots = require('electron-screenshots');
-
-    // Not singleWindow: after a capture the overlay must be *destroyed*. A hidden
-    // kiosk window kept coming back in selection mode whenever the panel took
-    // focus, which is exactly the "点对号又回到框选" symptom.
-    screenshotTool = new Screenshots({ lang: SCREENSHOT_LANG });
-
-    // The library's default ✓ path ends with `clipboard.writeImage`, which
-    // Electron 45 removed — that threw, so `endCapture()` never ran and the
-    // overlay sat there in selection mode, looking like a second capture had
-    // started. Take the buffer, refuse the default, and close the overlay here.
-    screenshotTool.on('ok', (event, buffer) => {
-      event.preventDefault();
-      pendingCapture = buffer;
-      capturing = false;
-      screenshotTool?.endCapture().catch((error) => {
-        console.error('closing the overlay after ✓ failed', error);
-      });
-    });
-
-    screenshotTool.on('cancel', () => {
-      pendingCapture = null;
-      capturing = false;
-    });
-
-    // Saving is ours: the library's dialog is attached to the kiosk window,
-    // where macOS never shows it.
-    screenshotTool.on('save', async (event, buffer) => {
-      event.preventDefault();
-      pendingCapture = null;
-      capturing = false;
-
-      // Close the overlay *first*: it is a kiosk window pinned above everything,
-      // so a save dialog opened underneath it never became visible and the click
-      // looked like it re-entered the capture flow.
-      try {
-        await screenshotTool?.endCapture();
-      } catch (error) {
-        console.error('closing the overlay before saving failed', error);
-      }
-
-      try {
-        const { canceled, filePath } = await dialog.showSaveDialog({
-          title: '保存截图',
-          defaultPath: path.join(app.getPath('pictures'), `bar-tool-${stamp()}.png`),
-          filters: [{ name: 'PNG 图片', extensions: ['png'] }],
-        });
-
-        if (!canceled && filePath) {
-          await fs.writeFile(filePath, buffer);
-          notifyPanel('capture.saved');
-        }
-      } catch (error) {
-        console.error('saving the screenshot failed', error);
-        notifyPanel('capture.failed', 'save');
-      }
-    });
-
-    screenshotTool.on('windowCreated', ($win) => {
-      // Escape leaves the overlay even if its own UI misses the key.
-      const onKey = (event, input) => {
-        if (input.type === 'keyDown' && input.key === 'Escape') {
-          event.preventDefault();
-          pendingCapture = null;
-          capturing = false;
-          screenshotTool?.endCapture();
-        }
-      };
-
-      $win.webContents.on('before-input-event', onKey);
-      screenshotTool.$view.webContents.on('before-input-event', onKey);
-
-      screenshotTool.$view.webContents.insertCSS(OVERLAY_CSS).catch(() => {});
-
-      const settled = () => {
-        const buffer = pendingCapture;
-        pendingCapture = null;
-        capturing = false;
-        if (!buffer?.length) return;
-
-        setTimeout(() => {
-          capturedToClipboard(buffer).catch((error) => {
-            console.error('capture handoff failed', error);
-          });
-        }, 140);
-      };
-
-      $win.on('hide', settled);
-      $win.on('closed', settled);
-    });
-
-    return screenshotTool;
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const file = path.join(app.getPath('temp'), `bar-tool-open-${stamp}.png`);
+    await fs.writeFile(file, image.buffer);
+    const error = await shell.openPath(file);
+    return error ? { ok: false, error } : { ok: true, file };
   } catch (error) {
-    // A missing native binary must not take the whole capture feature down.
-    console.error('annotation overlay unavailable, falling back to the system selector', error);
-    screenshotToolBroken = true;
-    return null;
+    console.error('opening the image failed', error);
+    return { ok: false, error: 'open_failed' };
   }
-}
-
-async function capturedToClipboard(buffer) {
-  capturing = false;
-  if (!buffer?.length) return;
-
-  await clipboardBridge.writeImage({ buffer, mime: 'image/png' });
-
-  // Deliberately not suppressed: a screenshot is a real copy, so it belongs in
-  // history like anything else.
-  showPanel();
-  panel?.webContents.send('panel:refresh');
-}
-
-/** Fallback: borrow macOS's own region selector. */
-async function runSystemCapture() {
-  const before = await clipboardBridge.readSource();
-
-  capturing = true;
-  try {
-    await execFileAsync(SCREENSHOT_BIN, ['-i', '-c', '-x'], { timeout: 180_000 });
-  } catch (error) {
-    const detail = String(error.stderr || error.message || '').trim().slice(0, 140);
-    notifyPanel('capture.failed', detail);
-    return { ok: false, error: 'capture_failed', detail };
-  } finally {
-    capturing = false;
-  }
-
-  const after = await clipboardBridge.readSource();
-  const unchanged =
-    before.kind === after.kind &&
-    (before.kind !== 'image' ||
-      (before.buffer && after.buffer && before.buffer.equals(after.buffer)));
-
-  if (unchanged) return { ok: false, error: 'cancelled' };
-
-  showPanel();
-  panel?.webContents.send('panel:refresh');
-  return { ok: true };
-}
-
-/**
- * Make sure macOS knows about us before we send anyone to Settings.
- *
- * Reading `getMediaAccessStatus` registers nothing: an app only appears in the
- * Screen Recording list after it has actually tried to capture once. Skipping
- * that attempt left users staring at a pane with no row for 吧台 and no way to
- * grant permission, so the first press of ⌘⇧S probes for real, which triggers
- * the system prompt and puts the switch there.
- */
-async function requestScreenAccess() {
-  const status = systemPreferences.getMediaAccessStatus('screen');
-  if (status === 'granted') return status;
-
-  // A 2×2 shot through the same binary the fallback capture uses. Electron's
-  // desktopCapturer would work too, but it spins up Chromium's capture stack,
-  // which meanwhile asks TCC about Accessibility for other running apps — and
-  // macOS turns that into a second, pointless permission pane. screencapture
-  // never leaves that trace.
-  const target = path.join(os.tmpdir(), `bar-tool-access-probe-${process.pid}.png`);
-  try {
-    await execFileAsync(SCREENSHOT_BIN, ['-x', '-R0,0,2,2', target]);
-  } catch {
-    // Denied is the expected result here; the request is what registers us.
-  }
-  await fs.rm(target, { force: true });
-
-  return systemPreferences.getMediaAccessStatus('screen');
-}
-
-async function runCapture() {
-  if (capturing) return { ok: false, error: 'busy' };
-
-  const status = await requestScreenAccess();
-  if (status !== 'granted') {
-    // The probe above put 吧台 in the list; now the switch can be flipped.
-    // Toast first, then Settings, so the pane the user has to use is in front.
-    notifyPanel('capture.permission');
-    shell.openExternal(SCREENSHOT_SETTINGS_URL);
-    return { ok: false, error: 'permission', detail: status };
-  }
-
-  const tool = getScreenshotTool();
-  if (!tool) return runSystemCapture();
-
-  capturing = true;
-  try {
-    await tool.startCapture();
-    return { ok: true };
-  } catch (error) {
-    capturing = false;
-    console.error('annotation overlay failed to start, falling back', error);
-    return runSystemCapture();
-  }
-}
-
-/* ---------- image editor ---------- */
-
-async function openImageEditor(dataUrl, { debug = false, theme = 'light' } = {}) {
-  if (!dataUrl) return { ok: false, error: 'no_image' };
-
-  const night = theme === 'dark';
-
-  if (editorWindow) {
-    editorWindow.setBackgroundColor(night ? '#241f1a' : '#fff7e8');
-    editorWindow.focus();
-    editorWindow.webContents.send('editor:theme', night ? 'dark' : 'light');
-    editorWindow.webContents.send('editor:image', dataUrl);
-    return { ok: true, reused: true };
-  }
-
-  editorWindow = new BrowserWindow({
-    width: 980,
-    height: 720,
-    minWidth: 640,
-    minHeight: 480,
-    title: '编辑图片 · 吧台',
-    backgroundColor: night ? '#241f1a' : '#fff7e8',
-    show: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'editor-preload.cjs'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
-  });
-
-  editorWindow.once('ready-to-show', () => editorWindow?.show());
-  editorWindow.loadFile(path.join(projectRoot, 'dist', 'editor.html'), {
-    query: { theme: night ? 'dark' : 'light', ...(debug ? { debug: '1' } : {}) },
-  });
-  editorWindow.webContents.once('did-finish-load', () => {
-    editorWindow?.webContents.send('editor:image', dataUrl);
-  });
-  editorWindow.on('closed', () => {
-    editorWindow = null;
-  });
-
-  return { ok: true };
-}
-
-async function editClipboardImage(theme = 'light') {
-  const source = await clipboardBridge.readSource();
-  if (source.kind !== 'image') return { ok: false, error: 'no_image' };
-
-  const dataUrl = `data:${source.mime || 'image/png'};base64,${source.buffer.toString('base64')}`;
-  return openImageEditor(dataUrl, { theme });
-}
-
-function closeEditor() {
-  if (!editorWindow) return { ok: true };
-  const win = editorWindow;
-  editorWindow = null;
-  win.close();
-  return { ok: true };
 }
 
 /* ---------- uploads ---------- */
@@ -624,6 +320,7 @@ function actionContext() {
     linkFormat: settings?.get().linkFormat ?? 'url',
     upload: uploadImage,
     saveFile: saveImageToDownloads,
+    openInPreview: (image) => openInPreview(image),
   };
 }
 
@@ -672,6 +369,7 @@ async function runAction(id) {
   const result = await action.run(source, actionContext());
   if (result.error) return { ok: false, error: result.error };
   if (result.ui) return { ok: true, ui: result.ui };
+  if (result.handled) return { ok: true, toast: result.toast };
 
   if (typeof result.text === 'string') {
     if (result.html) await clipboardBridge.writeRich(result.text, result.html);
@@ -785,29 +483,6 @@ function registerIpc() {
     return { ok: true, state: await buildState() };
   });
 
-  ipcMain.handle('capture:run', () => runCapture());
-
-  ipcMain.handle('image:edit', (_event, theme) => editClipboardImage(theme));
-
-  ipcMain.handle('editor:save', async (_event, dataUrl) => {
-    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) {
-      return { ok: false, error: 'invalid_image' };
-    }
-
-    const image = nativeImage.createFromDataURL(dataUrl);
-    if (image.isEmpty()) return { ok: false, error: 'invalid_image' };
-
-    await clipboardBridge.writeImage({ buffer: image.toPNG(), mime: 'image/png' });
-    closeEditor();
-
-    showPanel();
-    panel?.webContents.send('panel:notice', { key: 'image.edited' });
-    panel?.webContents.send('panel:refresh');
-    return { ok: true };
-  });
-
-  ipcMain.handle('editor:cancel', () => closeEditor());
-
   ipcMain.handle('buckets:save', async (_event, input) => {
     if (!buckets) return { ok: false, error: 'unavailable' };
     const result = await buckets.save(input ?? {});
@@ -842,11 +517,6 @@ function registerIpc() {
 }
 
 function registerShortcuts() {
-  // Option+Command+S — region screenshot straight to the clipboard.
-  globalShortcut.register(CAPTURE_SHORTCUT, () => {
-    runCapture().catch((error) => console.error('capture failed', error));
-  });
-
   // Option+Command+V — show/hide the panel.
   globalShortcut.register('Alt+Command+V', togglePanel);
 
@@ -894,126 +564,6 @@ async function initStores() {
   if (settings.get().historyEnabled) watcher.start();
 }
 
-/**
- * Development helper: BAR_TOOL_FROM_PANEL=<png> clicks the panel's 编辑图片
- * button, screenshots the editor that comes up and quits.
- */
-async function devEditorFromPanel(target) {
-  showPanel();
-  await new Promise((resolve) => setTimeout(resolve, 1400));
-
-  await panel.webContents.executeJavaScript(
-    "document.getElementById('image-edit')?.click()",
-  );
-  await new Promise((resolve) => setTimeout(resolve, 2600));
-
-  if (!editorWindow) {
-    console.error('[from-panel] no editor window');
-    app.quit();
-    return;
-  }
-
-  const dom = await editorWindow.webContents.executeJavaScript(`(() => ({
-    url: location.href,
-    theme: document.documentElement.dataset.theme,
-    hasBar: typeof window.barEditor,
-    canvas: (() => { const c = document.querySelector('canvas'); return c ? { w: c.width, h: c.height } : null; })(),
-    tools: document.querySelectorAll('.tool').length,
-    size: document.getElementById('size')?.textContent,
-  }))()`);
-  console.log('[from-panel] editor', JSON.stringify(dom));
-
-  const image = await editorWindow.webContents.capturePage();
-  await fs.writeFile(target, image.toPNG());
-  console.log(`[from-panel] wrote ${target}`);
-  app.quit();
-}
-
-/**
- * Development helper: BAR_TOOL_EDIT_PROBE=<png> opens the image editor on the
- * clipboard picture, screenshots the editor window and quits.
- */
-async function devEditorProbe(target) {
-  const source = await clipboardBridge.readSource();
-  if (source.kind !== 'image') {
-    console.error('[editor-probe] no image on the clipboard');
-    app.quit();
-    return;
-  }
-
-  const dataUrl = `data:${source.mime || 'image/png'};base64,${source.buffer.toString('base64')}`;
-  await openImageEditor(dataUrl, {
-    debug: true,
-    theme: process.env.BAR_TOOL_THEME === 'dark' ? 'dark' : 'light',
-  });
-  await new Promise((resolve) => setTimeout(resolve, 2500));
-
-  // Exercise the tools without a mouse, then capture the result.
-  const drawn = await editorWindow.webContents.executeJavaScript(`(() => {
-    const e = window.__editor;
-    if (!e) return { error: 'no debug handle' };
-    e.commitArrow({ x: 60, y: 60 }, { x: 320, y: 170 });
-    e.applyMosaic({ left: 120, top: 210, width: 240, height: 160 });
-    return { w: e.state.canvas.getWidth(), h: e.state.canvas.getHeight(), objects: e.state.canvas.getObjects().length };
-  })()`);
-  console.log('[editor-probe] tools', JSON.stringify(drawn));
-  await new Promise((resolve) => setTimeout(resolve, 900));
-
-  const afterTools = await editorWindow.webContents.capturePage();
-  await fs.writeFile(`${target}.tools.png`, afterTools.toPNG());
-
-  const cropped = await editorWindow.webContents.executeJavaScript(
-    `window.__editor.applyCrop({ left: 60, top: 60, width: 340, height: 300 }).then(() => ({
-       w: window.__editor.state.canvas.getWidth(),
-       h: window.__editor.state.canvas.getHeight(),
-       objects: window.__editor.state.canvas.getObjects().length,
-     }))`,
-  );
-  console.log('[editor-probe] crop', JSON.stringify(cropped));
-  await new Promise((resolve) => setTimeout(resolve, 700));
-
-  const info = await editorWindow.webContents.executeJavaScript(`(() => {
-    const c = document.querySelector('canvas');
-    const style = c ? getComputedStyle(c) : null;
-    return {
-      canvas: c ? { w: c.width, h: c.height, inlineBg: c.style.backgroundColor, computedBg: style.backgroundColor } : null,
-      bodyBg: getComputedStyle(document.body).backgroundColor,
-      tools: document.querySelectorAll('.tool').length,
-      cornerPixel: (() => { try { return Array.from(c.getContext('2d').getImageData(2, 2, 1, 1).data); } catch (e) { return String(e.message); } })(),
-      hint: document.getElementById('tool-hint')?.textContent,
-    };
-  })()`);
-  console.log('[editor-probe] dom', JSON.stringify(info));
-
-  const image = await editorWindow.webContents.capturePage();
-  await fs.writeFile(target, image.toPNG());
-  console.log(`[editor-probe] wrote ${target}`);
-
-  // Save and confirm the clipboard actually received the edited pixels.
-  await editorWindow.webContents.executeJavaScript("document.getElementById('save').click()");
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-  const saved = clipboardBridge.readSource
-    ? await clipboardBridge.readSource()
-    : null;
-  console.log(
-    '[editor-probe] clip',
-    JSON.stringify({
-      windowClosed: editorWindow === null,
-      kind: saved?.kind,
-      width: saved?.width,
-      height: saved?.height,
-      bytes: saved?.buffer?.length,
-    }),
-  );
-  app.quit();
-}
-
-/**
- * Development helper: BAR_TOOL_CAPTURE=<png> opens the panel, saves a PNG of it
- * and quits. BAR_TOOL_LANG=zh|en forces the UI language first, BAR_TOOL_CLICK runs
- * an action and BAR_TOOL_VIEW opens history/settings — which is how the
- * screenshots for the README are produced without a mouse.
- */
 async function devCapture(target) {
   showPanel();
   await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -1094,79 +644,6 @@ if (!app.requestSingleInstanceLock()) {
     registerShortcuts();
 
     app.on('activate', showPanel);
-
-    if (process.env.BAR_TOOL_CAPTURE_FLOW) {
-      // Drives one overlay capture without a mouse: start, wait, then feed the
-      // same buffer the ✓ button would send, and report whether a second window
-      // appeared (the "点对号又回到框选" regression).
-      const onePixel = Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-        'base64',
-      );
-      const tool = getScreenshotTool();
-      console.log('[flow] tool', Boolean(tool));
-      await tool.startCapture();
-      console.log('[flow] started', Boolean(screenshotTool?.$win));
-      await new Promise((resolve) => setTimeout(resolve, 2200));
-      ipcMain.emit('SCREENSHOTS:ok', {}, onePixel, {});
-      console.log('[flow] ok sent');
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('[flow] after ok', JSON.stringify({
-        window: Boolean(screenshotTool?.$win),
-        capturing,
-        panelVisible: Boolean(panel?.isVisible()),
-        clip: (await clipboardBridge.readSource()).kind,
-      }));
-      app.quit();
-    }
-
-    if (process.env.BAR_TOOL_SCREEN_PROBE) {
-      // Shows whether this machine's TCC knows about the app, before and after
-      // the capture probe that registers it. BAR_TOOL_SCREEN_PROBE=overlay also
-      // starts the annotation overlay, to see which step asks for Accessibility.
-      const before = systemPreferences.getMediaAccessStatus('screen');
-      const after = await requestScreenAccess();
-      console.log('[screen-probe]', JSON.stringify({ before, after }));
-
-      if (process.env.BAR_TOOL_SCREEN_PROBE === 'overlay') {
-        const tool = getScreenshotTool();
-        console.log('[screen-probe] overlay', JSON.stringify({ loaded: Boolean(tool) }));
-        try {
-          await tool?.startCapture();
-        } catch (error) {
-          console.log('[screen-probe] overlay failed', String(error));
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        await tool?.endCapture();
-      }
-
-      app.quit();
-    }
-
-    if (process.env.BAR_TOOL_OVERLAY_PROBE) {
-      // Loads the overlay from the packaged asar to prove the native addon
-      // resolves outside the archive.
-      const tool = getScreenshotTool();
-      console.log(
-        '[overlay-probe]',
-        JSON.stringify({ loaded: Boolean(tool), hasView: Boolean(tool?.$view), broken: screenshotToolBroken }),
-      );
-      app.quit();
-    }
-
-    if (process.env.BAR_TOOL_FROM_PANEL) {
-      devEditorFromPanel(process.env.BAR_TOOL_FROM_PANEL).catch((error) => {
-        console.error('[from-panel] failed', error);
-        app.quit();
-      });
-    }
-
-    if (process.env.BAR_TOOL_EDIT_PROBE) {
-      devEditorProbe(process.env.BAR_TOOL_EDIT_PROBE).catch((error) => {
-        console.error('[editor-probe] failed', error);
-        app.quit();
-      });
-    }
 
     if (process.env.BAR_TOOL_CAPTURE) {
       devCapture(process.env.BAR_TOOL_CAPTURE).catch((error) => {

@@ -11,29 +11,14 @@ directories:
 # arm64 binary. Letting electron-builder resolve each arch itself (it reuses the
 # @electron/get cache) is what actually yields a correct x64 bundle.
 
-# Nothing that ships here needs recompiling: node-screenshots is a prebuilt
-# N-API addon (stable ABI) and fabric's optional `canvas` is excluded from the
-# bundle. Leaving the rebuild on made the Intel build fail in node-gyp, which
-# looked for pixman/cairo on a machine that has no Headless-Canvas toolchain.
+# No native modules ship with the app any more, so there is nothing to rebuild.
 npmRebuild: false
 
 files:
   - dist/**/*
   - electron/**/*
   - package.json
-  # Runtime dependencies are no longer optional: the capture overlay ships a
-  # prebuilt native addon, so node_modules has to travel with the app.
-  - node_modules/**/*
   - '!**/*.map'
-  # fabric only needs these for server-side rendering; the editor runs in a window.
-  - '!**/node_modules/canvas/**'
-  - '!**/node_modules/jsdom/**'
-
-# The addon and the overlay's renderer assets are loaded from disk, not from
-# inside the archive: keep both unpacked.
-asarUnpack:
-  - '**/node_modules/node-screenshots*/**'
-  - '**/node_modules/electron-screenshots/**'
 
 mac:
   icon: build/icon.icns

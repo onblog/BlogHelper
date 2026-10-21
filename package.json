@@ -18,7 +18,6 @@
     "test": "node --test tests/*.test.cjs",
     "dist": "npm run dist:arm64 && npm run dist:x64",
     "dist:arm64": "electron-builder --mac --arm64",
-    "predist:x64": "node scripts/fetch-x64-addon.cjs",
     "dist:x64": "electron-builder --mac --x64"
   },
   "devDependencies": {
@@ -27,9 +26,5 @@
     "electron-builder": "^26.15.3",
     "vite": "^8.3.4",
     "wait-on": "^8.0.2"
-  },
-  "dependencies": {
-    "electron-screenshots": "^0.6.2",
-    "fabric": "^7.4.0"
   }
 }

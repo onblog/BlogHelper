@@ -26,7 +26,6 @@ contextBridge.exposeInMainWorld('bar', {
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
 
   /** Region screenshot into the clipboard. */
-  capture: () => ipcRenderer.invoke('capture:run'),
   onNotice: (handler) => {
     ipcRenderer.on('panel:notice', (_event, notice) => handler(notice));
   },
@@ -35,7 +34,6 @@ contextBridge.exposeInMainWorld('bar', {
   setAppearance: (theme) => ipcRenderer.invoke('appearance:set', theme),
 
   /** Open the image editor on the clipboard picture. */
-  editImage: (theme) => ipcRenderer.invoke('image:edit', theme),
 
   /** Inline editing. */
   fullText: () => ipcRenderer.invoke('clipboard:fullText'),

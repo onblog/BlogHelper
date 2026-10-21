@@ -837,6 +837,12 @@ select:focus-visible {
   text-overflow: ellipsis;
 }
 
+/* Sits directly under a setting, whose bottom rule already separates them. */
+.setting + .about {
+  margin-top: 0;
+  border-top: 0;
+}
+
 .about {
   display: flex;
   flex-wrap: wrap;

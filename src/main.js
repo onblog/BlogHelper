@@ -19,7 +19,6 @@ const nodes = {
   version: document.getElementById('version'),
   langToggle: document.getElementById('lang-toggle'),
   themeToggle: document.getElementById('theme-toggle'),
-  capture: document.getElementById('capture'),
   settings: document.getElementById('settings'),
   editSave: document.getElementById('edit-save'),
   editCancel: document.getElementById('edit-cancel'),
@@ -847,13 +846,6 @@ function bindEvents() {
 
   nodes.undo.addEventListener('click', undo);
 
-  document.getElementById('settings-capture')?.addEventListener('click', () => {
-    window.bar.capture();
-  });
-
-  nodes.capture.addEventListener('click', () => {
-    window.bar.capture();
-  });
 
   nodes.themeToggle.addEventListener('click', () => {
     applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
@@ -969,7 +961,7 @@ async function init() {
     if (!notice?.key) return;
     const detail = notice.detail ? ` (${notice.detail})` : '';
     showToast(`${t(notice.key)}${detail}`);
-    setStatus(notice.key, notice.key !== 'capture.done');
+    setStatus(notice.key);
   });
 
   window.bar.onView((view) => {

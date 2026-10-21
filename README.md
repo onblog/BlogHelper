@@ -4,7 +4,7 @@
 
 # bar-tool · 吧台
 
-**The clipboard workbench for macOS: whatever lands on it — a screenshot, a web page, a table column — comes back cleaned, tidied and ready to paste.**
+**The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
 <a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
 <img alt="version" src="https://img.shields.io/badge/version-1.6.1-f2b544?style=for-the-badge">
@@ -64,7 +64,8 @@ One model, one job: **clipboard in → transformation → clipboard out**.
 - **Two appearances, no auto-switching.** A dark bar at night (charcoal and amber) and a light bar
   at daytime (cream paper and caramel ink). The switch lives in the top bar and the choice is
   remembered — nothing changes under you when macOS flips its own appearance.
-- **Capture straight into the clipboard.** `⌘⇧S` borrows macOS's own region selector, drops the shot on the clipboard and opens the panel, so the very next click can send it to your bucket as a link.
+- **Images get three buttons, nothing more.** Copy the picture back to the clipboard, open it in
+  Preview (macOS's own editor), or send it to your bucket / Downloads.
 - **A menu bar panel, not a window.** Click the tray icon, pick an action, paste. No dock icon, no
   window stealing a Space.
 - **Only the actions that apply.** The list is filtered by what is actually on the clipboard right
@@ -102,7 +103,7 @@ code editor still gets the Markdown source.
 | Typography | Space between Chinese and Latin · Punctuation → full-width · Punctuation → half-width |
 | Lists | Remove duplicate lines · Sort lines · Reverse line order · Number the lines · Join into a comma list |
 | Links | Clean tracking parameters · Decode `%20` in links · Extract every link |
-| Image | Upload to your bucket · Copy to clipboard · Save to Downloads |
+| Image | Open in Preview · Copy to clipboard · Upload to your bucket · Save to Downloads |
 
 Adding a tool means adding one file under `electron/actions/` — the panel, the tests and the IPC
 surface pick it up automatically.
@@ -121,19 +122,16 @@ picture.
 | Access key / Secret | An S3 key with write access; the secret is encrypted with the macOS Keychain |
 | Path-style | On for MinIO and self-hosted, off for virtual-host buckets |
 
-Object keys are content addressed (`images/2026/10/4f9c1a2b.png`), so the same screenshot uploaded
+Object keys are content addressed (`images/2026/10/4f9c1a2b.png`), so the same picture uploaded
 twice is one object. The link format (URL / Markdown / HTML / BBCode) is a setting, not a per-upload
 choice.
 
-## Capture
+## Images
 
-`⌘⇧S` (or the camera button in the panel, or the tray menu) runs macOS's own region selector and puts
-the result on the clipboard, ready for the image actions.
-
-- The first use asks for **Screen Recording** permission — the same one every capture tool needs.
-  If it is missing the app opens the right pane in System Settings instead of failing silently.
-- Nothing is captured in the background: the system selector only appears when you ask for it.
-- Prefer the built-in `⌘⇧⌃4`? It works too — the panel picks the image up from the clipboard either way.
+Screenshots are macOS's job: `⌘⇧⌃4` puts a region straight on the clipboard and the panel picks it up.
+From there the image gets three actions — copy back to the clipboard, open in Preview, or upload /
+save. There is no capture shortcut of our own, so the app needs no Screen Recording permission and
+never grabs the screen in the background.
 
 ## History
 
@@ -150,7 +148,6 @@ The bottom row of the panel keeps the last three things you copied; **All** open
 
 | Keys | Action |
 | --- | --- |
-| `⌘⇧S` | Region screenshot → clipboard (needs Screen Recording once) |
 | `⌥⌘V` | Show / hide the panel |
 | `⌥⌘Z` | Undo the last action |
 | `Esc` | Close the panel |
@@ -185,8 +182,8 @@ Three rules keep it honest:
   telemetry, no crash reporting, no update check.
 - Turning history off stops recording immediately; **Clear history** deletes the index and every
   blob.
-- Screen Recording is requested only for the capture shortcut, and only the region you select is
-  captured — there is no background grab.
+- There is no capture of our own: the app never reads the screen, so no Screen Recording permission
+  is ever requested.
 - No telemetry, no crash reporting, no update check.
 
 ## Project layout
@@ -224,9 +221,7 @@ npm run dist:arm64     # dmg for Apple Silicon, output in release/
 npm run dist:x64       # dmg for Intel (fetches the x64 native addon first)
 ```
 
-`node-screenshots` ships one prebuilt addon per architecture, so an Intel build from an
-Apple Silicon Mac needs its x64 twin: `predist:x64` installs it and `after-pack` drops the
-addon that does not match the target, keeping each dmg honest.
+No native modules ship with the app any more, so both architectures are pure Electron builds.
 
 ## Status
 

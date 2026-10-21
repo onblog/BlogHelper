@@ -12,11 +12,16 @@ const { formatLink } = require('../link-format.cjs');
 
 module.exports = [
   {
-    id: 'image.edit',
+    id: 'image.open',
     group: 'image',
-    title: { zh: '编辑图片', en: 'Edit image' },
+    // Hand the picture to Preview: it already has every annotation and crop tool
+    // people need, and whatever they copy there lands back on the clipboard.
+    title: { zh: '预览打开图片', en: 'Open in Preview' },
     accepts: ['image'],
-    run: () => ({ ui: 'edit_image' }),
+    run: async (input, ctx) => {
+      const result = await ctx.openInPreview(input);
+      return result.ok ? { handled: true, toast: 'open.done' } : { error: result.error ?? 'open_failed' };
+    },
   },
   {
     id: 'image.upload',
