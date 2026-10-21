@@ -65,7 +65,6 @@ const nodes = {
   dot: document.getElementById('dot'),
   status: document.getElementById('status'),
   undo: document.getElementById('undo'),
-  hint: document.getElementById('hint'),
   toast: document.getElementById('toast'),
 };
 
@@ -84,7 +83,6 @@ const state = {
   editing: null,
   buckets: [],
   editingBucketId: null,
-  selectedId: null,
   signature: '',
   running: false,
   pollTimer: null,
@@ -293,17 +291,12 @@ function actionButton(action) {
   button.className = 'action';
   button.type = 'button';
   button.dataset.id = action.id;
-  if (action.id === state.selectedId) button.classList.add('is-selected');
 
   const name = document.createElement('span');
   name.className = 'action__name';
   name.textContent = pickLocalised(action.title);
 
-  const key = document.createElement('span');
-  key.className = 'action__key';
-  key.textContent = '↵';
-
-  button.append(name, key);
+  button.append(name);
   button.addEventListener('click', () => runAction(action.id));
   return button;
 }
@@ -388,7 +381,6 @@ function renderFooter() {
 
   nodes.undo.hidden = !state.canUndo;
   nodes.undo.textContent = t('undo');
-  nodes.hint.textContent = state.actions.length ? t('actions.hint') : '';
 
   if (state.statusIsError) {
     nodes.dot.dataset.state = 'bad';
@@ -442,11 +434,6 @@ function paint(payload) {
   }
 
   state.signature = signature;
-
-  // Keep the selection inside the new list, falling back to the first entry.
-  if (!state.actions.some((action) => action.id === state.selectedId)) {
-    state.selectedId = state.actions[0]?.id ?? null;
-  }
 
   renderPreview(state.preview);
   renderActions();
@@ -723,7 +710,6 @@ async function runAction(id) {
   if (state.running) return;
 
   state.running = true;
-  state.selectedId = id;
   setStatus('status.running');
 
   try {
@@ -798,19 +784,6 @@ async function clearHistory() {
 }
 
 /* ---------- keyboard + wiring ---------- */
-
-function moveSelection(delta) {
-  if (state.actions.length === 0) return;
-
-  const index = state.actions.findIndex((action) => action.id === state.selectedId);
-  const next = (index + delta + state.actions.length) % state.actions.length;
-  state.selectedId = state.actions[next].id;
-
-  for (const button of nodes.actions.querySelectorAll('.action')) {
-    button.classList.toggle('is-selected', button.dataset.id === state.selectedId);
-  }
-  nodes.actions.querySelector('.action.is-selected')?.scrollIntoView({ block: 'nearest' });
-}
 
 function bindEvents() {
   nodes.back.addEventListener('click', () => setView('main'));
@@ -893,21 +866,6 @@ function bindEvents() {
 
     if (state.view !== 'main') return;
 
-    if (event.key === 'ArrowDown' || (event.key === 'Tab' && !event.shiftKey)) {
-      event.preventDefault();
-      moveSelection(1);
-      return;
-    }
-    if (event.key === 'ArrowUp' || (event.key === 'Tab' && event.shiftKey)) {
-      event.preventDefault();
-      moveSelection(-1);
-      return;
-    }
-    if (event.key === 'Enter' && state.selectedId) {
-      event.preventDefault();
-      runAction(state.selectedId);
-      return;
-    }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {
       event.preventDefault();
       undo();

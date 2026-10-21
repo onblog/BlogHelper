@@ -9,6 +9,7 @@
  */
 
 const modules = [
+  require('./text/convert.cjs').actions,
   require('./text/clean.cjs'),
   require('./text/typography.cjs'),
   require('./text/list.cjs'),
@@ -24,7 +25,7 @@ const actions = modules.flat();
  * Grouped by what a person is trying to do, not by which technology is
  * involved — the audience is anyone who copies text, not just developers.
  */
-const GROUP_ORDER = ['clean', 'typography', 'list', 'link', 'image'];
+const GROUP_ORDER = ['convert', 'clean', 'typography', 'list', 'link', 'image'];
 
 const byId = new Map(actions.map((action) => [action.id, action]));
 

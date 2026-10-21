@@ -137,6 +137,20 @@ async function writeText(text) {
   await clipboard.write([new ClipboardItem({ 'text/plain': text })]);
 }
 
+/**
+ * Write rich text: both flavours in one atomic write, so the same clipboard item
+ * pastes formatted into Word and as Markdown into an editor.
+ */
+async function writeRich(text, html) {
+  const document = /^\s*<(!doctype|html)/i.test(html)
+    ? html
+    : `<!DOCTYPE html><html><body>${html}</body></html>`;
+
+  await clipboard.write([
+    new ClipboardItem({ 'text/plain': text, 'text/html': document }),
+  ]);
+}
+
 async function writeImage(image) {
   const type = image.mime ?? 'image/png';
   const blob = new Blob([image.buffer], { type });
@@ -149,4 +163,4 @@ async function restore(source) {
   else if (source.kind === 'image') await writeImage(source);
 }
 
-module.exports = { readSource, readText, hasImage, toPreview, writeText, writeImage, restore };
+module.exports = { readSource, readText, hasImage, toPreview, writeText, writeRich, writeImage, restore };

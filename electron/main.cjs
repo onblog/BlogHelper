@@ -408,7 +408,8 @@ async function runAction(id) {
   if (result.error) return { ok: false, error: result.error };
 
   if (typeof result.text === 'string') {
-    await clipboardBridge.writeText(result.text);
+    if (result.html) await clipboardBridge.writeRich(result.text, result.html);
+    else await clipboardBridge.writeText(result.text);
     watcher?.expectText(result.text);
   } else if (result.image) {
     await clipboardBridge.writeImage(result.image);

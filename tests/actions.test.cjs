@@ -48,12 +48,12 @@ test('html helpers', async (t) => {
 
 test('clean group', async (t) => {
   await t.test('plain text is only offered for rich clipboard content', () => {
-    assert.equal(offered('clean.plain', 'x'), false);
-    assert.equal(offered('clean.plain', 'x', '<b>x</b>'), true);
+    assert.equal(offered('convert.plain', 'x'), false);
+    assert.equal(offered('convert.plain', 'x', '<b>x</b>'), true);
   });
 
   await t.test('plain text strips markup', () => {
-    assert.equal(run('clean.plain', '', '<p>你好</p><p>世界</p>').text, '你好\n世界');
+    assert.equal(run('convert.plain', '', '<p>你好</p><p>世界</p>').text, '你好\n世界');
   });
 
   await t.test('trim removes trailing spaces and outer blank lines', () => {
@@ -224,7 +224,7 @@ test('registry', async (t) => {
   await t.test('a clean Chinese sentence offers the general tools only', () => {
     const ids = actions.listFor({ kind: 'text', text: '这是一句普通的话。' }).map((a) => a.id);
     assert.ok(ids.includes('clean.trim'));
-    assert.ok(!ids.includes('clean.plain'), 'no rich text');
+    assert.ok(!ids.includes('convert.plain'), 'no rich text');
     assert.ok(!ids.includes('clean.strip-markdown'), 'not markdown');
     assert.ok(!ids.includes('link.extract'), 'no links');
     assert.ok(!ids.includes('typography.cjk-spacing'), 'nothing to space');

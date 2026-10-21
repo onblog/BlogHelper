@@ -91,16 +91,24 @@
       </section>
 
       <section class="block" id="actions">
-        <h2 data-i18n="actions.title">21 个动作，五个分组</h2>
+        <h2 data-i18n="actions.title">23 个动作，六个分组</h2>
         <p class="block__lead" data-i18n="actions.lead">
           面板不会把所有功能都摊在你脸上：剪贴板是图片就只出图片动作，是普通文字就不会出现「转纯文本」。
         </p>
 
         <div class="grid">
           <article class="card">
-            <h3 data-i18n="group.clean">清理</h3>
+            <h3 data-i18n="group.convert">格式转换</h3>
             <ul>
               <li data-i18n="item.plain">转纯文本（剥掉网页样式）</li>
+              <li data-i18n="item.toMarkdown">转 Markdown（网页/Word → 干净源码）</li>
+              <li data-i18n="item.toRich">转富文本（Markdown → 带格式，粘进 Word/微信）</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3 data-i18n="group.clean">清理</h3>
+            <ul>
               <li data-i18n="item.trim">去首尾空白 · 合并空行 · 删掉空行</li>
               <li data-i18n="item.numbers">去掉行号 · 压成一行</li>
               <li data-i18n="item.invisible">清除隐形字符（零宽、BOM）</li>

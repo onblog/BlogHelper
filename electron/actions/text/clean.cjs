@@ -89,18 +89,6 @@ function stripMarkdown(text) {
 
 module.exports = [
   {
-    id: 'clean.plain',
-    group: 'clean',
-    title: { zh: '转纯文本', en: 'To plain text' },
-    accepts: ['text'],
-    // Only offers itself when the clipboard actually carries rich text.
-    isAvailable: (input) => Boolean(input.html),
-    run: (input) => {
-      const text = stripHtml(input.html);
-      return text ? { text } : { error: 'empty_result' };
-    },
-  },
-  {
     id: 'clean.trim',
     group: 'clean',
     title: { zh: '去首尾空白', en: 'Trim whitespace' },

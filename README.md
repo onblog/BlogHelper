@@ -7,7 +7,7 @@
 **The clipboard workbench for macOS: whatever lands on it — a screenshot, a web page, a table column — comes back cleaned, tidied and ready to paste.**
 
 <a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
-<img alt="version" src="https://img.shields.io/badge/version-1.5.0-f2b544?style=for-the-badge">
+<img alt="version" src="https://img.shields.io/badge/version-1.6.0-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -87,11 +87,18 @@ it needs a formatter dependency, which is exactly the weight this project refuse
 
 ## Actions
 
-Every action is a pure function; the registry decides what to show for the clipboard at hand.
+Every action is a pure function; the registry decides what to show for the clipboard at hand. The
+set is deliberately small: it is what a writer reaches for, not everything that is technically
+possible.
+
+**Rich text ⇄ Markdown go both ways.** Copy an article from a browser and get clean Markdown; write
+Markdown and put *rich text* on the clipboard, so Word, WeChat or Mail paste it formatted while a
+code editor still gets the Markdown source.
 
 | Group | Actions |
 | --- | --- |
-| Clean up | To plain text · Trim whitespace · Collapse blank lines · Remove blank lines · Join into one line · Strip line numbers · Remove invisible characters · Strip Markdown syntax |
+| Convert | To plain text · **To Markdown** · **To rich text** |
+| Clean up | Trim whitespace · Collapse blank lines · Remove blank lines · Join into one line · Strip line numbers · Remove invisible characters · Strip Markdown syntax |
 | Typography | Space between Chinese and Latin · Punctuation → full-width · Punctuation → half-width |
 | Lists | Remove duplicate lines · Sort lines · Reverse line order · Number the lines · Join into a comma list |
 | Links | Clean tracking parameters · Decode `%20` in links · Extract every link |
@@ -145,10 +152,10 @@ The bottom row of the panel keeps the last three things you copied; **All** open
 | --- | --- |
 | `⌥⌘S` | Region screenshot → clipboard (needs Screen Recording once) |
 | `⌥⌘V` | Show / hide the panel |
-| `↑` `↓` | Move through the actions |
-| `↵` | Run the selected action |
 | `⌥⌘Z` | Undo the last action |
 | `Esc` | Close the panel |
+
+The panel is mouse-first: no arrow-key cursor, no Enter to run. Click an action and it happens.
 
 ## How it works
 
@@ -219,7 +226,7 @@ npm run dist:x64       # dmg for Intel
 
 ## Status
 
-`1.5.0`: 19 text tools, image upload to your own S3-compatible bucket, save-to-Downloads,
+`1.6.0`: 21 text tools, image upload to your own S3-compatible bucket, save-to-Downloads,
 local clipboard history for text and images, undo and the bilingual panel. The site lives at
 **https://tool.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
