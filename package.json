@@ -1,7 +1,7 @@
 {
   "name": "bar-tool",
   "productName": "吧台",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "A macOS clipboard workbench: screenshots and text that land on the clipboard leave as something you can use right away. 吧台：macOS 上的剪贴板工作台，截图、文字进了剪贴板就变成能直接用的样子。",
   "main": "electron/main.cjs",
   "author": "Martin",

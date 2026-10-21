@@ -7,7 +7,7 @@
 **The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
 <a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
-<img alt="version" src="https://img.shields.io/badge/version-1.6.1-f2b544?style=for-the-badge">
+<img alt="version" src="https://img.shields.io/badge/version-1.7.0-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -236,8 +236,8 @@ No native modules ship with the app any more, so both architectures are pure Ele
 
 ## Status
 
-`1.6.1`: 21 text tools, image upload to your own S3-compatible bucket, save-to-Downloads,
-local clipboard history for text and images, undo (a button next to the action count, or ⌥⌘Z) and the bilingual panel. The site lives at
+`1.7.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
+local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. The screenshot shortcut is gone: macOS's ⌘⇧⌃4 plus this panel does that job. The site lives at
 **https://tool.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
 ## License
