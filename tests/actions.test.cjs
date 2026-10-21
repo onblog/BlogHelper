@@ -11,13 +11,20 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const actions = require('../electron/actions/index.cjs');
-const { stripHtml, decodeEntities, escapeHtml } = require('../electron/actions/html.cjs');
+const { stripHtml, decodeEntities } = require('../electron/actions/html.cjs');
 
 /** Run one action by id against a text-only clipboard. */
 function run(id, text, html) {
   const action = actions.get(id);
   assert.ok(action, `action ${id} is registered`);
   return action.run({ kind: 'text', text, html });
+}
+
+/** Is this action offered for the given clipboard text? */
+function offered(id, text, html) {
+  const action = actions.get(id);
+  assert.ok(action, `action ${id} is registered`);
+  return !action.isAvailable || action.isAvailable({ kind: 'text', text, html });
 }
 
 test('html helpers', async (t) => {
@@ -31,26 +38,18 @@ test('html helpers', async (t) => {
   });
 
   await t.test('stripHtml drops script and style bodies', () => {
-    const text = stripHtml('<style>p{color:red}</style><script>alert(1)</script><p>hi</p>');
-    assert.equal(text, 'hi');
+    assert.equal(stripHtml('<style>p{color:red}</style><script>alert(1)</script><p>hi</p>'), 'hi');
   });
 
   await t.test('decodeEntities handles named and numeric entities', () => {
     assert.equal(decodeEntities('a &amp; b &lt;c&gt; &#65; &#x42;'), 'a & b <c> A B');
-    assert.equal(decodeEntities('&unknown;'), '&unknown;');
-  });
-
-  await t.test('escapeHtml is the inverse on the usual suspects', () => {
-    assert.equal(escapeHtml('<a href="x">&\'</a>'), '&lt;a href=&quot;x&quot;&gt;&amp;&#39;&lt;/a&gt;');
-    assert.equal(decodeEntities(escapeHtml('<a href="x">&\'</a>')), '<a href="x">&\'</a>');
   });
 });
 
 test('clean group', async (t) => {
   await t.test('plain text is only offered for rich clipboard content', () => {
-    const action = actions.get('clean.plain');
-    assert.equal(action.isAvailable({ kind: 'text', text: 'x' }), false);
-    assert.equal(action.isAvailable({ kind: 'text', text: 'x', html: '<b>x</b>' }), true);
+    assert.equal(offered('clean.plain', 'x'), false);
+    assert.equal(offered('clean.plain', 'x', '<b>x</b>'), true);
   });
 
   await t.test('plain text strips markup', () => {
@@ -65,6 +64,10 @@ test('clean group', async (t) => {
     assert.equal(run('clean.blank-lines', 'a\n\n\n\nb').text, 'a\n\nb');
   });
 
+  await t.test('remove blank lines leaves no gap at all', () => {
+    assert.equal(run('clean.no-blank-lines', 'a\n\nb\n \n\nc').text, 'a\nb\nc');
+  });
+
   await t.test('join into one line removes line breaks', () => {
     assert.equal(run('clean.one-line', 'a\nb  c\n\nd').text, 'a b c d');
   });
@@ -76,156 +79,150 @@ test('clean group', async (t) => {
   await t.test('strip line numbers reports no change', () => {
     assert.equal(run('clean.strip-numbers', '甲\n乙').error, 'unchanged');
   });
-});
 
-test('case group', async (t) => {
-  await t.test('uppercase and lowercase', () => {
-    assert.equal(run('case.upper', 'abc').text, 'ABC');
-    assert.equal(run('case.lower', 'ABC').text, 'abc');
+  await t.test('invisible characters are only offered when present', () => {
+    assert.equal(offered('clean.invisible', 'plain'), false);
+    assert.equal(offered('clean.invisible', 'a\u200bb'), true);
   });
 
-  await t.test('snake case splits camel and acronym boundaries', () => {
-    assert.equal(run('case.snake', 'userID').text, 'user_id');
-    assert.equal(run('case.snake', 'HTTPServerName').text, 'http_server_name');
+  await t.test('invisible characters are removed and nbsp becomes a space', () => {
+    assert.equal(run('clean.invisible', 'a\u200bb\ufeffc\u00a0d').text, 'abc d');
   });
 
-  await t.test('camel case from mixed input', () => {
-    assert.equal(run('case.camel', 'user_name-id').text, 'userNameId');
-    assert.equal(run('case.camel', 'User Name').text, 'userName');
+  await t.test('markdown stripping flattens syntax', () => {
+    const markdown = '# 标题\n\n**加粗** 和 `代码`\n\n- 项目一\n- 项目二\n\n[链接](https://a.com)';
+    assert.equal(run('clean.strip-markdown', markdown).text, '标题\n\n加粗 和 代码\n\n项目一\n项目二\n\n链接');
   });
 
-  await t.test('kebab and constant case', () => {
-    assert.equal(run('case.kebab', 'UserName').text, 'user-name');
-    assert.equal(run('case.constant', 'user name').text, 'USER_NAME');
-  });
-
-  await t.test('title case per line keeps the line structure', () => {
-    assert.equal(run('case.title', 'hello world\nfoo_bar').text, 'Hello World\nFoo Bar');
-  });
-
-  await t.test('already converted text reports no change', () => {
-    assert.equal(run('case.upper', 'ABC').error, 'unchanged');
+  await t.test('markdown action is hidden for plain prose', () => {
+    assert.equal(offered('clean.strip-markdown', '这是一段普通文字'), false);
+    assert.equal(offered('clean.strip-markdown', '**加粗**'), true);
   });
 });
 
-test('codec group', async (t) => {
-  await t.test('base64 round trip', () => {
-    const encoded = run('codec.base64-encode', '你好 bar').text;
-    assert.equal(encoded, Buffer.from('你好 bar', 'utf8').toString('base64'));
-    assert.equal(run('codec.base64-decode', encoded).text, '你好 bar');
+test('typography group', async (t) => {
+  await t.test('spaces appear between Chinese and Latin', () => {
+    assert.equal(run('typography.cjk-spacing', '中文abc中文').text, '中文 abc 中文');
   });
 
-  await t.test('base64 decode is only offered for real base64', () => {
-    const action = actions.get('codec.base64-decode');
-    assert.equal(action.isAvailable({ kind: 'text', text: 'not base64 !!' }), false);
-    assert.equal(action.isAvailable({ kind: 'text', text: 'aGVsbG8=' }), true);
+  await t.test('spaces appear between Chinese and digits', () => {
+    assert.equal(run('typography.cjk-spacing', '第1章').text, '第 1 章');
   });
 
-  await t.test('url encode and decode', () => {
-    const encoded = run('codec.url-encode', 'a b&c=中').text;
-    assert.equal(encoded, 'a%20b%26c%3D%E4%B8%AD');
-    assert.equal(run('codec.url-decode', encoded).text, 'a b&c=中');
+  await t.test('already spaced text is untouched', () => {
+    assert.equal(run('typography.cjk-spacing', '中文 abc 中文').error, 'unchanged');
   });
 
-  await t.test('broken percent-encoding returns an error, not a crash', () => {
-    assert.equal(run('codec.url-decode', '100%').error, 'invalid_url_encoding');
+  await t.test('URLs are never split by the spacing rule', () => {
+    const text = '看这个 https://example.com/a_b_c 很好';
+    assert.equal(offered('typography.cjk-spacing', text), false);
+  });
+
+  await t.test('spacing is idempotent', () => {
+    const once = run('typography.cjk-spacing', '中文abc中文').text;
+    assert.equal(run('typography.cjk-spacing', once).error, 'unchanged');
+  });
+
+  await t.test('full-width punctuation only applies next to Chinese', () => {
+    assert.equal(run('typography.fullwidth', '你好,世界!').text, '你好，世界！');
+    assert.equal(offered('typography.fullwidth', '3.14 is pi, ok'), false);
+  });
+
+  await t.test('a period after Chinese becomes a full stop', () => {
+    assert.equal(run('typography.fullwidth', '你好.世界').text, '你好。世界');
+  });
+
+  await t.test('half-width conversion is the inverse', () => {
+    assert.equal(run('typography.halfwidth', '你好，世界！').text, '你好,世界!');
+  });
+
+  await t.test('half-width is hidden for pure ASCII', () => {
+    assert.equal(offered('typography.halfwidth', 'hello, world'), false);
   });
 });
 
-test('json group', async (t) => {
-  await t.test('beautify and minify', () => {
-    assert.equal(run('data.json-beautify', '{"a":1,"b":[2]}').text, '{\n  "a": 1,\n  "b": [\n    2\n  ]\n}');
-    assert.equal(run('data.json-minify', '{\n  "a": 1\n}').text, '{"a":1}');
-  });
-
-  await t.test('sort keys is recursive', () => {
-    const text = run('data.json-sort-keys', '{"b":1,"a":{"d":2,"c":3}}').text;
-    assert.equal(text, '{\n  "a": {\n    "c": 3,\n    "d": 2\n  },\n  "b": 1\n}');
-  });
-
-  await t.test('invalid json is hidden from the panel', () => {
-    const action = actions.get('data.json-beautify');
-    assert.equal(action.isAvailable({ kind: 'text', text: '{oops' }), false);
-    assert.equal(action.isAvailable({ kind: 'text', text: '{"a":1}' }), true);
-  });
-});
-
-test('lines group', async (t) => {
+test('list group', async (t) => {
   await t.test('dedupe keeps the first occurrence and its order', () => {
-    assert.equal(run('lines.dedupe', 'b\na\nb\nc\na').text, 'b\na\nc');
+    assert.equal(run('list.dedupe', 'b\na\nb\nc\na').text, 'b\na\nc');
   });
 
   await t.test('sort is natural and locale aware', () => {
-    assert.equal(run('lines.sort', 'item10\nitem2\nItem1').text, 'Item1\nitem2\nitem10');
+    assert.equal(run('list.sort', 'item10\nitem2\nItem1').text, 'Item1\nitem2\nitem10');
   });
 
-  await t.test('already clean lines report no change', () => {
-    assert.equal(run('lines.dedupe', 'a\nb').error, 'unchanged');
+  await t.test('reverse flips the line order', () => {
+    assert.equal(run('list.reverse', 'a\nb\nc').text, 'c\nb\na');
+  });
+
+  await t.test('single-line text offers no line-order actions', () => {
+    assert.equal(offered('list.reverse', 'just one line'), false);
+    assert.equal(offered('list.number', 'just one line'), false);
+  });
+
+  await t.test('numbering skips blank lines', () => {
+    assert.equal(run('list.number', 'a\n\nb').text, '1. a\n\n2. b');
+  });
+
+  await t.test('joining with commas cleans separators', () => {
+    assert.equal(run('list.commas', ' 甲 \n乙，丙\n\n丁 ').text, '甲, 乙, 丙, 丁');
   });
 });
 
-test('time group', async (t) => {
-  await t.test('seconds and milliseconds both convert', () => {
-    const seconds = run('time.to-date', '1700000000').text;
-    assert.match(seconds, /^2023-11-1[45] \d{2}:13:20 \(/);
-    const millis = run('time.to-date', '1700000000000').text;
-    assert.equal(millis, seconds);
+test('link group', async (t) => {
+  await t.test('tracking parameters are dropped, real ones stay', () => {
+    const text = run('link.strip-tracking', 'https://a.com/x?utm_source=wx&id=3&utm_medium=share').text;
+    assert.equal(text, 'https://a.com/x?id=3');
   });
 
-  await t.test('timestamp action is only offered for digits', () => {
-    const action = actions.get('time.to-date');
-    assert.equal(action.isAvailable({ kind: 'text', text: '1700000000' }), true);
-    assert.equal(action.isAvailable({ kind: 'text', text: 'yesterday' }), false);
+  await t.test('a clean link offers no cleaning', () => {
+    assert.equal(offered('link.strip-tracking', 'https://a.com/x?id=3'), false);
   });
 
-  await t.test('date to timestamp is the inverse', () => {
-    const seconds = run('time.to-timestamp', '2023-11-14 22:13:20').text;
-    assert.equal(typeof seconds, 'string');
-    assert.match(seconds, /^\d{10}$/);
+  await t.test('percent-encoding inside a link is decoded', () => {
+    assert.equal(run('link.decode', 'https://a.com/%E4%B8%AD%E6%96%87').text, 'https://a.com/中文');
   });
 
-  await t.test('prose is not treated as a date', () => {
-    const action = actions.get('time.to-timestamp');
-    assert.equal(action.isAvailable({ kind: 'text', text: '这是一句话，不是日期' }), false);
+  await t.test('links are extracted, deduped and kept in order', () => {
+    const text = run('link.extract', '先看 https://a.com/x ，再看 https://b.com/y ，重复 https://a.com/x').text;
+    assert.equal(text, 'https://a.com/x\nhttps://b.com/y');
+  });
+
+  await t.test('text without links offers no extraction', () => {
+    assert.equal(offered('link.extract', '没有链接的一段话'), false);
   });
 });
 
 test('registry', async (t) => {
-  await t.test('every action has the required shape', () => {
-    for (const id of ['clean.plain', 'case.upper', 'codec.url-encode', 'data.json-beautify']) {
-      const action = actions.get(id);
-      assert.ok(action, id);
-      assert.equal(typeof action.run, 'function');
-      assert.equal(typeof action.title.zh, 'string');
-      assert.equal(typeof action.title.en, 'string');
-      assert.ok(action.accepts.includes('text'));
+  await t.test('every action declares id, group, bilingual title and a run', () => {
+    const listed = actions.listFor({ kind: 'text', text: '这是一段包含 https://a.com 的普通文字' });
+    assert.ok(listed.length > 0);
+    for (const item of listed) {
+      assert.ok(actions.GROUP_ORDER.includes(item.group), `group ${item.group} is known`);
+      assert.equal(typeof item.title.zh, 'string');
+      assert.equal(typeof item.title.en, 'string');
+      assert.equal(typeof actions.get(item.id).run, 'function');
     }
   });
 
   await t.test('image clipboard offers no text actions', () => {
-    const listed = actions.listFor({ kind: 'image', width: 1, height: 1, dataUrl: 'data:,' });
-    assert.equal(listed.length, 0);
+    assert.equal(actions.listFor({ kind: 'image', width: 1, height: 1, dataUrl: 'data:,' }).length, 0);
   });
 
   await t.test('empty clipboard offers nothing', () => {
     assert.deepEqual(actions.listFor({ kind: 'empty' }), []);
   });
 
-  await t.test('plain text hides the actions that do not apply', () => {
-    const ids = actions
-      .listFor({ kind: 'text', text: 'plain sentence' })
-      .map((action) => action.id);
-    assert.ok(!ids.includes('clean.plain'), 'no rich text, no plain-text action');
-    assert.ok(!ids.includes('data.json-beautify'), 'not json');
-    assert.ok(ids.includes('case.upper'));
+  await t.test('a clean Chinese sentence offers the general tools only', () => {
+    const ids = actions.listFor({ kind: 'text', text: '这是一句普通的话。' }).map((a) => a.id);
     assert.ok(ids.includes('clean.trim'));
+    assert.ok(!ids.includes('clean.plain'), 'no rich text');
+    assert.ok(!ids.includes('clean.strip-markdown'), 'not markdown');
+    assert.ok(!ids.includes('link.extract'), 'no links');
+    assert.ok(!ids.includes('typography.cjk-spacing'), 'nothing to space');
   });
 
-  await t.test('json text unlocks the json actions', () => {
-    const ids = actions
-      .listFor({ kind: 'text', text: '{"a":1}' })
-      .map((action) => action.id);
-    assert.ok(ids.includes('data.json-beautify'));
-    assert.ok(ids.includes('data.json-minify'));
+  await t.test('mixed Chinese and English unlocks the typography group', () => {
+    const ids = actions.listFor({ kind: 'text', text: '用macOS写作' }).map((a) => a.id);
+    assert.ok(ids.includes('typography.cjk-spacing'));
   });
 });

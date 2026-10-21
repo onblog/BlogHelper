@@ -27,14 +27,6 @@ const NAMED_ENTITIES = {
   trade: '™',
 };
 
-const ESCAPES = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#39;',
-};
-
 function decodeEntities(text) {
   return text.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z]+);/gi, (match, body) => {
     if (body[0] === '#') {
@@ -46,10 +38,6 @@ function decodeEntities(text) {
     }
     return NAMED_ENTITIES[body.toLowerCase()] ?? match;
   });
-}
-
-function escapeHtml(text) {
-  return text.replace(/[&<>"']/g, (char) => ESCAPES[char]);
 }
 
 function stripHtml(html) {
@@ -70,4 +58,4 @@ function stripHtml(html) {
     .trim();
 }
 
-module.exports = { decodeEntities, escapeHtml, stripHtml };
+module.exports = { decodeEntities, stripHtml };

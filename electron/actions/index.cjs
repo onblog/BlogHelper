@@ -10,17 +10,20 @@
 
 const modules = [
   require('./text/clean.cjs'),
-  require('./text/case.cjs'),
-  require('./text/codec.cjs'),
-  require('./text/json.cjs'),
-  require('./text/lines.cjs'),
-  require('./text/time.cjs'),
+  require('./text/typography.cjs'),
+  require('./text/list.cjs'),
+  require('./text/link.cjs'),
 ];
 
 const actions = modules.flat();
 
-/** Rendering order of the groups inside the panel. */
-const GROUP_ORDER = ['clean', 'case', 'codec', 'data', 'lines', 'time'];
+/**
+ * Rendering order of the groups inside the panel.
+ *
+ * Grouped by what a person is trying to do, not by which technology is
+ * involved — the audience is anyone who copies text, not just developers.
+ */
+const GROUP_ORDER = ['clean', 'typography', 'list', 'link'];
 
 const byId = new Map(actions.map((action) => [action.id, action]));
 

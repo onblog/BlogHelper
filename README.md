@@ -4,7 +4,7 @@
 
 # bar-tool · 吧台
 
-**A macOS menu bar toolbox that turns whatever is on your clipboard into what you need next.**
+**A macOS menu bar toolbox for the text you paste all day — clean it up, space it the Chinese way, tidy a list, strip a tracking link.**
 
 <a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
 
@@ -13,7 +13,7 @@
 <img alt="platform" src="https://img.shields.io/badge/macOS-12%2B-1f2328?style=flat-square&logo=apple&logoColor=white">
 <img alt="electron" src="https://img.shields.io/badge/Electron-45-47848f?style=flat-square&logo=electron&logoColor=white">
 <img alt="runtime deps" src="https://img.shields.io/badge/runtime_deps-0-2f7d52?style=flat-square">
-<img alt="actions" src="https://img.shields.io/badge/actions-25-f2b544?style=flat-square">
+<img alt="actions" src="https://img.shields.io/badge/actions-19-f2b544?style=flat-square">
 <img alt="license" src="https://img.shields.io/badge/license-AGPL--3.0--only-6b7280?style=flat-square">
 
 <br/><br/>
@@ -22,12 +22,13 @@
 
 </div>
 
-> Copy something messy, click the menu bar, pick a transformation. bar-tool rewrites the clipboard
-> in place, so the next **⌘V** is already the shape you wanted — plain text without the styling,
-> readable JSON, snake_case, a decoded Base64 blob.
+> Copy something messy, click the menu bar, pick what it should become. bar-tool rewrites the
+> clipboard in place, so the next **⌘V** is already right: plain text without the web styling,
+> Chinese and English properly spaced, a list squeezed into one line, a link without the
+> `utm_source=…` tail.
 >
-> No account, no window to manage, no network call. The panel shows **what the current clipboard
-> can become**, never a fixed menu of everything the app can do.
+> No account, no window to manage, no network call. The panel shows **what the current clipboard can
+> become**, never a fixed menu of everything the app can do.
 
 ---
 
@@ -45,22 +46,24 @@
 
 ## What it does
 
-One model, 25 tools: **clipboard in → transformation → clipboard out**.
+One model, one job: **clipboard in → transformation → clipboard out**.
 
 - **A menu bar panel, not a window.** Click the tray icon, pick an action, paste. No dock icon, no
   window stealing a Space.
 - **Only the actions that apply.** The list is filtered by what is actually on the clipboard right
-  now: an image shows image actions, a JSON blob unlocks the JSON ones, "To plain text" only appears
-  when the clipboard really carries rich text.
+  now: "To plain text" only appears for rich text, the typography group only when Chinese sits next
+  to Latin, the tracking-link cleaner only for links that carry tracking.
+- **Chinese typesetting, done properly.** A space between Chinese and Latin, and punctuation that
+  belongs to the right script — the two things every Chinese writer fixes by hand.
 - **Undo is one keystroke.** Every action keeps the previous clipboard, so a wrong pick costs a
   ⌥⌘Z, not a re-copy.
-- **Zero runtime dependencies.** Only Electron itself; every transformation is hand-written on top
-  of Node's built-ins.
-- **Offline by construction.** Version 1.1 makes no network requests at all.
+- **Zero runtime dependencies, offline by construction.** Only Electron itself; no telemetry, no
+  network request at all in this version.
 
-What it deliberately does **not** do: host your images (that arrives with bucket upload), reformat
-JavaScript/CSS/HTML (that needs a formatter dependency and would break the zero-dependency rule),
-ask you to sign in, or phone home.
+Who this is **not** for: there is no Base64 encoder, no regex playground and no timestamp converter
+here. Those are developer tools, and this app deliberately belongs to whoever copies text — writers,
+ops people, anyone tidying a list at midnight. Formatting JavaScript/CSS/HTML is out of scope too:
+it needs a formatter dependency, which is exactly the weight this project refuses.
 
 ## Actions
 
@@ -68,12 +71,10 @@ Every action is a pure function; the registry decides what to show for the clipb
 
 | Group | Actions |
 | --- | --- |
-| Clean up | To plain text · Trim whitespace · Collapse blank lines · Join into one line · Strip line numbers |
-| Case | UPPERCASE · lowercase · Title Case · camelCase · snake_case · kebab-case · CONSTANT_CASE |
-| Encoding | Base64 encode/decode · URL encode/decode · HTML escape/unescape |
-| Data | Beautify JSON · Minify JSON · Sort JSON keys |
-| Lines | Remove duplicate lines · Sort lines |
-| Time | Timestamp → local time · Date → timestamp |
+| Clean up | To plain text · Trim whitespace · Collapse blank lines · Remove blank lines · Join into one line · Strip line numbers · Remove invisible characters · Strip Markdown syntax |
+| Typography | Space between Chinese and Latin · Punctuation → full-width · Punctuation → half-width |
+| Lists | Remove duplicate lines · Sort lines · Reverse line order · Number the lines · Join into a comma list |
+| Links | Clean tracking parameters · Decode `%20` in links · Extract every link |
 
 Adding a tool means adding one file under `electron/actions/` — the panel, the tests and the IPC
 surface pick it up automatically.
@@ -109,7 +110,7 @@ Three rules keep it honest:
 ## Privacy
 
 - The clipboard is read **only while the panel is on screen**.
-- Version 1.1 makes no network request: no telemetry, no crash reporting, no update check.
+- This version makes no network request: no telemetry, no crash reporting, no update check.
 - Nothing is written to disk yet. Clipboard history (text + images, stored locally) is the next
   milestone.
 
@@ -133,16 +134,16 @@ The renderer never touches Node: everything goes through a narrow `contextBridge
 ```bash
 npm install
 npm run dev            # Vite + Electron with hot reload
-npm test               # 44 unit tests, no dependencies
+npm test               # 46 unit tests, no dependencies
 npm run dist:arm64     # dmg for Apple Silicon, output in release/
 npm run dist:x64       # dmg for Intel
 ```
 
 ## Status
 
-`1.1.0` is in development: the action framework, all 25 text tools, undo and the bilingual panel are
-in place. Next up is clipboard history (text + images), then bucket upload for images, then the
-official site.
+`1.1.0` is in development: the action framework, 19 text tools across four groups, undo and the
+bilingual panel are in place. Next comes clipboard history (text + images, local), then image upload
+to your own bucket, then the official site.
 
 ## License
 
