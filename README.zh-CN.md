@@ -13,6 +13,7 @@
 <img alt="平台" src="https://img.shields.io/badge/macOS-12%2B-1f2328?style=flat-square&logo=apple&logoColor=white">
 <img alt="electron" src="https://img.shields.io/badge/Electron-45-47848f?style=flat-square&logo=electron&logoColor=white">
 <img alt="运行时依赖" src="https://img.shields.io/badge/%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BE%9D%E8%B5%96-0-2f7d52?style=flat-square">
+<img alt="历史" src="https://img.shields.io/badge/%E5%8E%86%E5%8F%B2-%E4%BB%85%E6%9C%AC%E5%9C%B0-2f7d52?style=flat-square">
 <img alt="动作数" src="https://img.shields.io/badge/%E5%8A%A8%E4%BD%9C-19-f2b544?style=flat-square">
 <img alt="协议" src="https://img.shields.io/badge/%E5%8D%8F%E8%AE%AE-AGPL--3.0--only-6b7280?style=flat-square">
 
@@ -68,6 +69,17 @@
 
 加一个工具就是在 `electron/actions/` 下加一个文件——面板、测试和 IPC 都会自动接上。
 
+## 剪贴板历史
+
+面板底部那一行保留最近 3 条，点「全部」看完整列表。
+
+- 文字与图片都记，最新在前，用首字或缩略图当预览
+- 点任意一条即可回填到剪贴板
+- 默认上限 100 条 / 200 MB（设置里可选 50 / 100 / 200），超出先丢最旧的
+- 重复复制的内容会移到最前，而不是堆一堆副本
+- 只记你复制过的东西，一个字节都不上传
+- 随时可在设置里关掉记录
+
 ## 快捷键
 
 | 按键 | 动作 |
@@ -97,15 +109,23 @@ src/                面板渲染层：预览、动作网格、双语文案
 
 ## 隐私
 
-- **只在面板显示时**读剪贴板。
-- 这个版本不发任何网络请求：没有统计、没有崩溃上报、没有更新探测。
-- 目前还没有任何落盘。剪贴板历史（文字 + 图片，存在本地）是下一个里程碑。
+- 面板显示时会读剪贴板；为了攒历史，后台也会轮询——文字每 1.2 秒、图片每 3 秒。
+- 历史从不离开这台 Mac：它是 `~/Library/Application Support/bar-tool/` 下的一个索引加若干图片文件。
+  这个版本完全不发网络请求。
+- 关掉记录会立刻停止写入；「清空历史」会把索引和所有图片一起删掉。
+- 没有统计、没有崩溃上报、没有更新探测。
 
 ## 项目结构
 
 ```
 electron/           主进程：菜单栏图标、面板窗口、剪贴板、IPC
 electron/actions/   动作注册表与各分组
+electron/history.cjs
+                    历史索引 + 图片文件，不依赖 Electron、有单元测试
+electron/watcher.cjs
+                    剪贴板轮询器（macOS 没有剪贴板变更事件）
+electron/settings.cjs
+                    持久化的开关与上限
 src/                渲染层：面板结构、样式、双语文案、DOM 逻辑
 src/styles/         一套深色玻璃主题，不引 CSS 框架
 build/              应用图标源文件（SVG）与生成的 icns
@@ -121,15 +141,15 @@ tests/              动作的 node:test 测试
 ```bash
 npm install
 npm run dev            # Vite + Electron，带热更新
-npm test               # 46 个单元测试，零依赖
+npm test               # 67 个单元测试，零依赖
 npm run dist:arm64     # Apple Silicon 的 dmg，产物在 release/
 npm run dist:x64       # Intel 的 dmg
 ```
 
 ## 当前进度
 
-`1.1.0` 开发中：动作框架、19 个文本工具（4 组）、撤销、双语面板都已就位。
-接下来是剪贴板历史（文字 + 图片，纯本地），然后是图片上传到你自己的存储桶，最后是官网。
+`1.2.0` 开发中：19 个文本工具（4 组）、本地剪贴板历史（文字 + 图片）、撤销、设置，以及双语三视图面板都已就位。
+接下来是图片上传到你自己的存储桶，最后是官网。
 
 ## 开源协议
 

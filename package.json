@@ -1,7 +1,7 @@
 {
   "name": "bar-tool",
   "productName": "吧台",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A macOS menu bar tool that turns clipboard images into links on your own S3-compatible bucket. 吧台：把剪贴板图片一键变成链接的 macOS 菜单栏小工具。",
   "main": "electron/main.cjs",
   "author": "Martin",

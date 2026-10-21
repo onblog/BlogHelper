@@ -1,23 +1,48 @@
 /**
  * Panel renderer.
  *
- * The panel is a menu of what the current clipboard can become: the main
- * process decides which actions apply, this file just paints them and sends
- * the chosen one back.
+ * Three views share one 400×600 panel: the main action view, the clipboard
+ * history and the settings page. The main process decides which actions apply
+ * to the current clipboard; this file paints them and sends the choice back.
  */
 
 import { applyStatic, nextLang, pickLocalised, setLang, storedLang, t } from './i18n.js';
 
 const POLL_MS = 900;
+const CLEAR_ARM_MS = 3000;
 
 const nodes = {
+  back: document.getElementById('back'),
+  brand: document.getElementById('brand'),
+  viewTitle: document.getElementById('view-title'),
   version: document.getElementById('version'),
   langToggle: document.getElementById('lang-toggle'),
   settings: document.getElementById('settings'),
+
+  viewMain: document.getElementById('view-main'),
+  viewHistory: document.getElementById('view-history'),
+  viewSettings: document.getElementById('view-settings'),
+
   clipMeta: document.getElementById('clip-meta'),
   preview: document.getElementById('preview'),
   actionCount: document.getElementById('action-count'),
   actions: document.getElementById('actions'),
+
+  historyChips: document.getElementById('history-chips'),
+  historyAll: document.getElementById('history-all'),
+  historyStats: document.getElementById('history-stats'),
+  historyClear: document.getElementById('history-clear'),
+  hlist: document.getElementById('hlist'),
+
+  setHistory: document.getElementById('set-history'),
+  setMax: document.getElementById('set-max'),
+  setLaunch: document.getElementById('set-launch'),
+  settingsUsage: document.getElementById('settings-usage'),
+  aboutVersion: document.getElementById('about-version'),
+  aboutGithub: document.getElementById('about-github'),
+  aboutDocs: document.getElementById('about-docs'),
+
+  foot: document.getElementById('foot'),
   dot: document.getElementById('dot'),
   status: document.getElementById('status'),
   undo: document.getElementById('undo'),
@@ -26,26 +51,67 @@ const nodes = {
 };
 
 const state = {
+  view: 'main',
   version: '',
   locale: 'zh',
   preview: { kind: 'empty' },
   actions: [],
   groups: [],
   canUndo: false,
+  history: { enabled: true, count: 0, bytes: 0, recent: [] },
+  settings: { maxItems: 100, launchAtLogin: false, historyEnabled: true },
+  historyItems: [],
   selectedId: null,
-  /** Signature of the last painted payload, to skip no-op repaints. */
   signature: '',
   running: false,
   pollTimer: null,
   toastTimer: null,
+  clearTimer: null,
+  clearArmed: false,
   statusKey: 'status.ready',
   statusIsError: false,
 };
 
-/* ---------- rendering ---------- */
+/* ---------- helpers ---------- */
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let value = bytes;
+  let index = 0;
+  while (value >= 1024 && index < units.length - 1) {
+    value /= 1024;
+    index += 1;
+  }
+  return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
+function formatAge(iso) {
+  const elapsed = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(elapsed / 60000);
+  if (minutes < 1) return t('age.now');
+  if (minutes < 60) return t('age.minutes', { n: minutes });
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return t('age.hours', { n: hours });
+  return t('age.days', { n: Math.floor(hours / 24) });
+}
+
+function showToast(message) {
+  nodes.toast.textContent = message;
+  nodes.toast.hidden = false;
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => {
+    nodes.toast.hidden = true;
+  }, 1900);
+}
+
+/* ---------- main view ---------- */
 
 function previewSignature(preview) {
-  if (preview.kind === 'image') return `i:${preview.width}x${preview.height}:${preview.dataUrl.length}`;
+  if (preview.kind === 'image') {
+    return `i:${preview.width}x${preview.height}:${preview.dataUrl.length}`;
+  }
   if (preview.kind === 'text') return `t:${preview.text}`;
   return 'empty';
 }
@@ -147,10 +213,47 @@ function renderActions() {
   }
 }
 
+function renderHistoryStrip() {
+  nodes.historyChips.replaceChildren();
+
+  if (!state.history.enabled) {
+    const note = document.createElement('span');
+    note.className = 'history-strip__note';
+    note.textContent = t('history.disabled');
+    nodes.historyChips.append(note);
+    nodes.historyAll.disabled = true;
+    return;
+  }
+
+  nodes.historyAll.disabled = state.history.count === 0;
+
+  for (const item of state.history.recent) {
+    const chip = document.createElement('button');
+    chip.className = 'chip-item';
+    chip.type = 'button';
+    chip.dataset.id = item.id;
+    chip.title = item.kind === 'image' ? t('history.imagePlain') : (item.snippet ?? '');
+
+    if (item.kind === 'image') {
+      chip.classList.add('chip-item--image');
+      chip.textContent = '▧';
+    } else {
+      chip.textContent = (item.snippet ?? '?').trim().slice(0, 1) || 'T';
+    }
+
+    chip.addEventListener('click', () => restoreHistory(item.id));
+    nodes.historyChips.append(chip);
+  }
+}
+
 function renderFooter() {
+  const mainView = state.view === 'main';
+  nodes.foot.hidden = !mainView;
+  if (!mainView) return;
+
   nodes.undo.hidden = !state.canUndo;
-  nodes.hint.textContent = state.actions.length ? t('actions.hint') : '';
   nodes.undo.textContent = t('undo');
+  nodes.hint.textContent = state.actions.length ? t('actions.hint') : '';
 
   if (state.statusIsError) {
     nodes.dot.dataset.state = 'bad';
@@ -169,7 +272,6 @@ function renderFooter() {
   nodes.status.textContent = t(state.statusKey);
 }
 
-/** Repaint from a state payload coming out of the main process. */
 function paint(payload) {
   const previousIds = state.actions.map((action) => action.id).join(',');
 
@@ -177,11 +279,21 @@ function paint(payload) {
   state.actions = payload.actions;
   state.groups = payload.groups;
   state.canUndo = payload.canUndo;
+  state.history = payload.history;
+  state.settings = payload.settings;
 
   const ids = state.actions.map((action) => action.id).join(',');
-  const signature = `${previewSignature(payload.preview)}|${ids}|${state.canUndo}`;
-  const changed = ids !== previousIds || signature !== state.signature;
+  const recentIds = state.history.recent.map((item) => item.id).join(',');
+  const signature = [
+    previewSignature(payload.preview),
+    ids,
+    state.canUndo,
+    state.history.enabled,
+    state.history.count,
+    recentIds,
+  ].join('|');
 
+  const changed = ids !== previousIds || signature !== state.signature;
   if (!changed) {
     renderFooter();
     return;
@@ -196,10 +308,142 @@ function paint(payload) {
 
   renderPreview(state.preview);
   renderActions();
+  renderHistoryStrip();
   renderFooter();
+
+  if (state.view === 'settings') renderSettings();
 }
 
-/* ---------- behaviour ---------- */
+/* ---------- views ---------- */
+
+function setView(view) {
+  state.view = view;
+
+  nodes.viewMain.hidden = view !== 'main';
+  nodes.viewHistory.hidden = view !== 'history';
+  nodes.viewSettings.hidden = view !== 'settings';
+
+  nodes.back.hidden = view === 'main';
+  nodes.brand.hidden = view !== 'main';
+  nodes.viewTitle.hidden = view === 'main';
+  nodes.settings.hidden = view === 'settings';
+
+  if (view === 'history') nodes.viewTitle.textContent = t('history.strip');
+  if (view === 'settings') nodes.viewTitle.textContent = t('settings.title');
+
+  renderFooter();
+
+  if (view === 'history') {
+    stopPolling();
+    loadHistory();
+  } else if (view === 'settings') {
+    stopPolling();
+    renderSettings();
+  } else {
+    startPolling();
+  }
+}
+
+/* ---------- history view ---------- */
+
+async function loadHistory() {
+  try {
+    const { items } = await window.bar.historyAll();
+    state.historyItems = items;
+    renderHistoryList();
+  } catch (error) {
+    console.error('history load failed', error);
+  }
+}
+
+function historyRow(item) {
+  const row = document.createElement('li');
+  row.className = 'hrow';
+  row.dataset.id = item.id;
+
+  const thumb = document.createElement('div');
+  thumb.className = 'hrow__thumb';
+  if (item.kind === 'image') {
+    if (item.thumb) {
+      const img = new Image();
+      img.src = item.thumb;
+      img.alt = '';
+      thumb.append(img);
+    } else {
+      thumb.textContent = '▧';
+      thumb.classList.add('hrow__thumb--plain');
+    }
+  } else {
+    thumb.textContent = (item.snippet ?? 'T').trim().slice(0, 1) || 'T';
+    thumb.classList.add('hrow__thumb--text');
+  }
+
+  const meta = document.createElement('div');
+  meta.className = 'hrow__meta';
+
+  const line = document.createElement('div');
+  line.className = 'hrow__line';
+  line.textContent =
+    item.kind === 'image'
+      ? t(item.width ? 'history.image' : 'history.imagePlain', { w: item.width, h: item.height })
+      : (item.snippet ?? '');
+
+  const time = document.createElement('div');
+  time.className = 'hrow__time';
+  time.textContent = formatAge(item.at);
+
+  meta.append(line, time);
+  row.append(thumb, meta);
+  row.addEventListener('click', () => restoreHistory(item.id, { backToMain: true }));
+  return row;
+}
+
+function renderHistoryList() {
+  nodes.hlist.replaceChildren();
+  nodes.historyClear.textContent = state.clearArmed ? t('history.clearConfirm') : t('history.clear');
+
+  nodes.historyStats.textContent = t('history.stats', {
+    n: state.history.count,
+    size: formatBytes(state.history.bytes),
+  });
+
+  if (state.historyItems.length === 0) {
+    const empty = document.createElement('li');
+    empty.className = 'hlist__empty';
+    empty.textContent = state.history.enabled ? t('history.empty') : t('history.disabled');
+    nodes.hlist.append(empty);
+    return;
+  }
+
+  for (const item of state.historyItems) nodes.hlist.append(historyRow(item));
+}
+
+/* ---------- settings view ---------- */
+
+function renderSettings() {
+  nodes.setHistory.setAttribute('aria-checked', String(Boolean(state.settings.historyEnabled)));
+  nodes.setLaunch.setAttribute('aria-checked', String(Boolean(state.settings.launchAtLogin)));
+  nodes.setMax.value = String(state.settings.maxItems ?? 100);
+
+  nodes.settingsUsage.textContent = t('history.stats', {
+    n: state.history.count,
+    size: formatBytes(state.history.bytes),
+  });
+  nodes.aboutVersion.textContent = `v${state.version}`;
+}
+
+async function updateSetting(patch) {
+  try {
+    const result = await window.bar.updateSettings(patch);
+    if (result.state) paint(result.state);
+    renderSettings();
+    if (state.view === 'history') loadHistory();
+  } catch (error) {
+    console.error('settings update failed', error);
+  }
+}
+
+/* ---------- actions ---------- */
 
 function setStatus(key, isError = false) {
   state.statusKey = key;
@@ -207,19 +451,9 @@ function setStatus(key, isError = false) {
   renderFooter();
 }
 
-function showToast(message) {
-  nodes.toast.textContent = message;
-  nodes.toast.hidden = false;
-  clearTimeout(state.toastTimer);
-  state.toastTimer = setTimeout(() => {
-    nodes.toast.hidden = true;
-  }, 1900);
-}
-
 async function refresh() {
   try {
-    const payload = await window.bar.state();
-    paint(payload);
+    paint(await window.bar.state());
   } catch (error) {
     console.error('panel state failed', error);
   }
@@ -260,6 +494,50 @@ async function undo() {
   }
 }
 
+async function restoreHistory(id, { backToMain = false } = {}) {
+  try {
+    const result = await window.bar.historyRestore(id);
+    if (!result.ok) {
+      setStatus(`err.${result.error}`, true);
+      return;
+    }
+
+    paint(result.state);
+    if (backToMain) setView('main');
+    setStatus('history.restored');
+    showToast(t('history.restored'));
+  } catch (error) {
+    console.error('history restore failed', error);
+  }
+}
+
+async function clearHistory() {
+  if (!state.clearArmed) {
+    state.clearArmed = true;
+    nodes.historyClear.textContent = t('history.clearConfirm');
+    clearTimeout(state.clearTimer);
+    state.clearTimer = setTimeout(() => {
+      state.clearArmed = false;
+      nodes.historyClear.textContent = t('history.clear');
+    }, CLEAR_ARM_MS);
+    return;
+  }
+
+  clearTimeout(state.clearTimer);
+  state.clearArmed = false;
+  nodes.historyClear.textContent = t('history.clear');
+
+  try {
+    const result = await window.bar.historyClear();
+    paint(result.state);
+    loadHistory();
+  } catch (error) {
+    console.error('history clear failed', error);
+  }
+}
+
+/* ---------- keyboard + wiring ---------- */
+
 function moveSelection(delta) {
   if (state.actions.length === 0) return;
 
@@ -274,6 +552,11 @@ function moveSelection(delta) {
 }
 
 function bindEvents() {
+  nodes.back.addEventListener('click', () => setView('main'));
+  nodes.settings.addEventListener('click', () => setView('settings'));
+  nodes.historyAll.addEventListener('click', () => setView('history'));
+  nodes.historyClear.addEventListener('click', clearHistory);
+
   nodes.langToggle.addEventListener('click', () => {
     setLang(nextLang());
     updateChrome();
@@ -284,17 +567,41 @@ function bindEvents() {
       actions: state.actions,
       groups: state.groups,
       canUndo: state.canUndo,
+      history: state.history,
+      settings: state.settings,
     });
+    if (state.view === 'history') renderHistoryList();
+    if (state.view === 'settings') renderSettings();
   });
 
-  nodes.settings.addEventListener('click', () => showToast(t('toast.settings')));
   nodes.undo.addEventListener('click', undo);
+
+  nodes.setHistory.addEventListener('click', () =>
+    updateSetting({ historyEnabled: !state.settings.historyEnabled }),
+  );
+  nodes.setLaunch.addEventListener('click', () =>
+    updateSetting({ launchAtLogin: !state.settings.launchAtLogin }),
+  );
+  nodes.setMax.addEventListener('change', () =>
+    updateSetting({ maxItems: Number(nodes.setMax.value) }),
+  );
+
+  nodes.aboutGithub.addEventListener('click', () =>
+    window.bar.openExternal('https://github.com/onblog/bar-tool'),
+  );
+  nodes.aboutDocs.addEventListener('click', () =>
+    window.bar.openExternal('https://tool.wordtk.com/docs'),
+  );
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      window.bar.hide();
+      if (state.view !== 'main') setView('main');
+      else window.bar.hide();
       return;
     }
+
+    if (state.view !== 'main') return;
+
     if (event.key === 'ArrowDown' || (event.key === 'Tab' && !event.shiftKey)) {
       event.preventDefault();
       moveSelection(1);
@@ -343,20 +650,27 @@ async function init() {
   bindEvents();
   updateChrome();
   renderPreview(state.preview);
+  renderHistoryStrip();
   renderFooter();
   await refresh();
 
   window.bar.onVisibility((visible) => {
-    if (visible) {
+    if (!visible) {
+      stopPolling();
+      return;
+    }
+    if (state.view === 'main') {
       refresh();
       startPolling();
-    } else {
-      stopPolling();
     }
   });
 
   window.bar.onRefresh(() => {
     refresh();
+  });
+
+  window.bar.onView((view) => {
+    setView(view === 'history' ? 'history' : 'settings');
   });
 }
 

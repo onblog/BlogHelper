@@ -13,6 +13,7 @@
 <img alt="platform" src="https://img.shields.io/badge/macOS-12%2B-1f2328?style=flat-square&logo=apple&logoColor=white">
 <img alt="electron" src="https://img.shields.io/badge/Electron-45-47848f?style=flat-square&logo=electron&logoColor=white">
 <img alt="runtime deps" src="https://img.shields.io/badge/runtime_deps-0-2f7d52?style=flat-square">
+<img alt="history" src="https://img.shields.io/badge/history-local_only-2f7d52?style=flat-square">
 <img alt="actions" src="https://img.shields.io/badge/actions-19-f2b544?style=flat-square">
 <img alt="license" src="https://img.shields.io/badge/license-AGPL--3.0--only-6b7280?style=flat-square">
 
@@ -79,6 +80,17 @@ Every action is a pure function; the registry decides what to show for the clipb
 Adding a tool means adding one file under `electron/actions/` — the panel, the tests and the IPC
 surface pick it up automatically.
 
+## History
+
+The bottom row of the panel keeps the last three things you copied; **All** opens the full list.
+
+- Text and images, newest first, one character or a thumbnail as the preview
+- Click any entry to put it back on the clipboard
+- 100 items / 200 MB by default (50, 100 or 200 in settings), oldest dropped first
+- Re-copying something moves it to the top instead of piling up duplicates
+- Only what you copy — nothing is uploaded, ever
+- Recording can be switched off at any time
+
 ## Shortcuts
 
 | Keys | Action |
@@ -109,16 +121,25 @@ Three rules keep it honest:
 
 ## Privacy
 
-- The clipboard is read **only while the panel is on screen**.
-- This version makes no network request: no telemetry, no crash reporting, no update check.
-- Nothing is written to disk yet. Clipboard history (text + images, stored locally) is the next
-  milestone.
+- The clipboard is read while the panel is open, and polled in the background to build history —
+  every 1.2 s for text, every 3 s for images.
+- History never leaves this Mac: it is an index plus image blobs in
+  `~/Library/Application Support/bar-tool/`. This version makes no network request at all.
+- Turning history off stops recording immediately; **Clear history** deletes the index and every
+  blob.
+- No telemetry, no crash reporting, no update check.
 
 ## Project layout
 
 ```
 electron/           Main process: tray, panel window, clipboard, IPC surface
 electron/actions/   The transformation registry and its groups
+electron/history.cjs
+                    History index + image blobs, Electron-free and unit tested
+electron/watcher.cjs
+                    Clipboard poller (macOS has no clipboard change event)
+electron/settings.cjs
+                    Persisted switches and limits
 src/                Renderer: panel markup, styles, i18n, DOM logic
 src/styles/         One dark glass theme, no CSS framework
 build/              App icon sources (SVG) and the generated icns
@@ -134,16 +155,16 @@ The renderer never touches Node: everything goes through a narrow `contextBridge
 ```bash
 npm install
 npm run dev            # Vite + Electron with hot reload
-npm test               # 46 unit tests, no dependencies
+npm test               # 67 unit tests, no dependencies
 npm run dist:arm64     # dmg for Apple Silicon, output in release/
 npm run dist:x64       # dmg for Intel
 ```
 
 ## Status
 
-`1.1.0` is in development: the action framework, 19 text tools across four groups, undo and the
-bilingual panel are in place. Next comes clipboard history (text + images, local), then image upload
-to your own bucket, then the official site.
+`1.2.0` is in development: 19 text tools across four groups, local clipboard history for text and
+images, undo, settings and the bilingual three-view panel are in place. Next comes image upload to
+your own bucket, then the official site.
 
 ## License
 
