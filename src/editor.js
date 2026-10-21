@@ -419,7 +419,14 @@ window.barEditor.onImage(async (dataUrl) => {
   originalUrl = dataUrl;
   await createCanvas(dataUrl);
   setTool('move');
+
+  // The window may have been hidden behind the panel: focus it and re-measure,
+  // otherwise clicks land where the canvas used to be.
+  window.focus();
+  requestAnimationFrame(() => state.canvas?.calcOffset());
 });
+
+window.addEventListener('focus', () => state.canvas?.calcOffset());
 
 for (const button of document.querySelectorAll('.tool')) {
   button.addEventListener('click', () => setTool(button.dataset.tool));

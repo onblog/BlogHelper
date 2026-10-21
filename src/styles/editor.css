@@ -12,7 +12,7 @@
   --mint: #7bc47f;
   --sky: #5ab0ff;
   --shadow: rgba(58, 46, 35, 0.18);
-  --canvas-bg: #ede3d2;
+  --canvas-bg: #e4d8c3;
   --radius: 12px;
 }
 
@@ -28,7 +28,7 @@
   --mint: #6fb573;
   --sky: #5aa0e8;
   --shadow: rgba(0, 0, 0, 0.45);
-  --canvas-bg: #1b1713;
+  --canvas-bg: #17130f;
 }
 
 * {
@@ -186,7 +186,8 @@ button:focus-visible {
 }
 
 .stage canvas {
-  box-shadow: 4px 4px 0 var(--shadow);
+  border: 2px solid var(--line);
+  border-radius: 6px;
 }
 
 .stage__hint {

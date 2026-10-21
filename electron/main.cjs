@@ -14,6 +14,7 @@ const {
   app,
   BrowserWindow,
   Menu,
+  dialog,
   Tray,
   globalShortcut,
   ipcMain,
@@ -295,18 +296,35 @@ function notifyPanel(key, detail) {
  * hands back a PNG buffer — the part that is genuinely hard to get right across
  * multiple displays and Retina scaling.
  */
+/** Overlay toolbar, recoloured to the panel's light theme. */
+const OVERLAY_CSS = `
+  .screenshots-operations-buttons {
+    background-color: #fff7e8 !important;
+    border: 2px solid #3a2e23 !important;
+    border-radius: 12px !important;
+  }
+  .screenshots-operations-divider { background-color: #e3d6bf !important; }
+  .screenshots-canvas-size { background-color: rgba(58, 46, 35, 0.82) !important; }
+`;
+
+function stamp() {
+  const t = new Date();
+  const pad = (value) => String(value).padStart(2, '0');
+  return `${t.getFullYear()}${pad(t.getMonth() + 1)}${pad(t.getDate())}-${pad(t.getHours())}${pad(t.getMinutes())}${pad(t.getSeconds())}`;
+}
+
 function getScreenshotTool() {
   if (screenshotTool) return screenshotTool;
   if (screenshotToolBroken) return null;
 
   try {
     const Screenshots = require('electron-screenshots');
-    screenshotTool = new Screenshots({ singleWindow: true, lang: SCREENSHOT_LANG });
 
-    // The overlay emits `ok` *before* it resets and hides itself. Showing the
-    // panel from inside that handler stole focus back to the overlay while it was
-    // still a kiosk window, which made it reappear in selection mode. The buffer
-    // is parked here and the hand-off happens only once the overlay is gone.
+    // Not singleWindow: after a capture the overlay must be *destroyed*. A hidden
+    // kiosk window kept coming back in selection mode whenever the panel took
+    // focus, which is exactly the "点对号又回到框选" symptom.
+    screenshotTool = new Screenshots({ lang: SCREENSHOT_LANG });
+
     screenshotTool.on('ok', (_event, buffer) => {
       pendingCapture = buffer;
     });
@@ -316,14 +334,56 @@ function getScreenshotTool() {
       capturing = false;
     });
 
+    // Saving is ours: the library's dialog is attached to the kiosk window,
+    // where macOS never shows it.
+    screenshotTool.on('save', async (event, buffer) => {
+      event.preventDefault();
+      pendingCapture = null;
+
+      try {
+        const { canceled, filePath } = await dialog.showSaveDialog({
+          title: '保存截图',
+          defaultPath: path.join(app.getPath('pictures'), `bar-tool-${stamp()}.png`),
+          filters: [{ name: 'PNG 图片', extensions: ['png'] }],
+        });
+
+        if (!canceled && filePath) {
+          await fs.writeFile(filePath, buffer);
+          capturing = false;
+          await screenshotTool?.endCapture();
+          notifyPanel('capture.saved');
+          return;
+        }
+      } catch (error) {
+        console.error('saving the screenshot failed', error);
+      }
+
+      capturing = false;
+      await screenshotTool?.endCapture();
+    });
+
     screenshotTool.on('windowCreated', ($win) => {
+      // Escape leaves the overlay even if its own UI misses the key.
+      const onKey = (event, input) => {
+        if (input.type === 'keyDown' && input.key === 'Escape') {
+          event.preventDefault();
+          pendingCapture = null;
+          capturing = false;
+          screenshotTool?.endCapture();
+        }
+      };
+
+      $win.webContents.on('before-input-event', onKey);
+      screenshotTool.$view.webContents.on('before-input-event', onKey);
+
+      screenshotTool.$view.webContents.insertCSS(OVERLAY_CSS).catch(() => {});
+
       const settled = () => {
         const buffer = pendingCapture;
         pendingCapture = null;
         capturing = false;
         if (!buffer?.length) return;
 
-        // One beat for the overlay's own teardown, then the panel may take focus.
         setTimeout(() => {
           capturedToClipboard(buffer).catch((error) => {
             console.error('capture handoff failed', error);
@@ -789,6 +849,41 @@ async function initStores() {
 }
 
 /**
+ * Development helper: BAR_TOOL_FROM_PANEL=<png> clicks the panel's 编辑图片
+ * button, screenshots the editor that comes up and quits.
+ */
+async function devEditorFromPanel(target) {
+  showPanel();
+  await new Promise((resolve) => setTimeout(resolve, 1400));
+
+  await panel.webContents.executeJavaScript(
+    "document.getElementById('image-edit')?.click()",
+  );
+  await new Promise((resolve) => setTimeout(resolve, 2600));
+
+  if (!editorWindow) {
+    console.error('[from-panel] no editor window');
+    app.quit();
+    return;
+  }
+
+  const dom = await editorWindow.webContents.executeJavaScript(`(() => ({
+    url: location.href,
+    theme: document.documentElement.dataset.theme,
+    hasBar: typeof window.barEditor,
+    canvas: (() => { const c = document.querySelector('canvas'); return c ? { w: c.width, h: c.height } : null; })(),
+    tools: document.querySelectorAll('.tool').length,
+    size: document.getElementById('size')?.textContent,
+  }))()`);
+  console.log('[from-panel] editor', JSON.stringify(dom));
+
+  const image = await editorWindow.webContents.capturePage();
+  await fs.writeFile(target, image.toPNG());
+  console.log(`[from-panel] wrote ${target}`);
+  app.quit();
+}
+
+/**
  * Development helper: BAR_TOOL_EDIT_PROBE=<png> opens the image editor on the
  * clipboard picture, screenshots the editor window and quits.
  */
@@ -963,6 +1058,13 @@ if (!app.requestSingleInstanceLock()) {
         JSON.stringify({ loaded: Boolean(tool), hasView: Boolean(tool?.$view), broken: screenshotToolBroken }),
       );
       app.quit();
+    }
+
+    if (process.env.BAR_TOOL_FROM_PANEL) {
+      devEditorFromPanel(process.env.BAR_TOOL_FROM_PANEL).catch((error) => {
+        console.error('[from-panel] failed', error);
+        app.quit();
+      });
     }
 
     if (process.env.BAR_TOOL_EDIT_PROBE) {
