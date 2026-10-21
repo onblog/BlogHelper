@@ -7,7 +7,7 @@
 **The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
 <a href="https://bar.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-bar.wordtk.com-f2b544?style=for-the-badge"></a>
-<img alt="version" src="https://img.shields.io/badge/version-1.7.0-f2b544?style=for-the-badge">
+<img alt="version" src="https://img.shields.io/badge/version-1.8.0-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -236,8 +236,8 @@ No native modules ship with the app any more, so both architectures are pure Ele
 
 ## Status
 
-`1.7.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
-local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. The screenshot shortcut is gone: macOS's ⌘⇧⌃4 plus this panel does that job. The site lives at
+`1.8.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
+local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. Since 1.8.0 the app is called 喵喵吧台 (Miaomiao Bar) and lives at **bar.wordtk.com**. The site lives at
 **https://bar.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
 ## License
