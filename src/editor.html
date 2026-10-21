@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    />
+    <title>编辑图片 · 吧台</title>
+    <link rel="stylesheet" href="./styles/editor.css" />
+  </head>
+
+  <body>
+    <header class="bar">
+      <div class="bar__tools" role="toolbar">
+        <button class="tool is-active" type="button" data-tool="move" title="选择/移动"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3v14M3 10h14"/><path d="M10 3l-2 2M10 3l2 2M10 17l-2-2M10 17l2-2M3 10l2-2M3 10l2 2M17 10l-2-2M17 10l-2 2"/></svg></button>
+        <button class="tool" type="button" data-tool="crop" title="裁剪"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v9a2 2 0 0 0 2 2h9"/><path d="M3 6h9a2 2 0 0 1 2 2v9"/></svg></button>
+        <button class="tool" type="button" data-tool="mosaic" title="马赛克"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="5" height="5" rx="1"/><rect x="11.5" y="3.5" width="5" height="5" rx="1"/><rect x="3.5" y="11.5" width="5" height="5" rx="1"/><rect x="11.5" y="11.5" width="5" height="5" rx="1" fill="currentColor" fill-opacity="0.35"/></svg></button>
+        <button class="tool" type="button" data-tool="pen" title="画笔"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3.5l2.5 2.5-8 8-3.5 1 1-3.5 8-8z"/></svg></button>
+        <button class="tool" type="button" data-tool="arrow" title="箭头"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16L16 4"/><path d="M9 4h7v7"/></svg></button>
+        <button class="tool" type="button" data-tool="text" title="文字"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15l3.2-9 3.2 9M5.3 12h3.8"/><path d="M13 15V7h1.8a2 2 0 0 1 0 4H13"/></svg></button>
+      </div>
+
+      <div class="bar__actions">
+        <button class="ghost" id="undo" type="button" title="撤销 ⌘Z">撤销</button>
+        <button class="ghost" id="reset" type="button" title="恢复原图">重置</button>
+        <span class="spacer"></span>
+        <button class="ghost" id="cancel" type="button" title="取消 Esc">取消</button>
+        <button class="primary" id="save" type="button" title="保存并覆盖剪贴板 ⌘↵">保存并覆盖</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage-wrap">
+      <div class="stage__hint" id="hint">拖动选择区域后松开即可应用</div>
+      <canvas id="stage"></canvas>
+    </main>
+
+    <footer class="status">
+      <span id="size"></span>
+      <span id="tool-hint">选择工具开始编辑</span>
+    </footer>
+
+    <script type="module" src="./editor.js"></script>
+  </body>
+</html>

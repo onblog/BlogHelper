@@ -13,7 +13,19 @@ files:
   - dist/**/*
   - electron/**/*
   - package.json
+  # Runtime dependencies are no longer optional: the capture overlay ships a
+  # prebuilt native addon, so node_modules has to travel with the app.
+  - node_modules/**/*
   - '!**/*.map'
+  # fabric only needs these for server-side rendering; the editor runs in a window.
+  - '!**/node_modules/canvas/**'
+  - '!**/node_modules/jsdom/**'
+
+# The addon and the overlay's renderer assets are loaded from disk, not from
+# inside the archive: keep both unpacked.
+asarUnpack:
+  - '**/node_modules/node-screenshots*/**'
+  - '**/node_modules/electron-screenshots/**'
 
 mac:
   icon: build/icon.icns

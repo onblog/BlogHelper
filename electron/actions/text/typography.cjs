@@ -106,15 +106,4 @@ module.exports = [
       return text === input.text ? { error: 'unchanged' } : { text };
     },
   },
-  {
-    id: 'typography.halfwidth',
-    group: 'typography',
-    title: { zh: '标点转半角', en: 'Punctuation → half-width' },
-    accepts: ['text'],
-    isAvailable: (input) => FULLWIDTH_PUNCT_TEST.test(input.text),
-    run: (input) => {
-      const text = toHalfwidth(input.text);
-      return text === input.text ? { error: 'unchanged' } : { text };
-    },
-  },
 ];

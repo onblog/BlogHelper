@@ -64,9 +64,6 @@ test('clean group', async (t) => {
     assert.equal(run('clean.blank-lines', 'a\n\n\n\nb').text, 'a\n\nb');
   });
 
-  await t.test('remove blank lines leaves no gap at all', () => {
-    assert.equal(run('clean.no-blank-lines', 'a\n\nb\n \n\nc').text, 'a\nb\nc');
-  });
 
   await t.test('join into one line removes line breaks', () => {
     assert.equal(run('clean.one-line', 'a\nb  c\n\nd').text, 'a b c d');
@@ -132,13 +129,7 @@ test('typography group', async (t) => {
     assert.equal(run('typography.fullwidth', '你好.世界').text, '你好。世界');
   });
 
-  await t.test('half-width conversion is the inverse', () => {
-    assert.equal(run('typography.halfwidth', '你好，世界！').text, '你好,世界!');
-  });
 
-  await t.test('half-width is hidden for pure ASCII', () => {
-    assert.equal(offered('typography.halfwidth', 'hello, world'), false);
-  });
 });
 
 test('list group', async (t) => {
@@ -150,22 +141,9 @@ test('list group', async (t) => {
     assert.equal(run('list.sort', 'item10\nitem2\nItem1').text, 'Item1\nitem2\nitem10');
   });
 
-  await t.test('reverse flips the line order', () => {
-    assert.equal(run('list.reverse', 'a\nb\nc').text, 'c\nb\na');
-  });
 
-  await t.test('single-line text offers no line-order actions', () => {
-    assert.equal(offered('list.reverse', 'just one line'), false);
-    assert.equal(offered('list.number', 'just one line'), false);
-  });
 
-  await t.test('numbering skips blank lines', () => {
-    assert.equal(run('list.number', 'a\n\nb').text, '1. a\n\n2. b');
-  });
 
-  await t.test('joining with commas cleans separators', () => {
-    assert.equal(run('list.commas', ' 甲 \n乙，丙\n\n丁 ').text, '甲, 乙, 丙, 丁');
-  });
 });
 
 test('link group', async (t) => {
@@ -178,9 +156,6 @@ test('link group', async (t) => {
     assert.equal(offered('link.strip-tracking', 'https://a.com/x?id=3'), false);
   });
 
-  await t.test('percent-encoding inside a link is decoded', () => {
-    assert.equal(run('link.decode', 'https://a.com/%E4%B8%AD%E6%96%87').text, 'https://a.com/中文');
-  });
 
   await t.test('links are extracted, deduped and kept in order', () => {
     const text = run('link.extract', '先看 https://a.com/x ，再看 https://b.com/y ，重复 https://a.com/x').text;

@@ -14,7 +14,7 @@ const dict = {
     'hero.title': '吧台',
     'hero.tagline': '截图 / 网页 / 表格列，进了剪贴板就变成你要的样子',
     'hero.desc':
-      '给文字工作者用的：按 ⌥⌘S 截图，或者复制一段网页、一列名单——清理干净、排好版、富文本与 Markdown 互转，图片传进你自己的图床拿回链接。一条龙，都在菜单栏里。',
+      '给文字工作者用的：按 ⌘⇧S 截图，或者复制一段网页、一列名单——清理干净、排好版、富文本与 Markdown 互转，图片传进你自己的图床拿回链接。一条龙，都在菜单栏里。',
     'hero.meta': 'macOS 12+ · 8 线程分片下载 · 首次打开需右键 → 打开 · 不收集任何数据',
     'download.arm': '下载 Apple Silicon 版',
     'download.intel': 'Intel 版',
@@ -33,7 +33,7 @@ const dict = {
     'details.theme2': '浅色：白天营业，奶油纸与焦糖墨',
     'details.theme3': '手动切换、记住选择，不跟随系统',
     'details.captureTitle': '截图到剪贴板',
-    'details.capture1': '⌥⌘S 调起系统自带的框选器',
+    'details.capture1': '⌘⇧S 调起系统自带的框选器',
     'details.capture2': '截完就落在剪贴板，面板自动弹开',
     'details.capture3': '下一次点击就能传到图床拿链接',
     'details.editTitle': '直接改剪贴板',
@@ -91,7 +91,7 @@ const dict = {
       '历史存在本机 ~/Library/Application Support/bar-tool/，图片是一个索引加若干文件。应用唯一的网络请求，就是把图片 PUT 到你配置的存储桶；没有统计、没有崩溃上报。',
     'faq.q4': '需要什么系统权限？',
     'faq.a4':
-      '功能本身不需要权限：⌥⌘V 呼出面板、文字与图片处理都直接可用。只有「截图」要授权「屏幕录制」，系统框选器也只会出现在你按下 ⌥⌘S 的时候。',
+      '功能本身不需要权限：⌥⌘V 呼出面板、文字与图片处理都直接可用。只有「截图」要授权「屏幕录制」，系统框选器也只会出现在你按下 ⌘⇧S 的时候。',
     'footer.license': 'AGPL-3.0-only + 商业授权',
     'footer.issue': '反馈',
   },
@@ -104,7 +104,7 @@ const dict = {
     'hero.title': 'bar-tool',
     'hero.tagline': 'A screenshot, a web page, a table column — in and out in the shape you need',
     'hero.desc':
-      'Built for people who write: hit ⌥⌘S for a screenshot, or copy a web page or a column of names — it comes back cleaned, spaced, converted between rich text and Markdown, with images going to your own bucket as links.',
+      'Built for people who write: hit ⌘⇧S for a screenshot, or copy a web page or a column of names — it comes back cleaned, spaced, converted between rich text and Markdown, with images going to your own bucket as links.',
     'hero.meta': 'macOS 12+ · 8-thread chunked download · right-click to open the first time · no data collected',
     'download.arm': 'Download for Apple Silicon',
     'download.intel': 'Intel build',
@@ -123,7 +123,7 @@ const dict = {
     'details.theme2': 'Light: open for business — cream paper and caramel ink',
     'details.theme3': 'Switched by hand and remembered, never follows macOS',
     'details.captureTitle': 'Screenshot to clipboard',
-    'details.capture1': '⌥⌘S borrows the macOS region selector',
+    'details.capture1': '⌘⇧S borrows the macOS region selector',
     'details.capture2': 'The shot lands on the clipboard and the panel opens',
     'details.capture3': 'One more click sends it to your bucket as a link',
     'details.editTitle': 'Edit the clipboard',
@@ -182,7 +182,7 @@ const dict = {
       'History stays in ~/Library/Application Support/bar-tool/ as an index plus image files. The only network request is the PUT to your bucket — no telemetry, no crash reporting.',
     'faq.q4': 'Does it need special permissions?',
     'faq.a4':
-      'Nothing needs a permission except capture: panel, text and image handling work as-is, and Screen Recording is only requested for ⌥⌘S, which is also the only moment the system selector appears.',
+      'Nothing needs a permission except capture: panel, text and image handling work as-is, and Screen Recording is only requested for ⌘⇧S, which is also the only moment the system selector appears.',
     'footer.license': 'AGPL-3.0-only + commercial license',
     'footer.issue': 'Issues',
   },

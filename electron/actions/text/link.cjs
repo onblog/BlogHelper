@@ -67,15 +67,6 @@ function stripTracking(text) {
   return text.replace(URL_PATTERN, (url) => stripQuery(url));
 }
 
-function decodeLinks(text) {
-  return text.replace(URL_PATTERN, (url) => {
-    try {
-      return decodeURI(url);
-    } catch {
-      return url;
-    }
-  });
-}
 
 function extractLinks(text) {
   const found = text.match(URL_PATTERN) ?? [];
@@ -92,17 +83,6 @@ module.exports = [
     isAvailable: (input) => /[?&](utm_|fbclid|gclid|spm|scm|share_token|mc_cid)/i.test(input.text),
     run: (input) => {
       const text = stripTracking(input.text);
-      return text === input.text ? { error: 'unchanged' } : { text };
-    },
-  },
-  {
-    id: 'link.decode',
-    group: 'link',
-    title: { zh: '链接里的 %20 解码', en: 'Decode %20 in links' },
-    accepts: ['text'],
-    isAvailable: (input) => /https?:\/\/\S*%[0-9a-f]{2}/i.test(input.text),
-    run: (input) => {
-      const text = decodeLinks(input.text);
       return text === input.text ? { error: 'unchanged' } : { text };
     },
   },

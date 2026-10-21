@@ -32,25 +32,8 @@ function sortLines(text) {
     .join('\n');
 }
 
-function reverseLines(text) {
-  return text.split('\n').reverse().join('\n');
-}
 
-function numberLines(text) {
-  let index = 0;
-  return text
-    .split('\n')
-    .map((line) => (line.trim() ? `${(index += 1)}. ${line}` : line))
-    .join('\n');
-}
 
-function joinWithCommas(text) {
-  return text
-    .split(/[\n,，、]/)
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .join(', ');
-}
 
 function makeAction(id, zh, en, transform, extra = {}) {
   return {
@@ -69,25 +52,4 @@ function makeAction(id, zh, en, transform, extra = {}) {
 module.exports = [
   makeAction('list.dedupe', '去重行', 'Remove duplicate lines', dedupe),
   makeAction('list.sort', '排序行', 'Sort lines', sortLines),
-  makeAction(
-    'list.reverse',
-    '反转行序',
-    'Reverse line order',
-    reverseLines,
-    { isAvailable: (input) => input.text.includes('\n') },
-  ),
-  makeAction(
-    'list.number',
-    '加序号',
-    'Number the lines',
-    numberLines,
-    { isAvailable: (input) => /\n/.test(input.text) }
-  ),
-  makeAction(
-    'list.commas',
-    '合并成逗号分隔',
-    'Join into a comma list',
-    joinWithCommas,
-    { isAvailable: (input) => input.text.trim().length > 0 },
-  ),
 ];

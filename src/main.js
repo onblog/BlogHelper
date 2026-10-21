@@ -7,6 +7,7 @@
  */
 
 import { applyStatic, nextLang, pickLocalised, setLang, storedLang, t } from './i18n.js';
+import { actionIcon, groupIcon } from './icons.js';
 
 const POLL_MS = 900;
 const CLEAR_ARM_MS = 3000;
@@ -21,6 +22,7 @@ const nodes = {
   capture: document.getElementById('capture'),
   settings: document.getElementById('settings'),
   clipEdit: document.getElementById('clip-edit'),
+  imageEdit: document.getElementById('image-edit'),
   editSave: document.getElementById('edit-save'),
   editCancel: document.getElementById('edit-cancel'),
 
@@ -160,6 +162,7 @@ function storedTheme() {
 
 function setEditControls(editing) {
   nodes.clipEdit.hidden = editing || state.preview.kind !== 'text';
+  nodes.imageEdit.hidden = editing || state.preview.kind !== 'image';
   nodes.editSave.hidden = !editing;
   nodes.editCancel.hidden = !editing;
 }
@@ -291,12 +294,17 @@ function actionButton(action) {
   button.className = 'action';
   button.type = 'button';
   button.dataset.id = action.id;
+  button.title = pickLocalised(action.title);
+
+  const icon = document.createElement('span');
+  icon.className = 'action__icon';
+  icon.innerHTML = actionIcon(action.id);
 
   const name = document.createElement('span');
   name.className = 'action__name';
   name.textContent = pickLocalised(action.title);
 
-  button.append(name);
+  button.append(icon, name);
   button.addEventListener('click', () => runAction(action.id));
   return button;
 }
@@ -328,15 +336,28 @@ function renderActions() {
     const wrapper = document.createElement('div');
     wrapper.className = 'group';
 
-    const title = document.createElement('div');
-    title.className = 'group__title';
-    title.textContent = t(`group.${group}`);
+    const head = document.createElement('div');
+    head.className = 'group__head';
+
+    const icon = document.createElement('span');
+    icon.className = 'group__icon';
+    icon.innerHTML = groupIcon(group);
+
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = t(`group.${group}`);
+
+    const count = document.createElement('span');
+    count.className = 'group__count';
+    count.textContent = String(items.length);
+
+    head.append(icon, tag, count);
 
     const grid = document.createElement('div');
     grid.className = 'group__grid';
     for (const item of items) grid.append(actionButton(item));
 
-    wrapper.append(title, grid);
+    wrapper.append(head, grid);
     nodes.actions.append(wrapper);
   }
 }
@@ -718,9 +739,8 @@ async function runAction(id) {
     paint(result.state);
 
     if (result.ok) {
-      const key = result.toast ?? 'status.done';
-      setStatus(key);
-      showToast(t(key));
+      setStatus(result.toast ?? 'status.done');
+      cheer();
     } else {
       setStatus(`err.${result.error}`, true);
     }
@@ -729,6 +749,15 @@ async function runAction(id) {
     console.error('action failed', error);
     setStatus('err.unknown_action', true);
   }
+}
+
+/** One happy bounce on the footer dot — quieter than a toast, and no overlap. */
+function cheer() {
+  nodes.dot.classList.remove('is-cheer');
+  // Force a reflow so the animation can restart on consecutive actions.
+  void nodes.dot.offsetWidth;
+  nodes.dot.classList.add('is-cheer');
+  setTimeout(() => nodes.dot.classList.remove('is-cheer'), 500);
 }
 
 async function undo() {
@@ -824,6 +853,9 @@ function bindEvents() {
   });
 
   nodes.clipEdit.addEventListener('click', startEdit);
+  nodes.imageEdit.addEventListener('click', () => {
+    window.bar.editImage(currentTheme());
+  });
   nodes.editSave.addEventListener('click', saveEdit);
   nodes.editCancel.addEventListener('click', cancelEdit);
 
@@ -897,7 +929,7 @@ async function init() {
   applyStatic();
 
   bindEvents();
-  applyTheme(storedTheme() ?? 'dark');
+  applyTheme(storedTheme() ?? 'light');
   updateChrome();
   renderPreview(state.preview);
   renderHistoryStrip();

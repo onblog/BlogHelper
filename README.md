@@ -7,7 +7,7 @@
 **The clipboard workbench for macOS: whatever lands on it — a screenshot, a web page, a table column — comes back cleaned, tidied and ready to paste.**
 
 <a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
-<img alt="version" src="https://img.shields.io/badge/version-1.6.0-f2b544?style=for-the-badge">
+<img alt="version" src="https://img.shields.io/badge/version-1.6.1-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -64,7 +64,7 @@ One model, one job: **clipboard in → transformation → clipboard out**.
 - **Two appearances, no auto-switching.** A dark bar at night (charcoal and amber) and a light bar
   at daytime (cream paper and caramel ink). The switch lives in the top bar and the choice is
   remembered — nothing changes under you when macOS flips its own appearance.
-- **Capture straight into the clipboard.** `⌥⌘S` borrows macOS's own region selector, drops the shot on the clipboard and opens the panel, so the very next click can send it to your bucket as a link.
+- **Capture straight into the clipboard.** `⌘⇧S` borrows macOS's own region selector, drops the shot on the clipboard and opens the panel, so the very next click can send it to your bucket as a link.
 - **A menu bar panel, not a window.** Click the tray icon, pick an action, paste. No dock icon, no
   window stealing a Space.
 - **Only the actions that apply.** The list is filtered by what is actually on the clipboard right
@@ -127,7 +127,7 @@ choice.
 
 ## Capture
 
-`⌥⌘S` (or the camera button in the panel, or the tray menu) runs macOS's own region selector and puts
+`⌘⇧S` (or the camera button in the panel, or the tray menu) runs macOS's own region selector and puts
 the result on the clipboard, ready for the image actions.
 
 - The first use asks for **Screen Recording** permission — the same one every capture tool needs.
@@ -150,7 +150,7 @@ The bottom row of the panel keeps the last three things you copied; **All** open
 
 | Keys | Action |
 | --- | --- |
-| `⌥⌘S` | Region screenshot → clipboard (needs Screen Recording once) |
+| `⌘⇧S` | Region screenshot → clipboard (needs Screen Recording once) |
 | `⌥⌘V` | Show / hide the panel |
 | `⌥⌘Z` | Undo the last action |
 | `Esc` | Close the panel |
@@ -226,7 +226,7 @@ npm run dist:x64       # dmg for Intel
 
 ## Status
 
-`1.6.0`: 21 text tools, image upload to your own S3-compatible bucket, save-to-Downloads,
+`1.6.1`: 21 text tools, image upload to your own S3-compatible bucket, save-to-Downloads,
 local clipboard history for text and images, undo and the bilingual panel. The site lives at
 **https://tool.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 

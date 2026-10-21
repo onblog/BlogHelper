@@ -34,6 +34,9 @@ contextBridge.exposeInMainWorld('bar', {
   /** Appearance: the window material changes with the theme. */
   setAppearance: (theme) => ipcRenderer.invoke('appearance:set', theme),
 
+  /** Open the image editor on the clipboard picture. */
+  editImage: (theme) => ipcRenderer.invoke('image:edit', theme),
+
   /** Inline editing. */
   fullText: () => ipcRenderer.invoke('clipboard:fullText'),
   writeText: (text) => ipcRenderer.invoke('clipboard:writeText', text),

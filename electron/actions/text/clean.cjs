@@ -52,13 +52,6 @@ function stripLineNumbers(text) {
     .join('\n');
 }
 
-function removeBlankLines(text) {
-  return text
-    .split('\n')
-    .filter((line) => line.trim())
-    .join('\n');
-}
-
 /**
  * Remove characters that survive copy-paste but are invisible: zero-width
  * spaces, the byte-order mark, soft hyphens, and non-breaking spaces turned
@@ -106,16 +99,6 @@ module.exports = [
     run: (input) => {
       const text = collapseBlankLines(input.text);
       return text ? { text } : { error: 'empty_result' };
-    },
-  },
-  {
-    id: 'clean.no-blank-lines',
-    group: 'clean',
-    title: { zh: '删掉空行', en: 'Remove blank lines' },
-    accepts: ['text'],
-    run: (input) => {
-      const text = removeBlankLines(input.text);
-      return text === input.text ? { error: 'unchanged' } : { text };
     },
   },
   {
