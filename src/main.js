@@ -68,7 +68,7 @@ const nodes = {
   foot: document.getElementById('foot'),
   dot: document.getElementById('dot'),
   status: document.getElementById('status'),
-  undo: document.getElementById('undo'),
+  undo: document.getElementById('undo-inline'),
   toast: document.getElementById('toast'),
 };
 
@@ -402,7 +402,6 @@ function renderFooter() {
   if (!mainView) return;
 
   nodes.undo.hidden = !state.canUndo;
-  nodes.undo.textContent = t('undo');
 
   if (state.statusIsError) {
     nodes.dot.dataset.state = 'bad';

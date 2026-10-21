@@ -114,7 +114,22 @@
         <section class="block block--grow">
           <div class="block__head">
             <h2 class="block__title" data-i18n="actions.title">能做什么</h2>
-            <span class="chip" id="action-count"></span>
+            <div class="block__head-actions">
+              <span class="chip" id="action-count"></span>
+              <button
+                class="undo-btn"
+                id="undo-inline"
+                type="button"
+                data-i18n-title="action.undo"
+                title="Undo ⌥⌘Z"
+                hidden
+              >
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 4.2L2.8 7.4 6 10.6" />
+                  <path d="M2.8 7.4h6.4a3.4 3.4 0 0 1 0 6.8H7.6" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="actions" id="actions"></div>
         </section>
@@ -308,7 +323,6 @@
       <footer class="foot" id="foot">
         <span class="dot" id="dot" data-state="idle"></span>
         <span class="foot__text" id="status"></span>
-        <button class="link" id="undo" type="button" hidden></button>
       </footer>
     </div>
 

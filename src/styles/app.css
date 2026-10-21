@@ -218,6 +218,36 @@ select:focus-visible {
   gap: 10px;
 }
 
+/* Undo appears next to the action count, only while something can be undone. */
+.undo-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--amber);
+  color: #3a2e23;
+  box-shadow: 2px 2px 0 var(--shadow);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.12s;
+}
+
+.undo-btn:hover {
+  background: #ffc24a;
+}
+
+.undo-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
+.undo-btn[hidden] {
+  display: none;
+}
+
 .chip {
   color: var(--ink-soft);
   font-size: 10.5px;
