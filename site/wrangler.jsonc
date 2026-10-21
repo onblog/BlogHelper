@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "bar-tool",
+  "name": "miaomiao-bar",
   "main": "src/index.js",
   "compatibility_date": "2026-10-01",
 
@@ -35,7 +35,7 @@
 
   "routes": [
     {
-      "pattern": "tool.wordtk.com",
+      "pattern": "bar.wordtk.com",
       "custom_domain": true
     }
   ]

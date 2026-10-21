@@ -2,11 +2,11 @@
 
 <img src="build/icon.svg" width="104" alt="喵喵吧台" />
 
-# 喵喵吧台 · bar-tool
+# 喵喵吧台 · miaomiao-bar
 
 **macOS 上的剪贴板工作台：文字和图片，凡是进了剪贴板的东西，出来的都是能直接用的样子。**
 
-<a href="https://tool.wordtk.com"><img alt="下载" src="https://img.shields.io/badge/%E2%96%B6_%E4%B8%8B%E8%BD%BD-tool.wordtk.com-f2b544?style=for-the-badge"></a>
+<a href="https://bar.wordtk.com"><img alt="下载" src="https://img.shields.io/badge/%E2%96%B6_%E4%B8%8B%E8%BD%BD-bar.wordtk.com-f2b544?style=for-the-badge"></a>
 <img alt="版本" src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.6.1-f2b544?style=for-the-badge">
 
 <br/>
@@ -47,12 +47,12 @@
 
 ## 安装
 
-到 **[tool.wordtk.com](https://tool.wordtk.com)** 下载 dmg（Apple Silicon 与 Intel 各一个），拖进
+到 **[bar.wordtk.com](https://bar.wordtk.com)** 下载 dmg（Apple Silicon 与 Intel 各一个），拖进
 `Applications` 打开即可。安装包是 ad-hoc 签名、没做公证，所以第一次打开要**右键 → 打开 → 再点一次
 「打开」**（或在系统设置 → 隐私与安全性里放行）。
 
 文字动作开箱即用；图片上传需要先在「设置 → 存储」里加一个存储桶，官网的
-[图片上传一节](https://tool.wordtk.com/#bucket)写清了四个关键字段。
+[图片上传一节](https://bar.wordtk.com/#bucket)写清了四个关键字段。
 
 ## 它做什么
 
@@ -152,9 +152,9 @@ src/                面板渲染层：预览、动作网格、双语文案
 ## 隐私
 
 - 面板显示时会读剪贴板；为了攒历史，后台也会轮询——文字每 1.2 秒、图片每 3 秒。
-- 历史从不离开这台 Mac：它是 `~/Library/Application Support/bar-tool/` 下的一个索引加若干图片文件。
+- 历史从不离开这台 Mac：它是 `~/Library/Application Support/喵喵吧台/` 下的一个索引加若干图片文件。
 - 只有两类网络请求，都写在这里：一是 `PUT` 到你配置的存储桶；二是每次启动一条匿名信号（本机生成的随机
-  设备 ID、UTC 日期，以及 Cloudflare 解析出的国家/城市级定位），用于[使用数据页](https://tool.wordtk.com/stats.html)。
+  设备 ID、UTC 日期，以及 Cloudflare 解析出的国家/城市级定位），用于[使用数据页](https://bar.wordtk.com/stats)。
   在设置里关掉「匿名使用统计」即刻停止。不上传内容、不存 IP、不存 UA、没有崩溃上报；检查更新只是一次
   公开清单的 GET。
 - 关掉记录会立刻停止写入；「清空历史」会把索引和所有图片一起删掉。
@@ -200,7 +200,7 @@ npm run dist:x64       # Intel 的 dmg（会先补齐 x64 原生模块）
 ## 当前进度
 
 `1.7.0`：21 个动作、图片上传到你自己的 S3 兼容存储桶、存到下载目录与「预览」、本地剪贴板历史
-（文字 + 图片）、动作旁的撤销按钮、检查更新、匿名使用数据页，以及双语面板；截图快捷键已移除，交给 macOS 的 ⌘⇧⌃4。官网在 **https://tool.wordtk.com**，双架构 dmg 由
+（文字 + 图片）、动作旁的撤销按钮、检查更新、匿名使用数据页，以及双语面板；截图快捷键已移除，交给 macOS 的 ⌘⇧⌃4。官网在 **https://bar.wordtk.com**，双架构 dmg 由
 Cloudflare R2 分发。
 
 ## 开源协议
@@ -212,4 +212,4 @@ Cloudflare R2 分发。
 - **商业** —— 如果 AGPL 不适合你的产品（例如要发布闭源衍生品），
   见 [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md)。
 
-「喵喵吧台 / bar-tool」这个名字与图标不在开源授权范围内。
+「喵喵吧台 / miaomiao-bar」这个名字与图标不在开源授权范围内。

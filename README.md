@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="build/icon.svg" width="104" alt="bar-tool" />
+<img src="build/icon.svg" width="104" alt="miaomiao-bar" />
 
-# bar-tool · 喵喵吧台
+# miaomiao-bar · 喵喵吧台
 
 **The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
-<a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
+<a href="https://bar.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-bar.wordtk.com-f2b544?style=for-the-badge"></a>
 <img alt="version" src="https://img.shields.io/badge/version-1.7.0-f2b544?style=for-the-badge">
 
 <br/>
@@ -24,7 +24,7 @@
 
 </div>
 
-> Copy something messy, click the menu bar, pick what it should become. bar-tool rewrites the
+> Copy something messy, click the menu bar, pick what it should become. Miaomiao Bar rewrites the
 > clipboard in place, so the next **⌘V** is already right: plain text without the web styling,
 > Chinese and English properly spaced, a list squeezed into one line, a link without the
 > `utm_source=…` tail.
@@ -48,13 +48,13 @@
 
 ## Install
 
-Grab the dmg from **[tool.wordtk.com](https://tool.wordtk.com)** (Apple Silicon and Intel), drag the
+Grab the dmg from **[bar.wordtk.com](https://bar.wordtk.com)** (Apple Silicon and Intel), drag the
 app into `Applications`, and launch it. The build is ad-hoc signed rather than notarised, so the
 first launch needs one extra click: **right-click → Open → Open** (or allow it under System Settings
 → Privacy & Security).
 
 Nothing to configure for the text tools. For image uploads, add a bucket in Settings → Storage — the
-site's [image host section](https://tool.wordtk.com/#bucket) walks through the four fields that
+site's [image host section](https://bar.wordtk.com/#bucket) walks through the four fields that
 matter.
 
 ## Screenshots
@@ -185,10 +185,10 @@ Three rules keep it honest:
 - The clipboard is read while the panel is open, and polled in the background to build history —
   every 1.2 s for text, every 3 s for images.
 - History never leaves this Mac: it is an index plus image blobs in
-  `~/Library/Application Support/bar-tool/`.
+  `~/Library/Application Support/喵喵吧台/`.
 - Two network calls, both listed here. One is the `PUT` to the bucket you configured. The other is a
   single anonymous launch signal (a random device id generated on this Mac, the UTC date and the
-  coarse country/city Cloudflare derives) that feeds [the usage page](https://tool.wordtk.com/stats.html);
+  coarse country/city Cloudflare derives) that feeds [the usage page](https://bar.wordtk.com/stats);
   turning **Anonymous usage** off in Settings stops it immediately. No content, no IP, no user agent,
   no crash reporting, and the update check is a plain GET of the public release manifest.
 - Turning history off stops recording immediately; **Clear history** deletes the index and every
@@ -238,7 +238,7 @@ No native modules ship with the app any more, so both architectures are pure Ele
 
 `1.7.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
 local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. The screenshot shortcut is gone: macOS's ⌘⇧⌃4 plus this panel does that job. The site lives at
-**https://tool.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
+**https://bar.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
 ## License
 
@@ -249,4 +249,4 @@ Dual-licensed:
 - **Commercial** — if AGPL does not fit your product (for example, you want to ship a closed-source
   derivative) see [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md).
 
-The name "喵喵吧台 / bar-tool" and the icon are not covered by the open-source grant.
+The name "喵喵吧台 / miaomiao-bar" and the icon are not covered by the open-source grant.

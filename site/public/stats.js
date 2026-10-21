@@ -59,7 +59,7 @@ const messages = {
 /* 六档配色，从「无数据」到「最多」 */
 const BUCKET_COLORS = ['#f3ecdd', '#ffe3a3', '#ffcf6b', '#ffb020', '#f59a2b', '#e0761f'];
 
-const STORAGE_KEY = 'bar-tool-site.lang';
+const STORAGE_KEY = 'miaomiao-bar-site.lang';
 let currentLang = 'zh';
 let statsData = null;
 let mapData = null;

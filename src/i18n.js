@@ -5,7 +5,7 @@
  * so that adding a tool stays a one-file change.
  */
 
-const STORAGE_KEY = 'bar-tool.lang';
+const STORAGE_KEY = 'miaomiao-bar.lang';
 
 const dict = {
   zh: {
@@ -125,10 +125,10 @@ const dict = {
     'toast.settings': '设置面板正在开发中',
   },
   en: {
-    brand: 'bar-tool',
+    brand: 'Miaomiao Bar',
     'action.theme': 'Switch appearance',
-    'settings.quit': 'Quit bar-tool',
-    'action.quit': 'Quit bar-tool',
+    'settings.quit': 'Quit Miaomiao Bar',
+    'action.quit': 'Quit Miaomiao Bar',
     'settings.telemetry': 'Anonymous usage',
     'settings.telemetryHint': 'A random device id and coarse region only — how many people use it',
     'settings.update': 'Check for updates',
@@ -175,7 +175,7 @@ const dict = {
     'settings.launchHint': 'Stay in the menu bar after login',
     'settings.github': 'GitHub repository',
     'donate.title': 'Buy me a coffee',
-    'donate.sub': 'Your support keeps bar-tool going',
+    'donate.sub': 'Your support keeps Miaomiao Bar going',
     'settings.docs': 'Documentation',
     'age.now': 'just now',
     'age.minutes': '{n} min ago',

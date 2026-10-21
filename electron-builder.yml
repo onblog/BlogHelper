@@ -1,4 +1,4 @@
-appId: com.onblog.bartool
+appId: com.onblog.miaomiaobar
 productName: 喵喵吧台
 copyright: Copyright © 2026 onblog
 
@@ -41,4 +41,4 @@ afterPack: scripts/after-pack.cjs
 
 dmg:
   title: 喵喵吧台
-  artifactName: bar-tool-${version}-${arch}.${ext}
+  artifactName: miaomiao-bar-${version}-${arch}.${ext}

@@ -133,7 +133,7 @@ function showToast(message) {
 
 /* ---------- appearance ---------- */
 
-const THEME_KEY = 'bar-tool.theme';
+const THEME_KEY = 'miaomiao-bar.theme';
 
 function currentTheme() {
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
@@ -572,7 +572,7 @@ function renderHistoryList() {
 
 /* ---------- update check ---------- */
 
-const UPDATE_NOTICE_KEY = 'bar-tool.update-notified';
+const UPDATE_NOTICE_KEY = 'miaomiao-bar.update-notified';
 const UPDATE_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 /** Remember which day we last showed a reminder, so it fires at most daily. */
@@ -945,15 +945,15 @@ function bindEvents() {
   });
 
   document.getElementById('donate')?.addEventListener('click', () => {
-    window.bar.openExternal('https://github.com/onblog/bar-tool');
+    window.bar.openExternal('https://github.com/onblog/miaomiao-bar');
   });
 
 
   nodes.aboutGithub.addEventListener('click', () =>
-    window.bar.openExternal('https://github.com/onblog/bar-tool'),
+    window.bar.openExternal('https://github.com/onblog/miaomiao-bar'),
   );
   nodes.aboutDocs.addEventListener('click', () =>
-    window.bar.openExternal('https://tool.wordtk.com/docs'),
+    window.bar.openExternal('https://bar.wordtk.com/docs'),
   );
 
   document.addEventListener('keydown', (event) => {

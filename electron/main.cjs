@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * bar-tool — macOS menu bar shell.
+ * miaomiao-bar — macOS menu bar shell.
  *
  * The app has no dock icon and no main window: a tray icon owns a single
  * frameless panel that is positioned right below it. This file owns window
@@ -41,7 +41,7 @@ const { ClipboardWatcher } = require('./watcher.cjs');
 const { BucketStore } = require('./storage.cjs');
 const sigv4 = require('./sigv4.cjs');
 
-const SITE_ORIGIN = 'https://tool.wordtk.com';
+const SITE_ORIGIN = 'https://bar.wordtk.com';
 const STATS_URL = `${SITE_ORIGIN}/api/ping`;
 
 const PANEL_WIDTH = 420;
@@ -172,11 +172,11 @@ function contextMenu() {
     { type: 'separator' },
     {
       label: '使用文档',
-      click: () => shell.openExternal('https://tool.wordtk.com/docs'),
+      click: () => shell.openExternal('https://bar.wordtk.com/docs'),
     },
     {
       label: 'GitHub',
-      click: () => shell.openExternal('https://github.com/onblog/bar-tool'),
+      click: () => shell.openExternal('https://github.com/onblog/miaomiao-bar'),
     },
     { type: 'separator' },
     { label: `版本 ${app.getVersion()}`, enabled: false },
@@ -186,7 +186,7 @@ function contextMenu() {
 
 function createTray() {
   tray = new Tray(trayImage());
-  tray.setToolTip('喵喵吧台 · bar-tool');
+  tray.setToolTip('喵喵吧台 · Miaomiao Bar');
   tray.on('click', togglePanel);
   tray.on('right-click', () => tray.popUpContextMenu(contextMenu()));
 }
@@ -267,7 +267,7 @@ async function restoreHistory(id) {
 async function openInPreview(image) {
   try {
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const file = path.join(app.getPath('temp'), `bar-tool-open-${stamp}.png`);
+    const file = path.join(app.getPath('temp'), `miaomiao-bar-open-${stamp}.png`);
     await fs.writeFile(file, image.buffer);
     const error = await shell.openPath(file);
     return error ? { ok: false, error } : { ok: true, file };
@@ -309,7 +309,7 @@ async function saveImageToDownloads(image) {
   const pad = (value) => String(value).padStart(2, '0');
   const now = new Date();
   const name = [
-    'bar-tool',
+    'miaomiao-bar',
     `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`,
     `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`,
   ].join('-');
@@ -602,50 +602,6 @@ function registerShortcuts() {
 
 /* ---------- startup ---------- */
 
-/**
- * Carry a 1.7-era install across the rename.
- *
- * `app.getPath('userData')` follows the product name, so renaming the app would
- * otherwise start from an empty profile and look like the history vanished. Only
- * our own files are copied — never Chromium's caches.
- *
- * BAR_TOOL_MIGRATE_FROM exists so this can be exercised against a fixture.
- */
-const MIGRATED_ENTRIES = ['settings.json', 'buckets.json', 'device.json', 'history'];
-
-async function migrateUserData() {
-  const next = app.getPath('userData');
-  const previous = process.env.BAR_TOOL_MIGRATE_FROM || path.join(app.getPath('appData'), '吧台');
-
-  if (next === previous) return;
-  if (await exists(path.join(next, 'settings.json'))) return;
-
-  const source = [];
-  for (const entry of MIGRATED_ENTRIES) {
-    if (await exists(path.join(previous, entry))) source.push(entry);
-  }
-  if (source.length === 0) return;
-
-  try {
-    await fs.mkdir(next, { recursive: true });
-    for (const entry of source) {
-      await fs.cp(path.join(previous, entry), path.join(next, entry), { recursive: true, force: true });
-    }
-    console.log('[migrate] carried over', JSON.stringify(source));
-  } catch (error) {
-    console.error('[migrate] could not copy the old user data', error);
-  }
-}
-
-async function exists(target) {
-  try {
-    await fs.access(target);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 async function initStores() {
   const userData = app.getPath('userData');
 
@@ -687,14 +643,14 @@ async function devCapture(target) {
   const forced = process.env.BAR_TOOL_LANG;
   if (forced === 'zh' || forced === 'en') {
     await panel.webContents.executeJavaScript(
-      `localStorage.setItem('bar-tool.lang', ${JSON.stringify(forced)}); location.reload();`,
+      `localStorage.setItem('miaomiao-bar.lang', ${JSON.stringify(forced)}); location.reload();`,
     );
     await new Promise((resolve) => setTimeout(resolve, 1400));
   }
 
   if (process.env.BAR_TOOL_THEME) {
     await panel.webContents.executeJavaScript(
-      `localStorage.setItem('bar-tool.theme', ${JSON.stringify(process.env.BAR_TOOL_THEME)}); location.reload()`,
+      `localStorage.setItem('miaomiao-bar.theme', ${JSON.stringify(process.env.BAR_TOOL_THEME)}); location.reload()`,
     );
     await new Promise((resolve) => setTimeout(resolve, 1500));
   }
@@ -752,7 +708,6 @@ if (!app.requestSingleInstanceLock()) {
     app.dock?.hide();
     app.setName('喵喵吧台');
 
-    await migrateUserData();
     await initStores();
 
     createPanel();

@@ -83,7 +83,7 @@ const dict = {
       'macOS 没有剪贴板变更事件，只能轮询：文字每 1.2 秒读一次并比对哈希，图片每 3 秒采样一次、且只在剪贴板没有文字时才读。副作用是连拍两张图时，第二张可能不会被记录。',
     'faq.q3': '数据存在哪？会上传吗？',
     'faq.a3':
-      '历史存在本机 ~/Library/Application Support/bar-tool/，图片是一个索引加若干文件。网络请求只有两类：图片 PUT 到你配置的存储桶，以及每次启动一条匿名信号（随机设备 ID + 城市级定位，可在设置关闭）。',
+      '历史存在本机 ~/Library/Application Support/喵喵吧台/，图片是一个索引加若干文件。网络请求只有两类：图片 PUT 到你配置的存储桶，以及每次启动一条匿名信号（随机设备 ID + 城市级定位，可在设置关闭）。',
     'faq.q4': '需要什么系统权限？',
     'faq.a4':
       '完全不需要系统权限：⌥⌘V 呼出面板，文字与图片处理都直接可用。截图交给 macOS 自带的 ⌘⇧⌃4（直接进剪贴板），喵喵吧台只负责把它变成你要的样子。',
@@ -91,13 +91,13 @@ const dict = {
     'footer.issue': '反馈',
   },
   en: {
-    brand: 'bar-tool',
+    brand: 'Miaomiao Bar',
     'nav.actions': 'Actions',
     'nav.details': 'Details',
     'nav.bucket': 'Image host',
     'nav.faq': 'FAQ',
     'nav.stats': 'Stats',
-    'hero.title': 'bar-tool',
+    'hero.title': 'Miaomiao Bar',
     'hero.tagline': 'A screenshot or a snippet of text lands on the clipboard, and leaves in the shape you need',
     'hero.desc': 'For people who write: copy some text or a picture — it comes back cleaned, spaced and converted between rich text and Markdown; images go to your own bucket as links, or open in Preview for a slower pass.',
     'hero.meta': 'macOS 12+ · latest v{v} · right-click to open the first time · anonymous stats, opt-out in Settings',
@@ -169,7 +169,7 @@ const dict = {
       'macOS has no clipboard change event, so it polls: text every 1.2 s compared by hash, images every 3 s and only when the clipboard holds no text. Side effect: when you copy two images back to back, the second may be missed.',
     'faq.q3': 'Where does the data go?',
     'faq.a3':
-      'History stays in ~/Library/Application Support/bar-tool/ as an index plus image files. Two network calls exist: the PUT to your bucket, and one anonymous launch signal (random device id plus coarse city) that you can switch off in Settings.',
+      'History stays in ~/Library/Application Support/喵喵吧台/ as an index plus image files. Two network calls exist: the PUT to your bucket, and one anonymous launch signal (random device id plus coarse city) that you can switch off in Settings.',
     'faq.q4': 'Does it need special permissions?',
     'faq.a4':
       'No system permission is needed at all: ⌥⌘V shows the panel, and text and image handling work as-is. For screenshots use macOS\'s own ⌘⇧⌃4, which already lands in the clipboard.',
@@ -178,7 +178,7 @@ const dict = {
   },
 };
 
-const stored = localStorage.getItem('bar-tool-site.lang');
+const stored = localStorage.getItem('miaomiao-bar-site.lang');
 const initial = stored ?? (navigator.language.startsWith('zh') ? 'zh' : 'en');
 let lang = initial === 'en' ? 'en' : 'zh';
 
@@ -201,7 +201,7 @@ function applyLanguage() {
 
 function toggleLanguage() {
   lang = lang === 'zh' ? 'en' : 'zh';
-  localStorage.setItem('bar-tool-site.lang', lang);
+  localStorage.setItem('miaomiao-bar-site.lang', lang);
   applyLanguage();
   loadRelease();
 }
