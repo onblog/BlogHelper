@@ -247,6 +247,10 @@ async function loadRelease() {
     state.release = payload.data;
     const preferred = detectArch();
 
+    // Re-render the static copy first: it would otherwise overwrite the size
+    // suffix that the loop below appends to each button label.
+    applyLanguage();
+
     for (const button of downloads.querySelectorAll('button')) {
       const arch = button.dataset.arch;
       const file = payload.data.files[arch];
@@ -264,7 +268,6 @@ async function loadRelease() {
       button.classList.toggle('btn--ghost', !recommended);
     }
 
-    applyLanguage();
     versionNode.textContent = payload.data.version
       ? `v${payload.data.version} · ${payload.data.released_at ?? ''}`
       : '';
