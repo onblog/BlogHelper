@@ -11,10 +11,11 @@ const dict = {
     'nav.details': '细节',
     'nav.bucket': '图床',
     'nav.faq': '常见问题',
+    'nav.stats': '统计',
     'hero.title': '吧台',
     'hero.tagline': '文字和图片进了剪贴板，就变成你要的样子',
     'hero.desc': '给文字工作者用的：复制一段文字或一张图——清理干净、排好版、富文本与 Markdown 互转；图片能传进你自己的图床拿回链接，也能交给「预览」慢慢改。一条龙，都在菜单栏里。',
-    'hero.meta': 'macOS 12+ · 8 线程分片下载 · 首次打开需右键 → 打开 · 不收集任何数据',
+    'hero.meta': 'macOS 12+ · 最新版本 v{v} · 首次打开需右键 → 打开 · 匿名统计可在设置关闭',
     'download.arm': '下载 Apple Silicon 版',
     'download.intel': 'Intel 版',
     'download.wait': '正在准备下载…',
@@ -41,10 +42,10 @@ const dict = {
     'actions.title': '21 个动作，六个分组',
     'actions.lead':
       '面板不会把所有功能都摊在你脸上：剪贴板是图片就只出图片动作，是普通文字就不会出现「转纯文本」。',
-    'group.convert': '格式转换',
+    'group.convert': '转换',
     'group.clean': '清理',
-    'group.typography': '中文排版',
-    'group.list': '列表整理',
+    'group.typography': '排版',
+    'group.list': '列表',
     'group.link': '链接',
     'group.image': '图片',
     'item.plain': '转纯文本（剥掉格式，只剩字）',
@@ -82,7 +83,7 @@ const dict = {
       'macOS 没有剪贴板变更事件，只能轮询：文字每 1.2 秒读一次并比对哈希，图片每 3 秒采样一次、且只在剪贴板没有文字时才读。副作用是连拍两张图时，第二张可能不会被记录。',
     'faq.q3': '数据存在哪？会上传吗？',
     'faq.a3':
-      '历史存在本机 ~/Library/Application Support/bar-tool/，图片是一个索引加若干文件。应用唯一的网络请求，就是把图片 PUT 到你配置的存储桶；没有统计、没有崩溃上报。',
+      '历史存在本机 ~/Library/Application Support/bar-tool/，图片是一个索引加若干文件。网络请求只有两类：图片 PUT 到你配置的存储桶，以及每次启动一条匿名信号（随机设备 ID + 城市级定位，可在设置关闭）。',
     'faq.q4': '需要什么系统权限？',
     'faq.a4':
       '完全不需要系统权限：⌥⌘V 呼出面板，文字与图片处理都直接可用。截图交给 macOS 自带的 ⌘⇧⌃4（直接进剪贴板），吧台只负责把它变成你要的样子。',
@@ -95,10 +96,11 @@ const dict = {
     'nav.details': 'Details',
     'nav.bucket': 'Image host',
     'nav.faq': 'FAQ',
+    'nav.stats': 'Stats',
     'hero.title': 'bar-tool',
     'hero.tagline': 'A screenshot or a snippet of text lands on the clipboard, and leaves in the shape you need',
     'hero.desc': 'For people who write: copy some text or a picture — it comes back cleaned, spaced and converted between rich text and Markdown; images go to your own bucket as links, or open in Preview for a slower pass.',
-    'hero.meta': 'macOS 12+ · 8-thread chunked download · right-click to open the first time · no data collected',
+    'hero.meta': 'macOS 12+ · latest v{v} · right-click to open the first time · anonymous stats, opt-out in Settings',
     'download.arm': 'Download for Apple Silicon',
     'download.intel': 'Intel build',
     'download.wait': 'Preparing the download…',
@@ -167,7 +169,7 @@ const dict = {
       'macOS has no clipboard change event, so it polls: text every 1.2 s compared by hash, images every 3 s and only when the clipboard holds no text. Side effect: when you copy two images back to back, the second may be missed.',
     'faq.q3': 'Where does the data go?',
     'faq.a3':
-      'History stays in ~/Library/Application Support/bar-tool/ as an index plus image files. The only network request is the PUT to your bucket — no telemetry, no crash reporting.',
+      'History stays in ~/Library/Application Support/bar-tool/ as an index plus image files. Two network calls exist: the PUT to your bucket, and one anonymous launch signal (random device id plus coarse city) that you can switch off in Settings.',
     'faq.q4': 'Does it need special permissions?',
     'faq.a4':
       'No system permission is needed at all: ⌥⌘V shows the panel, and text and image handling work as-is. For screenshots use macOS\'s own ⌘⇧⌃4, which already lands in the clipboard.',
@@ -190,7 +192,7 @@ function applyLanguage() {
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
 
   for (const node of document.querySelectorAll('[data-i18n]')) {
-    node.textContent = t(node.dataset.i18n);
+    node.textContent = t(node.dataset.i18n, { v: state.release?.version ?? '—' });
   }
 
   document.getElementById('lang-label').textContent = lang === 'zh' ? 'EN' : '中';
@@ -262,6 +264,7 @@ async function loadRelease() {
       button.classList.toggle('btn--ghost', !recommended);
     }
 
+    applyLanguage();
     versionNode.textContent = payload.data.version
       ? `v${payload.data.version} · ${payload.data.released_at ?? ''}`
       : '';

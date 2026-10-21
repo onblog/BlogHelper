@@ -57,6 +57,14 @@ Nothing to configure for the text tools. For image uploads, add a bucket in Sett
 site's [image host section](https://tool.wordtk.com/#bucket) walks through the four fields that
 matter.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/panel-main.png" width="240" alt="clipboard actions" />
+  <img src="docs/screenshots/panel-history.png" width="240" alt="clipboard history" />
+  <img src="docs/screenshots/panel-settings.png" width="240" alt="settings" />
+</p>
+
 ## What it does
 
 One model, one job: **clipboard in → transformation → clipboard out**.
@@ -98,11 +106,11 @@ code editor still gets the Markdown source.
 
 | Group | Actions |
 | --- | --- |
-| Convert | To plain text · **To Markdown** · **To rich text** |
-| Clean up | Trim whitespace · Collapse blank lines · Remove blank lines · Join into one line · Strip line numbers · Remove invisible characters · Strip Markdown syntax |
-| Typography | Space between Chinese and Latin · Punctuation → full-width · Punctuation → half-width |
-| Lists | Remove duplicate lines · Sort lines · Reverse line order · Number the lines · Join into a comma list |
-| Links | Clean tracking parameters · Decode `%20` in links · Extract every link |
+| Convert | Edit text · **Copy to clipboard** · To plain text · **To Markdown** · **To rich text** |
+| Clean up | Trim whitespace · Collapse blank lines · Join into one line · Strip line numbers · Remove invisible characters · Strip Markdown syntax |
+| Type | Space between Chinese and Latin · Punctuation → full-width |
+| Lists | Remove duplicate lines · Sort lines |
+| Links | Clean tracking parameters · Extract every link |
 | Image | Open in Preview · Copy to clipboard · Upload to your bucket · Save to Downloads |
 
 Adding a tool means adding one file under `electron/actions/` — the panel, the tests and the IPC
@@ -178,8 +186,11 @@ Three rules keep it honest:
   every 1.2 s for text, every 3 s for images.
 - History never leaves this Mac: it is an index plus image blobs in
   `~/Library/Application Support/bar-tool/`.
-- The only network request the app ever makes is the `PUT` to the bucket you configured. No
-  telemetry, no crash reporting, no update check.
+- Two network calls, both listed here. One is the `PUT` to the bucket you configured. The other is a
+  single anonymous launch signal (a random device id generated on this Mac, the UTC date and the
+  coarse country/city Cloudflare derives) that feeds [the usage page](https://tool.wordtk.com/stats.html);
+  turning **Anonymous usage** off in Settings stops it immediately. No content, no IP, no user agent,
+  no crash reporting, and the update check is a plain GET of the public release manifest.
 - Turning history off stops recording immediately; **Clear history** deletes the index and every
   blob.
 - There is no capture of our own: the app never reads the screen, so no Screen Recording permission

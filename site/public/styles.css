@@ -84,9 +84,28 @@ code {
   text-decoration: none;
 }
 
-.brand img {
+.brand img,
+.brand__icon {
   border-radius: 7px;
   box-shadow: 2px 2px 0 var(--shadow);
+}
+
+.brand__name {
+  font-weight: 750;
+}
+
+/* the stats page reuses the same header markup with its own class names */
+.topbar__link {
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.topbar__link:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .topbar__nav {
@@ -534,6 +553,226 @@ footer {
     opacity: 0;
     transform: translate(-50%, 8px);
   }
+}
+
+
+/* ---------- stats page ---------- */
+
+.stats-page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+}
+
+.stats-title {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.stats-sub {
+  margin: 0 0 28px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 34px;
+}
+
+.stat-card {
+  padding: 18px 20px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--drop);
+}
+
+.stat-card b {
+  display: block;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-card span {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  font-weight: 620;
+}
+
+.stats-block {
+  margin-bottom: 32px;
+}
+
+.stats-block h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 780;
+}
+
+.map-wrap {
+  position: relative;
+  padding: 10px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--drop);
+}
+
+#world-map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+#world-map .country {
+  stroke: var(--card);
+  stroke-width: 0.6;
+  transition: fill 0.12s;
+}
+
+#world-map .country.has-data:hover {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 11.5px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-item i {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(58, 46, 35, 0.35);
+  border-radius: 3px;
+}
+
+.legend-item em {
+  font-style: normal;
+}
+
+.map-tooltip {
+  position: absolute;
+  z-index: 5;
+  max-width: 220px;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 11.5px;
+  line-height: 1.5;
+  box-shadow: var(--drop);
+  pointer-events: none;
+}
+
+.city-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.city-row {
+  display: grid;
+  grid-template-columns: minmax(84px, 150px) 1fr 34px;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.city-name {
+  overflow: hidden;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.city-bar {
+  height: 10px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  border-radius: 99px;
+  background: var(--paper-deep, #f7ead1);
+}
+
+.city-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--amber);
+}
+
+.city-count {
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.daily-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 160px;
+  padding: 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--drop);
+}
+
+.day-col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 100%;
+}
+
+.day-col i {
+  width: 100%;
+  min-height: 4px;
+  border-radius: 4px 4px 0 0;
+  background: var(--amber);
+}
+
+.day-col span {
+  color: var(--ink-soft);
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-empty {
+  color: var(--ink-soft);
+  font-size: 12.5px;
+}
+
+.stats-foot {
+  margin-top: 24px;
+  color: var(--ink-soft);
+  font-size: 12px;
 }
 
 @media (max-width: 720px) {

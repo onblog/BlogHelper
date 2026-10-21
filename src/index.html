@@ -77,6 +77,19 @@
               <circle cx="8" cy="8" r="1.9" fill="none" stroke="currentColor" stroke-width="1.1" />
             </svg>
           </button>
+
+          <button
+            class="icon-btn"
+            id="quit"
+            type="button"
+            data-i18n-title="action.quit"
+            title="Quit"
+          >
+            <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M8 2.4v5" />
+              <path d="M4.5 4.4a4.6 4.6 0 1 0 7 0" />
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -164,6 +177,17 @@
           ></button>
         </div>
 
+        <div class="setting">
+          <div class="setting__text">
+            <span class="setting__label" data-i18n="settings.update">检查更新</span>
+            <span class="setting__hint" id="update-hint" data-i18n="settings.updateHint">
+              每天自动检查一次，也可以现在就看
+            </span>
+          </div>
+          <button class="link" id="check-update" type="button" data-i18n="settings.updateAction">
+            立即检查
+          </button>
+        </div>
 
         <div class="section">
           <div class="section__title" data-i18n="settings.storage">存储</div>
@@ -227,15 +251,6 @@
           <span class="donate__chev">→</span>
         </button>
 
-        <div class="settings__footer">
-          <button class="quit" id="quit" type="button">
-            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-              <path d="M8 2.6v5.2" />
-              <path d="M4.6 4.7a5 5 0 1 0 6.8 0" />
-            </svg>
-            <span data-i18n="settings.quit">退出吧台</span>
-          </button>
-        </div>
       </div>
 
       <!-- bucket form ------------------------------------------------------ -->

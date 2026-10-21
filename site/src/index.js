@@ -5,9 +5,9 @@
  * other request is served straight from the static asset layer, which keeps the
  * site free and fast.
  *
- * Privacy: this worker stores no IP addresses, sets no cookies and calls no third
- * parties. Its only state is a 60 second in-memory cache of the release manifest.
- * Downloads are counted with standard Workers Logs, not a database.
+ * Privacy: no IP addresses, no user agents, no cookies, no third parties. The one
+ * piece of state is the anonymous launch signal described in the stats section
+ * below — a random device id, the UTC date and coarse geo from Cloudflare.
  */
 
 const MANIFEST_KEY = 'releases/latest.json';
@@ -125,12 +125,107 @@ async function handleDownload(request, env) {
   return new Response(object.body, { status: range ? 206 : 200, headers });
 }
 
+
+/* ---------------------------------------------------------------- stats */
+
+const DEVICE_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/** UTC date, so one launch always lands on exactly one day. */
+function utcDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Record one app launch.
+ *
+ * Only what the client generated locally (a random UUID) plus the coarse geo
+ * Cloudflare derives for the request. No IP, no user agent, no hardware.
+ */
+async function handlePing(request, env) {
+  if (request.method !== 'POST') return fail(405, 'method_not_allowed', '只支持 POST');
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return fail(400, 'bad_request', '请求体不是合法 JSON');
+  }
+
+  const device = String(body?.device || '');
+  if (!DEVICE_ID_RE.test(device)) return fail(400, 'bad_request', 'device 必须是 UUID');
+
+  const cf = request.cf || {};
+
+  try {
+    await env.DB.prepare(
+      `INSERT INTO launches (device_id, date, country, region, city, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+      .bind(device, utcDate(), cf.country || null, cf.region || null, cf.city || null, Date.now())
+      .run();
+  } catch (error) {
+    console.error('[ping] insert failed', error);
+    return fail(500, 'internal_error', '记录失败');
+  }
+
+  return json(200, { ok: true });
+}
+
+/** Aggregates only: the public endpoint never exposes device ids. */
+async function handleStats(env) {
+  const today = utcDate();
+  const weekAgo = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+
+  try {
+    const [total, todayRow, weekRow, cities, countries, daily] = await Promise.all([
+      env.DB.prepare('SELECT COUNT(DISTINCT device_id) AS n FROM launches').first(),
+      env.DB.prepare('SELECT COUNT(DISTINCT device_id) AS n FROM launches WHERE date = ?').bind(today).first(),
+      env.DB.prepare('SELECT COUNT(DISTINCT device_id) AS n FROM launches WHERE date >= ?').bind(weekAgo).first(),
+      env.DB.prepare(
+        `SELECT city, country, COUNT(DISTINCT device_id) AS devices
+         FROM launches WHERE city IS NOT NULL AND city != ''
+         GROUP BY city, country ORDER BY devices DESC, city ASC LIMIT 40`,
+      ).all(),
+      env.DB.prepare(
+        `SELECT country, COUNT(DISTINCT device_id) AS devices
+         FROM launches WHERE country IS NOT NULL AND country != ''
+         GROUP BY country ORDER BY devices DESC`,
+      ).all(),
+      env.DB.prepare(
+        `SELECT date, COUNT(DISTINCT device_id) AS uv FROM launches
+         GROUP BY date ORDER BY date DESC LIMIT 30`,
+      ).all(),
+    ]);
+
+    return json(
+      200,
+      {
+        ok: true,
+        data: {
+          totalDevices: total?.n ?? 0,
+          todayDevices: todayRow?.n ?? 0,
+          weekDevices: weekRow?.n ?? 0,
+          cities: (cities?.results || []).map((row) => ({ city: row.city, country: row.country, devices: row.devices })),
+          countries: (countries?.results || []).map((row) => ({ code: row.country, devices: row.devices })),
+          daily: (daily?.results || []).map((row) => ({ date: row.date, uv: row.uv })),
+        },
+      },
+      { 'Cache-Control': 'public, max-age=120' },
+    );
+  } catch (error) {
+    console.error('[stats] query failed', error);
+    return fail(500, 'internal_error', '统计查询失败');
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
     if (url.pathname === '/api/release') return handleRelease(env);
     if (url.pathname === '/api/download') return handleDownload(request, env);
+    if (url.pathname === '/api/ping') return handlePing(request, env);
+    if (url.pathname === '/api/stats') return handleStats(env);
 
     return new Response('Not found', { status: 404 });
   },

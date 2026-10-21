@@ -15,15 +15,15 @@
       content="清理文字、中文排版、整理列表、净化链接，图片能传到自己的图床，也能交给「预览」慢慢改。"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/assets/icon.svg?v=162" />
-    <link rel="icon" href="/assets/icon.svg?v=162" type="image/svg+xml" />
+    <meta property="og:image" content="/assets/icon.svg?v=163" />
+    <link rel="icon" href="/assets/icon.svg?v=163" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
 
   <body>
     <header class="topbar">
       <a class="brand" href="/">
-        <img src="/assets/icon.svg?v=162" alt="" width="24" height="24" />
+        <img src="/assets/icon.svg?v=163" alt="" width="24" height="24" />
         <span data-i18n="brand">吧台</span>
       </a>
 
@@ -35,6 +35,7 @@
         <button class="lang-toggle" id="lang-toggle" type="button" aria-label="切换语言">
           <span id="lang-label">EN</span>
         </button>
+        <a class="nav-link" href="/stats.html" data-i18n="nav.stats">统计</a>
         <a class="nav-link nav-link--keep" href="https://github.com/onblog/bar-tool" target="_blank" rel="noreferrer">
           GitHub
         </a>
@@ -43,7 +44,7 @@
 
     <main>
       <section class="hero">
-        <img class="hero__icon" src="/assets/icon.svg?v=162" alt="吧台图标" width="96" height="96" />
+        <img class="hero__icon" src="/assets/icon.svg?v=163" alt="吧台图标" width="96" height="96" />
         <h1 class="hero__title" data-i18n="hero.title">吧台</h1>
         <p class="hero__tagline" data-i18n="hero.tagline">
           把剪贴板里乱糟糟的内容，变成你下一步要用的样子
@@ -67,21 +68,21 @@
         </div>
 
         <p class="hero__meta">
-          <span data-i18n="hero.meta">macOS 12+ · 8 线程分片下载 · 首次打开需右键 → 打开 · 不收集任何数据</span>
+          <span data-i18n="hero.meta">macOS 12+ · 最新版本 v— · 首次打开需右键 → 打开 · 匿名统计可在设置关闭</span>
         </p>
       </section>
 
       <section class="shots">
         <figure>
-          <img src="/assets/panel-main.png?v=160" alt="bar-tool 面板" width="420" height="700" />
+          <img src="/assets/panel-main.png?v=163" alt="bar-tool 面板" width="420" height="700" />
           <figcaption data-i18n="shots.main">剪贴板里是什么，就列出能变成什么</figcaption>
         </figure>
         <figure>
-          <img src="/assets/panel-history.png?v=160" alt="历史记录" width="420" height="700" />
+          <img src="/assets/panel-history.png?v=163" alt="历史记录" width="420" height="700" />
           <figcaption data-i18n="shots.history">最近复制过的东西，点一下就回去</figcaption>
         </figure>
         <figure>
-          <img src="/assets/panel-settings.png?v=160" alt="设置" width="420" height="700" />
+          <img src="/assets/panel-settings.png?v=163" alt="设置" width="420" height="700" />
           <figcaption data-i18n="shots.settings">历史、图床、开机启动，都在设置里</figcaption>
         </figure>      </section>
 
@@ -246,7 +247,7 @@
           <summary data-i18n="faq.q3">数据存在哪？会上传吗？</summary>
           <p data-i18n="faq.a3">
             历史存在本机 ~/Library/Application Support/吧台/，图片是一个索引加若干文件。
-            应用唯一的网络请求，就是把图片 PUT 到你配置的存储桶；没有统计、没有崩溃上报。
+            网络请求只有两类：图片 PUT 到你配置的存储桶，以及每次启动一条匿名信号（随机设备 ID + 城市级定位，可在设置关闭）。
           </p>
         </details>
 

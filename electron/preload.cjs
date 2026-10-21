@@ -49,6 +49,7 @@ contextBridge.exposeInMainWorld('bar', {
   // The menu bar icon quits on double click, which nobody discovers on their own.
   quit: () => ipcRenderer.invoke('app:quit'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
+  checkUpdate: () => ipcRenderer.invoke('update:check'),
 
   onVisibility: (handler) => {
     ipcRenderer.on('panel:visibility', (_event, visible) => handler(visible));

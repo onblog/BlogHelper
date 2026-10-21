@@ -8,6 +8,7 @@
 
 import { applyStatic, nextLang, pickLocalised, setLang, storedLang, t } from './i18n.js';
 import { actionIcon, groupIcon } from './icons.js';
+import { isNewer } from './update.js';
 
 const POLL_MS = 900;
 const CLEAR_ARM_MS = 3000;
@@ -54,7 +55,11 @@ const nodes = {
   bSave: document.getElementById('b-save'),
   bDelete: document.getElementById('b-delete'),
   setMax: document.getElementById('set-max'),
+  checkUpdate: document.getElementById('check-update'),
+  quit: document.getElementById('quit'),
+  updateHint: document.getElementById('update-hint'),
   setLaunch: document.getElementById('set-launch'),
+  setTelemetry: document.getElementById('set-telemetry'),
   settingsUsage: document.getElementById('settings-usage'),
   aboutVersion: document.getElementById('about-version'),
   aboutGithub: document.getElementById('about-github'),
@@ -566,6 +571,60 @@ function renderHistoryList() {
   for (const item of state.historyItems) nodes.hlist.append(historyRow(item));
 }
 
+/* ---------- update check ---------- */
+
+const UPDATE_NOTICE_KEY = 'bar-tool.update-notified';
+const UPDATE_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
+/** Remember which day we last showed a reminder, so it fires at most daily. */
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function setUpdateHint(key, version) {
+  if (!nodes.updateHint) return;
+  const text = version ? t(key).replace('{v}', version) : t(key);
+  nodes.updateHint.textContent = text;
+}
+
+/**
+ * Ask the site for its release manifest.
+ *
+ * Auto checks are silent unless something new turns up; a manual check always
+ * reports, even when the answer is "you are current".
+ */
+async function checkForUpdates({ manual = false } = {}) {
+  if (nodes.checkUpdate) nodes.checkUpdate.disabled = true;
+  if (manual) setUpdateHint('settings.updateChecking');
+
+  try {
+    const result = await window.bar.checkUpdate();
+    if (!result?.ok) {
+      if (manual) setUpdateHint('settings.updateFailed');
+      return null;
+    }
+
+    const newer = isNewer(result.current, result.latest);
+    setUpdateHint(newer ? 'settings.updateNewer' : 'settings.updateLatest', newer ? result.latest : result.current);
+
+    if (newer && (manual || localStorage.getItem(UPDATE_NOTICE_KEY) !== today())) {
+      showToast(t('update.available').replace('{v}', result.latest));
+      localStorage.setItem(UPDATE_NOTICE_KEY, today());
+    }
+
+    return result;
+  } finally {
+    if (nodes.checkUpdate) nodes.checkUpdate.disabled = false;
+  }
+}
+
+function startUpdateChecks() {
+  checkForUpdates().catch((error) => console.error('update check failed', error));
+  setInterval(() => {
+    checkForUpdates().catch((error) => console.error('update check failed', error));
+  }, UPDATE_INTERVAL_MS);
+}
+
 /* ---------- settings view ---------- */
 
 function renderBucketList() {
@@ -684,6 +743,7 @@ async function activateBucket(id) {
 function renderSettings() {
   nodes.setHistory.setAttribute('aria-checked', String(Boolean(state.settings.historyEnabled)));
   nodes.setLaunch.setAttribute('aria-checked', String(Boolean(state.settings.launchAtLogin)));
+  nodes.setTelemetry?.setAttribute('aria-checked', String(state.settings.telemetry !== false));
   nodes.setMax.value = String(state.settings.maxItems ?? 100);
   nodes.setFormat.value = state.settings.linkFormat ?? 'url';
 
@@ -846,6 +906,12 @@ function bindEvents() {
 
   nodes.undo.addEventListener('click', undo);
 
+  nodes.quit?.addEventListener('click', () => window.bar.quit());
+
+  nodes.checkUpdate?.addEventListener('click', () => {
+    checkForUpdates({ manual: true }).catch((error) => console.error('update check failed', error));
+  });
+
 
   nodes.themeToggle.addEventListener('click', () => {
     applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
@@ -857,6 +923,10 @@ function bindEvents() {
   nodes.setHistory.addEventListener('click', () =>
     updateSetting({ historyEnabled: !state.settings.historyEnabled }),
   );
+  nodes.setTelemetry?.addEventListener('click', () =>
+    updateSetting({ telemetry: state.settings.telemetry === false }),
+  );
+
   nodes.setLaunch.addEventListener('click', () =>
     updateSetting({ launchAtLogin: !state.settings.launchAtLogin }),
   );
@@ -879,9 +949,6 @@ function bindEvents() {
     window.bar.openExternal('https://github.com/onblog/bar-tool');
   });
 
-  document.getElementById('quit')?.addEventListener('click', () => {
-    window.bar.quit();
-  });
 
   nodes.aboutGithub.addEventListener('click', () =>
     window.bar.openExternal('https://github.com/onblog/bar-tool'),
@@ -933,6 +1000,7 @@ async function init() {
 
   bindEvents();
   applyTheme(storedTheme() ?? 'light');
+startUpdateChecks();
   updateChrome();
   renderPreview(state.preview);
   renderHistoryStrip();

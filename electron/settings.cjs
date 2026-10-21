@@ -18,6 +18,8 @@ const DEFAULTS = {
   maxItems: 100,
   launchAtLogin: false,
   linkFormat: 'url',
+  // One anonymous launch signal a day; see electron/main.cjs reportLaunch().
+  telemetry: true,
 };
 
 const ALLOWED_MAX_ITEMS = [50, 100, 200];
@@ -29,6 +31,7 @@ function normalise(patch, base) {
   if (typeof patch.launchAtLogin === 'boolean') next.launchAtLogin = patch.launchAtLogin;
   if (ALLOWED_MAX_ITEMS.includes(patch.maxItems)) next.maxItems = patch.maxItems;
   if (ALLOWED_LINK_FORMATS.includes(patch.linkFormat)) next.linkFormat = patch.linkFormat;
+  if (typeof patch.telemetry === 'boolean') next.telemetry = patch.telemetry;
 
   return next;
 }

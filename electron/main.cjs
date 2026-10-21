@@ -13,6 +13,7 @@
 const {
   app,
   BrowserWindow,
+  net,
   Menu,
   dialog,
   Tray,
@@ -25,8 +26,10 @@ const {
   shell,
 } = require('electron');
 const fs = require('node:fs/promises');
+const fsSync = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { randomUUID } = require('node:crypto');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 
@@ -37,6 +40,9 @@ const { SettingsStore } = require('./settings.cjs');
 const { ClipboardWatcher } = require('./watcher.cjs');
 const { BucketStore } = require('./storage.cjs');
 const sigv4 = require('./sigv4.cjs');
+
+const SITE_ORIGIN = 'https://tool.wordtk.com';
+const STATS_URL = `${SITE_ORIGIN}/api/ping`;
 
 const PANEL_WIDTH = 420;
 const PANEL_HEIGHT = 700;
@@ -314,6 +320,47 @@ async function saveImageToDownloads(image) {
 }
 
 /** Everything an action needs from the outside world. */
+/* ---------- anonymous launch signal ---------- */
+
+/**
+ * A random id, generated here and stored next to the settings.
+ *
+ * Nothing links it to a person: no IP is stored, no user agent, no hardware.
+ * Deleting the app (or this file) removes the identity with it.
+ */
+function deviceId() {
+  const file = path.join(app.getPath('userData'), 'device.json');
+  try {
+    const parsed = JSON.parse(fsSync.readFileSync(file, 'utf8'));
+    if (typeof parsed?.id === 'string' && parsed.id.length === 36) return parsed.id;
+  } catch {
+    /* first launch */
+  }
+
+  const id = randomUUID();
+  try {
+    fsSync.writeFileSync(file, JSON.stringify({ id }), 'utf8');
+  } catch (error) {
+    console.error('[stats] could not persist the device id:', error);
+  }
+  return id;
+}
+
+/** One ping per launch, silently skipped when the user turned reporting off. */
+async function reportLaunch() {
+  if (settings?.get().telemetry === false) return;
+
+  try {
+    await net.fetch(STATS_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ device: deviceId() }),
+    });
+  } catch {
+    // Offline is normal and never worth surfacing.
+  }
+}
+
 function actionContext() {
   return {
     hasBucket: Boolean(buckets?.hasActive()),
@@ -509,6 +556,31 @@ function registerIpc() {
     app.quit();
   });
 
+  ipcMain.handle('update:check', async () => {
+    try {
+      const response = await net.fetch(`${SITE_ORIGIN}/api/release`, {
+        cache: 'no-store',
+        headers: { 'cache-control': 'no-cache' },
+      });
+      if (!response.ok) return { ok: false, error: `http_${response.status}` };
+
+      const payload = await response.json();
+      const latest = payload?.data?.version;
+      if (!payload?.ok || !latest) return { ok: false, error: 'no_manifest' };
+
+      return {
+        ok: true,
+        current: app.getVersion(),
+        latest,
+        url: `${SITE_ORIGIN}/`,
+        releasedAt: payload.data.released_at ?? null,
+      };
+    } catch (error) {
+      console.error('update check failed', error);
+      return { ok: false, error: 'network' };
+    }
+  });
+
   ipcMain.handle('app:open-external', (_event, url) => {
     if (typeof url !== 'string' || !/^https:\/\//.test(url)) return false;
     shell.openExternal(url);
@@ -642,6 +714,7 @@ if (!app.requestSingleInstanceLock()) {
     createTray();
     registerIpc();
     registerShortcuts();
+    reportLaunch();
 
     app.on('activate', showPanel);
 

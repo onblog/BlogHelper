@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>使用数据 · 吧台 bar-tool</title>
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="description"
+      content="吧台的匿名使用数据：总用户量、每日活跃与城市分布。不收集个人信息。"
+    />
+    <link rel="icon" href="/assets/icon.svg?v=163" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <img class="brand__icon" src="/assets/icon.svg?v=163" alt="" width="26" height="26" />
+        <span class="brand__name" data-i18n="brand">吧台</span>
+      </a>
+
+      <nav class="topbar__nav">
+        <a class="topbar__link" href="/" data-i18n="nav.home">首页</a>
+        <a class="topbar__link" href="/#actions" data-i18n="nav.actions">功能</a>
+        <button class="lang-toggle" id="lang-toggle" type="button" aria-label="切换语言">
+          <span id="lang-label">EN</span>
+        </button>
+      </nav>
+    </header>
+
+    <main class="stats-page">
+      <h1 class="stats-title" data-i18n="stats.title">使用数据</h1>
+      <p class="stats-sub" data-i18n="stats.sub">
+        只统计匿名启动信号，不收集个人信息，不含 IP 与设备指纹。
+      </p>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <b id="stat-total">—</b>
+          <span data-i18n="stats.total">总用户量</span>
+        </div>
+        <div class="stat-card">
+          <b id="stat-today">—</b>
+          <span data-i18n="stats.today">今日活跃</span>
+        </div>
+        <div class="stat-card">
+          <b id="stat-week">—</b>
+          <span data-i18n="stats.week">近 7 日活跃</span>
+        </div>
+      </div>
+
+      <section class="stats-block">
+        <div class="block-head">
+          <h2 data-i18n="stats.map">全球分布</h2>
+          <div class="map-legend" id="map-legend"></div>
+        </div>
+
+        <div class="map-wrap">
+          <svg id="world-map" viewBox="0 0 960 500" role="img" aria-label="全球设备分布"></svg>
+          <div class="map-tooltip" id="map-tooltip"></div>
+        </div>
+      </section>
+
+      <section class="stats-block">
+        <h2 data-i18n="stats.cities">城市分布</h2>
+        <ul class="city-list" id="city-list">
+          <li class="stats-empty" data-i18n="stats.empty">还没有数据</li>
+        </ul>
+      </section>
+
+      <section class="stats-block">
+        <h2 data-i18n="stats.daily">每日活跃</h2>
+        <div class="daily-chart" id="daily-chart"></div>
+      </section>
+
+      <p class="stats-foot" data-i18n="stats.foot">
+        设备 ID 是应用本地生成的随机字符串，删除应用即消失；可在应用设置中关闭上报。
+      </p>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__left">
+        <a href="/" data-i18n="footer.home">返回首页</a>
+        <span class="footer__dot">·</span>
+        <a href="https://github.com/onblog/miaomiao-notes" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+      <div class="footer__right">
+        <span data-i18n="footer.license">AGPL-3.0 · 商业授权</span>
+      </div>
+    </footer>
+
+    <script src="/stats.js" type="module"></script>
+  </body>
+</html>

@@ -928,44 +928,6 @@ select:focus-visible {
   font-weight: 600;
 }
 
-/* Quit lives at the very bottom, quiet enough not to compete with the donate
-   card, but findable for anyone who never learned about the double click. */
-.settings__footer {
-  display: flex;
-  justify-content: center;
-  padding: 2px 0 16px;
-}
-
-.quit {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border: 2px solid transparent;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: 11.5px;
-  font-weight: 650;
-  cursor: pointer;
-  transition: color 0.12s, background 0.12s, border-color 0.12s, transform 0.08s;
-}
-
-.quit:hover {
-  border-color: var(--coral);
-  background: rgba(255, 107, 107, 0.1);
-  color: var(--coral);
-}
-
-.quit:active {
-  transform: translateY(1px);
-}
-
-.quit svg {
-  flex: none;
-}
-
 .donate__chev {
   margin-left: auto;
   color: var(--ink-soft);

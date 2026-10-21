@@ -17,6 +17,15 @@
     "run_worker_first": ["/api/*"]
   },
 
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bar-tool",
+      "database_id": "fc9f6a9b-9c7e-4d20-ae33-1663885fc8e7",
+      "migrations_dir": "migrations"
+    }
+  ],
+
   "r2_buckets": [
     {
       "binding": "R2_RELEASES",
