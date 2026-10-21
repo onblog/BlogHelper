@@ -880,6 +880,10 @@ function bindEvents() {
     nodes.bPath.setAttribute('aria-checked', String(next));
   });
 
+  document.getElementById('donate')?.addEventListener('click', () => {
+    window.bar.openExternal('https://github.com/onblog/bar-tool');
+  });
+
   nodes.aboutGithub.addEventListener('click', () =>
     window.bar.openExternal('https://github.com/onblog/bar-tool'),
   );

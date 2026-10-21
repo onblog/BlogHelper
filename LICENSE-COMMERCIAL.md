@@ -7,7 +7,7 @@ If AGPL does not fit — for example you want to bundle bar-tool inside a closed
 distribute a modified binary without publishing the source — a commercial license is available on
 reasonable terms.
 
-**Contact:** miao@wordtk.com
+**Contact:** hello@wordtk.com
 
 Commercial terms do not include the name "吧台 / bar-tool" or the application icon; those stay with
 the project regardless of the license you hold.
@@ -21,6 +21,6 @@ bar-tool 以 [AGPL-3.0-only](LICENSE) 发布。对大多数人够用：使用、
 如果 AGPL 不适合你——例如要把吧台打包进闭源产品，或分发修改后的二进制而不公开源码——
 可以按合理条款购买商业授权。
 
-**联系方式：** miao@wordtk.com
+**联系方式：** hello@wordtk.com
 
 商业授权同样不包含「吧台 / bar-tool」名称与应用图标的使用权。
