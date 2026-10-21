@@ -1,8 +1,8 @@
 /**
  * Bilingual copy for the panel.
  *
- * Every visible string lives here so the UI can switch language instantly and
- * the panel never hard-codes user-facing text.
+ * Action names are not here: each action carries its own `title: { zh, en }`
+ * so that adding a tool stays a one-file change.
  */
 
 const STORAGE_KEY = 'bar-tool.lang';
@@ -13,52 +13,76 @@ const dict = {
     'action.lang': '切换语言',
     'action.settings': '设置',
     'clip.title': '剪贴板',
-    'clip.emptyTitle': '剪贴板里还没有图片',
-    'clip.emptyDesc': '按 ⌘⇧⌃4 把截图存到剪贴板，再点下面的按钮',
     'clip.imageMeta': '{w} × {h}',
     'clip.textMeta': '{n} 字',
-    'bucket.label': '存入',
-    'bucket.empty': '未配置存储桶',
-    'bucket.manage': '管理',
-    'format.label': '复制格式',
-    'upload.label': '上传并复制',
-    'recent.title': '最近上传',
-    'recent.all': '查看全部',
-    'recent.empty': '还没有上传记录，第一张图会出现在这里',
-    'recent.copy': '复制',
-    'status.noBucket': '未配置存储桶 · 先配置一个再开工',
-    'status.ready': '就绪 · {bucket}',
-    'status.uploading': '正在上传…',
-    'status.copied': '链接已复制',
+    'clip.rich': '富文本',
+    'clip.emptyTitle': '剪贴板是空的',
+    'clip.emptyDesc': '复制一段文字或一张图片，这里会列出能对它做什么',
+    'actions.title': '能做什么',
+    'actions.count': '{n} 个动作',
+    'actions.hint': '↑↓ 选择 · ↵ 执行',
+    'actions.imageEmpty': '图片动作还在开发中：上传到图床、存到下载目录',
+    'group.clean': '清理',
+    'group.case': '大小写',
+    'group.codec': '编码',
+    'group.data': '数据',
+    'group.lines': '行处理',
+    'group.time': '时间',
+    'status.empty': '等待剪贴板内容',
+    'status.ready': '就绪',
+    'status.running': '处理中…',
+    'status.done': '已写入剪贴板',
+    'status.undone': '已撤销',
+    undo: '撤销',
+    'err.empty_result': '结果为空，没有改动',
+    'err.unchanged': '内容没有变化',
+    'err.invalid_json': '这段内容不是合法 JSON',
+    'err.invalid_base64': '不是合法的 Base64',
+    'err.invalid_url_encoding': '百分号编码不完整',
+    'err.invalid_timestamp': '时间戳超出范围',
+    'err.invalid_date': '识别不出日期',
+    'err.not_applicable': '当前剪贴板类型不支持这个动作',
+    'err.unknown_action': '动作不存在',
+    'err.nothing_to_undo': '没有可撤销的操作',
     'toast.settings': '设置面板正在开发中',
-    'toast.upload': '上传引擎正在开发中',
-    'toast.copied': '已复制到剪贴板',
   },
   en: {
     brand: 'bar-tool',
     'action.lang': 'Switch language',
     'action.settings': 'Settings',
     'clip.title': 'Clipboard',
-    'clip.emptyTitle': 'No image on the clipboard',
-    'clip.emptyDesc': 'Press ⌘⇧⌃4 to copy a screenshot, then hit the button below',
     'clip.imageMeta': '{w} × {h}',
     'clip.textMeta': '{n} chars',
-    'bucket.label': 'Save to',
-    'bucket.empty': 'No bucket configured',
-    'bucket.manage': 'Manage',
-    'format.label': 'Copy format',
-    'upload.label': 'Upload & copy',
-    'recent.title': 'Recent',
-    'recent.all': 'View all',
-    'recent.empty': 'Nothing yet — your first image will land here',
-    'recent.copy': 'Copy',
-    'status.noBucket': 'No bucket configured — add one to get started',
-    'status.ready': 'Ready · {bucket}',
-    'status.uploading': 'Uploading…',
-    'status.copied': 'Link copied',
+    'clip.rich': 'rich text',
+    'clip.emptyTitle': 'The clipboard is empty',
+    'clip.emptyDesc': 'Copy some text or an image and this panel lists what it can become',
+    'actions.title': 'Can become',
+    'actions.count': '{n} actions',
+    'actions.hint': '↑↓ select · ↵ run',
+    'actions.imageEmpty': 'Image actions are coming: upload to your bucket, save to Downloads',
+    'group.clean': 'Clean up',
+    'group.case': 'Case',
+    'group.codec': 'Encoding',
+    'group.data': 'Data',
+    'group.lines': 'Lines',
+    'group.time': 'Time',
+    'status.empty': 'Waiting for the clipboard',
+    'status.ready': 'Ready',
+    'status.running': 'Working…',
+    'status.done': 'Written to the clipboard',
+    'status.undone': 'Undone',
+    undo: 'Undo',
+    'err.empty_result': 'Nothing left after processing',
+    'err.unchanged': 'Nothing would change',
+    'err.invalid_json': 'That is not valid JSON',
+    'err.invalid_base64': 'That is not valid Base64',
+    'err.invalid_url_encoding': 'Incomplete percent-encoding',
+    'err.invalid_timestamp': 'Timestamp out of range',
+    'err.invalid_date': 'That does not read as a date',
+    'err.not_applicable': 'This action does not fit the clipboard',
+    'err.unknown_action': 'No such action',
+    'err.nothing_to_undo': 'Nothing to undo',
     'toast.settings': 'Settings is coming soon',
-    'toast.upload': 'The uploader is coming soon',
-    'toast.copied': 'Copied to clipboard',
   },
 };
 
@@ -74,6 +98,12 @@ function interpolate(template, vars) {
 export function t(key, vars) {
   const table = dict[lang] ?? dict.zh;
   return interpolate(table[key] ?? dict.zh[key] ?? key, vars);
+}
+
+/** Pick the bilingual field an action carries. */
+export function pickLocalised(title) {
+  if (!title) return '';
+  return title[lang] ?? title.zh ?? title.en ?? '';
 }
 
 export function getLang() {
@@ -93,9 +123,6 @@ export function applyStatic() {
   }
   for (const node of document.querySelectorAll('[data-i18n-title]')) {
     node.title = t(node.dataset.i18nTitle);
-  }
-  for (const node of document.querySelectorAll('[data-i18n-placeholder]')) {
-    node.placeholder = t(node.dataset.i18nPlaceholder);
   }
 }
 

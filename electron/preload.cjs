@@ -9,13 +9,21 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('bar', {
   info: () => ipcRenderer.invoke('app:info'),
-  readClipboard: () => ipcRenderer.invoke('clipboard:read'),
+
+  /** Current clipboard preview + the actions that apply to it. */
+  state: () => ipcRenderer.invoke('panel:state'),
+
+  /** Run one action; resolves with the fresh state so the panel can repaint. */
+  run: (id) => ipcRenderer.invoke('action:run', id),
+  undo: () => ipcRenderer.invoke('action:undo'),
+
   hide: () => ipcRenderer.invoke('panel:hide'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
-  onShortcutUpload: (handler) => {
-    ipcRenderer.on('shortcut:upload', () => handler());
-  },
+
   onVisibility: (handler) => {
     ipcRenderer.on('panel:visibility', (_event, visible) => handler(visible));
+  },
+  onRefresh: (handler) => {
+    ipcRenderer.on('panel:refresh', () => handler());
   },
 });
