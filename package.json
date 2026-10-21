@@ -1,0 +1,30 @@
+{
+  "name": "bar-tool",
+  "productName": "吧台",
+  "version": "1.1.0",
+  "description": "A macOS menu bar tool that turns clipboard images into links on your own S3-compatible bucket. 吧台：把剪贴板图片一键变成链接的 macOS 菜单栏小工具。",
+  "main": "electron/main.cjs",
+  "author": "Martin",
+  "license": "AGPL-3.0-only",
+  "repository": "https://github.com/onblog/bar-tool",
+  "private": true,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n VITE,ELECTRON -c cyan,magenta \"vite\" \"wait-on tcp:5199 && VITE_DEV_SERVER_URL=http://localhost:5199 electron .\"",
+    "build": "vite build",
+    "start": "npm run build && electron .",
+    "test": "node --test tests/*.test.cjs",
+    "dist": "npm run dist:arm64 && npm run dist:x64",
+    "dist:arm64": "electron-builder --mac --arm64",
+    "dist:x64": "electron-builder --mac --x64"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3",
+    "vite": "^8.3.4",
+    "wait-on": "^8.0.2"
+  }
+}
