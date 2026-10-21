@@ -21,8 +21,6 @@ const nodes = {
   themeToggle: document.getElementById('theme-toggle'),
   capture: document.getElementById('capture'),
   settings: document.getElementById('settings'),
-  clipEdit: document.getElementById('clip-edit'),
-  imageEdit: document.getElementById('image-edit'),
   editSave: document.getElementById('edit-save'),
   editCancel: document.getElementById('edit-cancel'),
 
@@ -161,8 +159,7 @@ function storedTheme() {
 /* ---------- inline editing ---------- */
 
 function setEditControls(editing) {
-  nodes.clipEdit.hidden = editing || state.preview.kind !== 'text';
-  nodes.imageEdit.hidden = editing || state.preview.kind !== 'image';
+  // The entry points now live in the action list; only save/cancel stay up here.
   nodes.editSave.hidden = !editing;
   nodes.editCancel.hidden = !editing;
 }
@@ -243,7 +240,7 @@ async function saveEdit() {
 
 function previewSignature(preview) {
   if (preview.kind === 'image') {
-    return `i:${preview.width}x${preview.height}:${preview.dataUrl.length}`;
+    return `i:${preview.width}x${preview.height}:${preview.stamp ?? preview.dataUrl.length}`;
   }
   if (preview.kind === 'text') return `t:${preview.text}`;
   return 'empty';
@@ -738,6 +735,15 @@ async function runAction(id) {
     state.running = false;
     paint(result.state);
 
+    if (result.ok && result.ui === 'edit_text') {
+      await startEdit();
+      return;
+    }
+    if (result.ok && result.ui === 'edit_image') {
+      await window.bar.editImage(currentTheme());
+      return;
+    }
+
     if (result.ok) {
       setStatus(result.toast ?? 'status.done');
       cheer();
@@ -780,8 +786,9 @@ async function restoreHistory(id, { backToMain = false } = {}) {
 
     paint(result.state);
     if (backToMain) setView('main');
+    // No toast here: picking something you just copied is self-evident, and the
+    // banner used to fire on every single click.
     setStatus('history.restored');
-    showToast(t('history.restored'));
   } catch (error) {
     console.error('history restore failed', error);
   }
@@ -852,10 +859,6 @@ function bindEvents() {
     applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
   });
 
-  nodes.clipEdit.addEventListener('click', startEdit);
-  nodes.imageEdit.addEventListener('click', () => {
-    window.bar.editImage(currentTheme());
-  });
   nodes.editSave.addEventListener('click', saveEdit);
   nodes.editCancel.addEventListener('click', cancelEdit);
 
@@ -882,6 +885,10 @@ function bindEvents() {
 
   document.getElementById('donate')?.addEventListener('click', () => {
     window.bar.openExternal('https://github.com/onblog/bar-tool');
+  });
+
+  document.getElementById('quit')?.addEventListener('click', () => {
+    window.bar.quit();
   });
 
   nodes.aboutGithub.addEventListener('click', () =>

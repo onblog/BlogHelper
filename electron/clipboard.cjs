@@ -14,6 +14,21 @@
 
 const { clipboard, nativeImage, ClipboardItem } = require('electron');
 
+/**
+ * Cheap content stamp for the preview.
+ *
+ * The renderer used to key its repaint on `dataUrl.length`, so two different
+ * pictures of the same size and similar compression were treated as "already
+ * rendered" and the panel kept showing the old one — or a blank checkerboard.
+ */
+function stampOf(value) {
+  let hash = 5381;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = ((hash << 5) + hash + value.charCodeAt(index)) | 0;
+  }
+  return (hash >>> 0).toString(36);
+}
+
 const PREVIEW_MAX = 720;
 const TEXT_PREVIEW_MAX = 4000;
 
@@ -38,8 +53,14 @@ async function blobText(item, type) {
 
 function downscale(image, width, height) {
   const scale = Math.min(1, PREVIEW_MAX / Math.max(width, height));
-  const preview = scale < 1 ? image.resize({ width: Math.round(width * scale) }) : image;
-  return preview.toDataURL();
+  if (scale >= 1) return image.toDataURL();
+
+  // resize() can hand back an empty image for some sizes; that preview showed up
+  // as a transparent checkerboard. Fall back to the original instead of painting
+  // nothing at all.
+  const resized = image.resize({ width: Math.max(1, Math.round(width * scale)), quality: 'good' });
+  const dataUrl = resized.isEmpty() ? '' : resized.toDataURL();
+  return dataUrl.length > 64 ? dataUrl : image.toDataURL();
 }
 
 /** Full clipboard contents — the shape actions receive. */
@@ -100,6 +121,7 @@ function toPreview(source) {
       width: source.width,
       height: source.height,
       dataUrl: source.dataUrl,
+      stamp: stampOf(source.dataUrl),
     };
   }
 

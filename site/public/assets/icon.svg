@@ -1,60 +1,91 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFDF6" />
-      <stop offset="1" stop-color="#FFEBC9" />
+    <!-- Warm amber board, the panel's accent colour, so the blue critter pops. -->
+    <linearGradient id="board" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#FFD79A" />
+      <stop offset="0.55" stop-color="#FFB955" />
+      <stop offset="1" stop-color="#F79A38" />
     </linearGradient>
-    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#7CC4FF" />
-      <stop offset="1" stop-color="#4A9DE8" />
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34" />
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0" />
     </linearGradient>
+
+    <!-- fur: sky blue, one gradient for head and ears so they fuse -->
+    <linearGradient id="fur" gradientUnits="userSpaceOnUse" x1="300" y1="230" x2="740" y2="840">
+      <stop offset="0" stop-color="#CDE9FF" />
+      <stop offset="0.35" stop-color="#8CC8FF" />
+      <stop offset="1" stop-color="#4E96E8" />
+    </linearGradient>
+    <linearGradient id="innerEar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF7E8" />
+      <stop offset="1" stop-color="#FFE0C4" />
+    </linearGradient>
+    <linearGradient id="muzzle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFDF7" />
+      <stop offset="1" stop-color="#FFF1DA" />
+    </linearGradient>
+
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" />
+    </filter>
+
+    <clipPath id="boardClip">
+      <rect x="100" y="100" width="824" height="824" rx="185" />
+    </clipPath>
   </defs>
 
-  <!-- sticker board -->
-  <rect x="92" y="92" width="840" height="840" rx="196" fill="url(#bg)" />
-  <rect
-    x="92"
-    y="92"
-    width="840"
-    height="840"
-    rx="196"
-    fill="none"
-    stroke="#3A2E23"
-    stroke-width="22"
-  />
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#board)" />
 
-  <!-- ears -->
-  <g stroke="#3A2E23" stroke-width="22" stroke-linejoin="round">
-    <ellipse cx="262" cy="292" rx="112" ry="152" fill="url(#fur)" transform="rotate(-42 262 292)" />
-    <ellipse cx="762" cy="292" rx="112" ry="152" fill="url(#fur)" transform="rotate(42 762 292)" />
+  <g clip-path="url(#boardClip)">
+    <rect x="100" y="100" width="824" height="420" fill="url(#gloss)" />
+
+    <!-- soft ground shadow so the head sits on the board -->
+    <ellipse cx="512" cy="838" rx="250" ry="34" fill="#8A4B12" opacity="0.18" filter="url(#soft)" />
+
+    <!-- ears: the mascot's round lobes, not a cat's points -->
+    <g fill="url(#fur)">
+      <circle cx="316" cy="330" r="112" />
+      <circle cx="708" cy="330" r="112" />
+    </g>
+    <g fill="url(#innerEar)">
+      <circle cx="330" cy="318" r="62" />
+      <circle cx="694" cy="318" r="62" />
+    </g>
+
+    <!-- head -->
+    <circle cx="512" cy="556" r="258" fill="url(#fur)" />
+
+    <!-- muzzle -->
+    <ellipse cx="512" cy="632" rx="176" ry="128" fill="url(#muzzle)" />
+
+    <!-- cheeks -->
+    <ellipse cx="330" cy="640" rx="46" ry="28" fill="#FFC9A8" opacity="0.85" />
+    <ellipse cx="694" cy="640" rx="46" ry="28" fill="#FFC9A8" opacity="0.85" />
+
+    <!-- eyes -->
+    <g>
+      <ellipse cx="416" cy="556" rx="34" ry="42" fill="#3A2E23" />
+      <ellipse cx="608" cy="556" rx="34" ry="42" fill="#3A2E23" />
+      <circle cx="428" cy="540" r="13" fill="#FFFFFF" />
+      <circle cx="620" cy="540" r="13" fill="#FFFFFF" />
+      <circle cx="404" cy="572" r="6" fill="#FFFFFF" opacity="0.7" />
+      <circle cx="596" cy="572" r="6" fill="#FFFFFF" opacity="0.7" />
+    </g>
+
+    <!-- nose -->
+    <path
+      d="M486 604 C486 594 500 588 512 596 C524 588 538 594 538 604 C538 615 522 626 512 626 C502 626 486 615 486 604 Z"
+      fill="#FF8064"
+    />
+
+    <!-- mouth: the small ω that makes it read friendly -->
+    <path
+      d="M512 626 C512 648 496 660 478 656 M512 626 C512 648 528 660 546 656"
+      fill="none"
+      stroke="#3A2E23"
+      stroke-width="13"
+      stroke-linecap="round"
+    />
   </g>
-  <ellipse cx="262" cy="300" rx="58" ry="98" fill="#C9E8FF" transform="rotate(-42 262 300)" />
-  <ellipse cx="762" cy="300" rx="58" ry="98" fill="#C9E8FF" transform="rotate(42 762 300)" />
-
-  <!-- head -->
-  <ellipse cx="512" cy="566" rx="300" ry="240" fill="url(#fur)" stroke="#3A2E23" stroke-width="22" />
-
-  <!-- muzzle -->
-  <ellipse cx="512" cy="632" rx="164" ry="126" fill="#D8EEFF" stroke="#3A2E23" stroke-width="18" />
-
-  <!-- eyes -->
-  <g>
-    <ellipse cx="412" cy="516" rx="54" ry="64" fill="#2A2118" />
-    <ellipse cx="612" cy="516" rx="54" ry="64" fill="#2A2118" />
-    <circle cx="430" cy="494" r="19" fill="#FFFDF6" />
-    <circle cx="630" cy="494" r="19" fill="#FFFDF6" />
-  </g>
-
-  <!-- nose + smile -->
-  <path
-    d="M486 588 Q512 570 538 588 Q538 606 512 614 Q486 606 486 588 Z"
-    fill="#2A2118"
-  />
-  <path
-    d="M458 636 Q512 690 566 636"
-    fill="none"
-    stroke="#2A2118"
-    stroke-width="18"
-    stroke-linecap="round"
-  />
 </svg>

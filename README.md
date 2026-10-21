@@ -102,7 +102,7 @@ code editor still gets the Markdown source.
 | Typography | Space between Chinese and Latin · Punctuation → full-width · Punctuation → half-width |
 | Lists | Remove duplicate lines · Sort lines · Reverse line order · Number the lines · Join into a comma list |
 | Links | Clean tracking parameters · Decode `%20` in links · Extract every link |
-| Image | Upload to your bucket · Save to Downloads |
+| Image | Upload to your bucket · Copy to clipboard · Save to Downloads |
 
 Adding a tool means adding one file under `electron/actions/` — the panel, the tests and the IPC
 surface pick it up automatically.
@@ -221,8 +221,12 @@ npm install
 npm run dev            # Vite + Electron with hot reload
 npm test               # 102 unit tests, no dependencies
 npm run dist:arm64     # dmg for Apple Silicon, output in release/
-npm run dist:x64       # dmg for Intel
+npm run dist:x64       # dmg for Intel (fetches the x64 native addon first)
 ```
+
+`node-screenshots` ships one prebuilt addon per architecture, so an Intel build from an
+Apple Silicon Mac needs its x64 twin: `predist:x64` installs it and `after-pack` drops the
+addon that does not match the target, keeping each dmg honest.
 
 ## Status
 

@@ -12,6 +12,13 @@ const { formatLink } = require('../link-format.cjs');
 
 module.exports = [
   {
+    id: 'image.edit',
+    group: 'image',
+    title: { zh: '编辑图片', en: 'Edit image' },
+    accepts: ['image'],
+    run: () => ({ ui: 'edit_image' }),
+  },
+  {
     id: 'image.upload',
     group: 'image',
     title: { zh: '上传到图床', en: 'Upload to bucket' },
@@ -23,6 +30,15 @@ module.exports = [
       if (!result.ok) return { error: result.error ?? 'upload_failed' };
       return { text: formatLink(result.url, ctx.linkFormat), toast: 'upload.done' };
     },
+  },
+  {
+    id: 'image.restore',
+    group: 'image',
+    // Same effect as picking the picture from history: the image is on the
+    // clipboard again, ready to paste, without saving it to disk first.
+    title: { zh: '复制到剪贴板', en: 'Copy to clipboard' },
+    accepts: ['image'],
+    run: (input) => ({ image: input, toast: 'restore.done' }),
   },
   {
     id: 'image.save',

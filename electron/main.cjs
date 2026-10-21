@@ -25,6 +25,7 @@ const {
   shell,
 } = require('electron');
 const fs = require('node:fs/promises');
+const os = require('node:os');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
@@ -325,8 +326,17 @@ function getScreenshotTool() {
     // focus, which is exactly the "点对号又回到框选" symptom.
     screenshotTool = new Screenshots({ lang: SCREENSHOT_LANG });
 
-    screenshotTool.on('ok', (_event, buffer) => {
+    // The library's default ✓ path ends with `clipboard.writeImage`, which
+    // Electron 45 removed — that threw, so `endCapture()` never ran and the
+    // overlay sat there in selection mode, looking like a second capture had
+    // started. Take the buffer, refuse the default, and close the overlay here.
+    screenshotTool.on('ok', (event, buffer) => {
+      event.preventDefault();
       pendingCapture = buffer;
+      capturing = false;
+      screenshotTool?.endCapture().catch((error) => {
+        console.error('closing the overlay after ✓ failed', error);
+      });
     });
 
     screenshotTool.on('cancel', () => {
@@ -339,6 +349,16 @@ function getScreenshotTool() {
     screenshotTool.on('save', async (event, buffer) => {
       event.preventDefault();
       pendingCapture = null;
+      capturing = false;
+
+      // Close the overlay *first*: it is a kiosk window pinned above everything,
+      // so a save dialog opened underneath it never became visible and the click
+      // looked like it re-entered the capture flow.
+      try {
+        await screenshotTool?.endCapture();
+      } catch (error) {
+        console.error('closing the overlay before saving failed', error);
+      }
 
       try {
         const { canceled, filePath } = await dialog.showSaveDialog({
@@ -349,17 +369,12 @@ function getScreenshotTool() {
 
         if (!canceled && filePath) {
           await fs.writeFile(filePath, buffer);
-          capturing = false;
-          await screenshotTool?.endCapture();
           notifyPanel('capture.saved');
-          return;
         }
       } catch (error) {
         console.error('saving the screenshot failed', error);
+        notifyPanel('capture.failed', 'save');
       }
-
-      capturing = false;
-      await screenshotTool?.endCapture();
     });
 
     screenshotTool.on('windowCreated', ($win) => {
@@ -444,13 +459,44 @@ async function runSystemCapture() {
   return { ok: true };
 }
 
+/**
+ * Make sure macOS knows about us before we send anyone to Settings.
+ *
+ * Reading `getMediaAccessStatus` registers nothing: an app only appears in the
+ * Screen Recording list after it has actually tried to capture once. Skipping
+ * that attempt left users staring at a pane with no row for 吧台 and no way to
+ * grant permission, so the first press of ⌘⇧S probes for real, which triggers
+ * the system prompt and puts the switch there.
+ */
+async function requestScreenAccess() {
+  const status = systemPreferences.getMediaAccessStatus('screen');
+  if (status === 'granted') return status;
+
+  // A 2×2 shot through the same binary the fallback capture uses. Electron's
+  // desktopCapturer would work too, but it spins up Chromium's capture stack,
+  // which meanwhile asks TCC about Accessibility for other running apps — and
+  // macOS turns that into a second, pointless permission pane. screencapture
+  // never leaves that trace.
+  const target = path.join(os.tmpdir(), `bar-tool-access-probe-${process.pid}.png`);
+  try {
+    await execFileAsync(SCREENSHOT_BIN, ['-x', '-R0,0,2,2', target]);
+  } catch {
+    // Denied is the expected result here; the request is what registers us.
+  }
+  await fs.rm(target, { force: true });
+
+  return systemPreferences.getMediaAccessStatus('screen');
+}
+
 async function runCapture() {
   if (capturing) return { ok: false, error: 'busy' };
 
-  const status = systemPreferences.getMediaAccessStatus('screen');
+  const status = await requestScreenAccess();
   if (status !== 'granted') {
+    // The probe above put 吧台 in the list; now the switch can be flipped.
+    // Toast first, then Settings, so the pane the user has to use is in front.
+    notifyPanel('capture.permission');
     shell.openExternal(SCREENSHOT_SETTINGS_URL);
-    notifyPanel('capture.permission', status);
     return { ok: false, error: 'permission', detail: status };
   }
 
@@ -470,11 +516,6 @@ async function runCapture() {
 
 /* ---------- image editor ---------- */
 
-/**
- * One editor window serves both entry points: the clipboard picture and (later)
- * a screenshot that needs another pass. It always works on a copy — the
- * clipboard changes only when the user saves.
- */
 async function openImageEditor(dataUrl, { debug = false, theme = 'light' } = {}) {
   if (!dataUrl) return { ok: false, error: 'no_image' };
 
@@ -630,6 +671,7 @@ async function runAction(id) {
 
   const result = await action.run(source, actionContext());
   if (result.error) return { ok: false, error: result.error };
+  if (result.ui) return { ok: true, ui: result.ui };
 
   if (typeof result.text === 'string') {
     if (result.html) await clipboardBridge.writeRich(result.text, result.html);
@@ -786,6 +828,10 @@ function registerIpc() {
 
   ipcMain.handle('panel:hide', () => {
     hidePanel();
+  });
+
+  ipcMain.handle('app:quit', () => {
+    app.quit();
   });
 
   ipcMain.handle('app:open-external', (_event, url) => {
@@ -1048,6 +1094,54 @@ if (!app.requestSingleInstanceLock()) {
     registerShortcuts();
 
     app.on('activate', showPanel);
+
+    if (process.env.BAR_TOOL_CAPTURE_FLOW) {
+      // Drives one overlay capture without a mouse: start, wait, then feed the
+      // same buffer the ✓ button would send, and report whether a second window
+      // appeared (the "点对号又回到框选" regression).
+      const onePixel = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+        'base64',
+      );
+      const tool = getScreenshotTool();
+      console.log('[flow] tool', Boolean(tool));
+      await tool.startCapture();
+      console.log('[flow] started', Boolean(screenshotTool?.$win));
+      await new Promise((resolve) => setTimeout(resolve, 2200));
+      ipcMain.emit('SCREENSHOTS:ok', {}, onePixel, {});
+      console.log('[flow] ok sent');
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log('[flow] after ok', JSON.stringify({
+        window: Boolean(screenshotTool?.$win),
+        capturing,
+        panelVisible: Boolean(panel?.isVisible()),
+        clip: (await clipboardBridge.readSource()).kind,
+      }));
+      app.quit();
+    }
+
+    if (process.env.BAR_TOOL_SCREEN_PROBE) {
+      // Shows whether this machine's TCC knows about the app, before and after
+      // the capture probe that registers it. BAR_TOOL_SCREEN_PROBE=overlay also
+      // starts the annotation overlay, to see which step asks for Accessibility.
+      const before = systemPreferences.getMediaAccessStatus('screen');
+      const after = await requestScreenAccess();
+      console.log('[screen-probe]', JSON.stringify({ before, after }));
+
+      if (process.env.BAR_TOOL_SCREEN_PROBE === 'overlay') {
+        const tool = getScreenshotTool();
+        console.log('[screen-probe] overlay', JSON.stringify({ loaded: Boolean(tool) }));
+        try {
+          await tool?.startCapture();
+        } catch (error) {
+          console.log('[screen-probe] overlay failed', String(error));
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await tool?.endCapture();
+      }
+
+      app.quit();
+    }
 
     if (process.env.BAR_TOOL_OVERLAY_PROBE) {
       // Loads the overlay from the packaged asar to prove the native addon

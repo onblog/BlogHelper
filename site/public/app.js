@@ -38,7 +38,7 @@ const dict = {
     'details.edit1': '文字点「编辑」改字；图片能裁剪、打码、画笔、箭头',
     'details.edit2': '保存即覆盖剪贴板，⌘↵ 快速保存',
     'details.edit3': '⌥⌘Z 可以撤销这次覆盖',
-    'actions.title': '17 个动作，六个分组',
+    'actions.title': '21 个动作，六个分组',
     'actions.lead':
       '面板不会把所有功能都摊在你脸上：剪贴板是图片就只出图片动作，是普通文字就不会出现「转纯文本」。',
     'group.convert': '格式转换',
@@ -60,7 +60,7 @@ const dict = {
     'item.tracking': '净化链接（去掉 utm_* 跟踪参数）',
     'item.extract': '提取文中所有链接',
     'item.upload': '上传到图床 → 链接',
-    'item.save': '存到下载目录',
+    'item.save': '复制到剪贴板 · 存到下载目录',
     'bucket.title': '图片存在你自己的桶里',
     'bucket.lead':
       '没有官方图床，也没有账号。填一个 S3 兼容存储，链接就指向你自己的域名，费用和隐私都归你。',
@@ -122,7 +122,7 @@ const dict = {
     'details.edit1': 'Edit text; crop, mosaic, draw or arrow on an image',
     'details.edit2': 'Saving overwrites the clipboard; ⌘↵ saves fast',
     'details.edit3': '⌥⌘Z undoes that overwrite',
-    'actions.title': '17 actions, six groups',
+    'actions.title': '21 actions, six groups',
     'actions.lead':
       'The panel never dumps everything on you: an image only shows image actions, plain prose never offers "To plain text".',
     'group.convert': 'Convert',
@@ -144,7 +144,7 @@ const dict = {
     'item.tracking': 'Clean tracking parameters (utm_*)',
     'item.extract': 'Extract every link',
     'item.upload': 'Upload to bucket → link',
-    'item.save': 'Save to Downloads',
+    'item.save': 'Copy to clipboard · save to Downloads',
     'bucket.title': 'Images live in your own bucket',
     'bucket.lead':
       'No official image host and no account. Point it at any S3-compatible storage and links point at your own domain — the cost and the privacy are yours.',

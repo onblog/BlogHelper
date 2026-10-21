@@ -47,6 +47,9 @@ contextBridge.exposeInMainWorld('bar', {
   bucketsActivate: (id) => ipcRenderer.invoke('buckets:activate', id),
 
   hide: () => ipcRenderer.invoke('panel:hide'),
+
+  // The menu bar icon quits on double click, which nobody discovers on their own.
+  quit: () => ipcRenderer.invoke('app:quit'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
 
   onVisibility: (handler) => {

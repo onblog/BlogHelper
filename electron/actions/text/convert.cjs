@@ -20,6 +20,25 @@ function looksLikeMarkdown(text) {
 
 const actions = [
   {
+    id: 'text.edit',
+    group: 'convert',
+    // Opening the inline editor is UI work, not a transform: run() just tells the
+    // renderer what to do, and the clipboard stays untouched until you save.
+    title: { zh: '编辑文字', en: 'Edit text' },
+    accepts: ['text'],
+    run: () => ({ ui: 'edit_text' }),
+  },
+  {
+    id: 'text.restore',
+    // Nothing to transform: this is the explicit "put it back on the clipboard"
+    // the panel was missing, for when the clipboard drifted away from the text
+    // you are looking at.
+    group: 'convert',
+    title: { zh: '复制到剪贴板', en: 'Copy to clipboard' },
+    accepts: ['text'],
+    run: (input) => (input.text ? { text: input.text, toast: 'restore.done' } : { error: 'empty_result' }),
+  },
+  {
     id: 'convert.plain',
     group: 'convert',
     title: { zh: '转纯文本', en: 'To plain text' },

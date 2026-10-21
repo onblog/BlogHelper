@@ -6,8 +6,16 @@ directories:
   output: release
   buildResources: build
 
-# Reuse the Electron shipped in node_modules instead of downloading it again.
-electronDist: node_modules/electron/dist
+# No electronDist override: node_modules/electron/dist pins THIS machine's
+# architecture, so reusing it silently produced an "Intel" dmg containing an
+# arm64 binary. Letting electron-builder resolve each arch itself (it reuses the
+# @electron/get cache) is what actually yields a correct x64 bundle.
+
+# Nothing that ships here needs recompiling: node-screenshots is a prebuilt
+# N-API addon (stable ABI) and fabric's optional `canvas` is excluded from the
+# bundle. Leaving the rebuild on made the Intel build fail in node-gyp, which
+# looked for pixman/cairo on a machine that has no Headless-Canvas toolchain.
+npmRebuild: false
 
 files:
   - dist/**/*

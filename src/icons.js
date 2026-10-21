@@ -69,6 +69,18 @@ const ICONS = {
     `<path d="M6 15.5h8a3.2 3.2 0 0 0 .4-6.4A4.2 4.2 0 0 0 6.7 8 3.4 3.4 0 0 0 6 15.5z"/><path d="M10 14V8.5M7.8 10.7L10 8.5l2.2 2.2" stroke="${SKY}"/>`,
     { accent: SKY },
   ),
+  'text.edit': svg(
+    `<path d="M4.5 5.5h7M4.5 9h5M4.5 12.5h3"/><path d="M13.2 7.6l1.9 1.9-5.4 5.4-2.4.5.5-2.4 5.4-5.4z" stroke="${CORAL}"/>`,
+    { accent: CORAL },
+  ),
+  'text.restore': svg(
+    `<rect x="6.5" y="3.5" width="9" height="11" rx="2"/><path d="M13.5 6.5H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h7.5" stroke="${AMBER}"/>`,
+    { accent: AMBER },
+  ),
+  'image.restore': svg(
+    `<rect x="3" y="4.5" width="9.5" height="9.5" rx="2"/><path d="M8 9.2h5.5a2.3 2.3 0 0 1 2.3 2.3v2.2a2.3 2.3 0 0 1-2.3 2.3H9.5" stroke="${CORAL}"/><path d="M11.6 14.2L9.6 16l2 1.8" stroke="${CORAL}"/>`,
+    { accent: CORAL },
+  ),
   'image.save': svg(
     `<path d="M4 12.5v2.5a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 16 15v-2.5"/><path d="M10 3.5v9M7.3 10l2.7 2.7L12.7 10" stroke="${MINT}"/>`,
     { accent: MINT },
