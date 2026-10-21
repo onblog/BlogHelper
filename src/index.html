@@ -16,7 +16,11 @@
         <button class="icon-btn icon-btn--back" id="back" type="button" hidden>←</button>
 
         <div class="brand" id="brand">
-          <img class="brand__glyph" src="./assets/glyph.svg" alt="" width="18" height="18" />
+          <svg class="brand__glyph" viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+            <rect x="3.2" y="3" width="11.6" height="8.2" rx="2" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <path d="M5.6 9.4l2.1-2.2 1.6 1.7 1.3-1.3 1.9 2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+            <path class="brand__accent" d="M2 13.6h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+          </svg>
           <span class="brand__name" data-i18n="brand">吧台</span>
           <span class="brand__version" id="version"></span>
         </div>
@@ -33,6 +37,33 @@
           >
             EN
           </button>
+          <button
+            class="icon-btn"
+            id="capture"
+            type="button"
+            data-i18n-title="action.capture"
+            title="Screenshot"
+          >
+            <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+              <rect x="1.6" y="4.4" width="12.8" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.2" />
+              <path d="M5.6 4.4l.9-1.6h3l.9 1.6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+              <circle cx="8" cy="8.9" r="2.4" fill="none" stroke="currentColor" stroke-width="1.2" />
+            </svg>
+          </button>
+
+          <button
+            class="icon-btn"
+            id="theme-toggle"
+            type="button"
+            data-i18n-title="action.theme"
+            title="Appearance"
+          >
+            <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+              <circle cx="8" cy="8" r="5.2" fill="none" stroke="currentColor" stroke-width="1.2" />
+              <path d="M8 2.8a5.2 5.2 0 0 0 0 10.4z" fill="currentColor" />
+            </svg>
+          </button>
+
           <button
             class="icon-btn"
             id="settings"
@@ -55,11 +86,22 @@
       </header>
 
       <!-- main view ------------------------------------------------------- -->
-      <div class="view" id="view-main">
+      <div class="view" id="view-main" tabindex="-1">
         <section class="block">
           <div class="block__head">
             <h2 class="block__title" data-i18n="clip.title">剪贴板</h2>
-            <span class="chip" id="clip-meta"></span>
+            <div class="block__head-actions">
+              <span class="chip" id="clip-meta"></span>
+              <button class="link" id="clip-edit" type="button" data-i18n="clip.edit" hidden>
+                编辑
+              </button>
+              <button class="link" id="edit-save" type="button" data-i18n="edit.save" hidden>
+                保存
+              </button>
+              <button class="link" id="edit-cancel" type="button" data-i18n="edit.cancel" hidden>
+                取消
+              </button>
+            </div>
           </div>
           <div class="preview" id="preview"></div>
         </section>
@@ -128,6 +170,14 @@
             role="switch"
             aria-checked="false"
           ></button>
+        </div>
+
+        <div class="setting">
+          <div class="setting__text">
+            <span class="setting__label" data-i18n="settings.capture">截图到剪贴板</span>
+            <span class="setting__hint" data-i18n="settings.captureHint">⌥⌘S · 首次使用需授权「屏幕录制」</span>
+          </div>
+          <button class="link" id="settings-capture" type="button">⌥⌘S</button>
         </div>
 
         <div class="section">

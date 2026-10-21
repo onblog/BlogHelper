@@ -19,11 +19,14 @@ const {
   ipcMain,
   nativeImage,
   safeStorage,
+  systemPreferences,
   screen,
   shell,
 } = require('electron');
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { execFile } = require('node:child_process');
+const { promisify } = require('node:util');
 
 const clipboardBridge = require('./clipboard.cjs');
 const actions = require('./actions/index.cjs');
@@ -32,6 +35,12 @@ const { SettingsStore } = require('./settings.cjs');
 const { ClipboardWatcher } = require('./watcher.cjs');
 const { BucketStore } = require('./storage.cjs');
 const sigv4 = require('./sigv4.cjs');
+
+const execFileAsync = promisify(execFile);
+const SCREENSHOT_BIN = '/usr/sbin/screencapture';
+const CAPTURE_SHORTCUT = 'Alt+Command+S';
+const SCREENSHOT_SETTINGS_URL =
+  'x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture';
 
 const PANEL_WIDTH = 400;
 const PANEL_HEIGHT = 600;
@@ -58,6 +67,7 @@ let settings = null;
 let watcher = null;
 /** @type {BucketStore | null} */
 let buckets = null;
+let capturing = false;
 
 function trayImage() {
   const image = nativeImage.createFromPath(path.join(__dirname, 'assets', 'trayTemplate.png'));
@@ -156,6 +166,7 @@ function togglePanel() {
 function contextMenu() {
   return Menu.buildFromTemplate([
     { label: '打开吧台', click: showPanel },
+    { label: '截图到剪贴板', accelerator: CAPTURE_SHORTCUT, click: () => runCapture() },
     { label: '设置…', click: () => openSettings() },
     { type: 'separator' },
     {
@@ -242,6 +253,60 @@ async function restoreHistory(id) {
     watcher?.skipNextImage();
   }
 
+  return { ok: true };
+}
+
+/* ---------- screenshots ---------- */
+
+function notifyPanel(key, detail) {
+  showPanel();
+  panel?.webContents.send('panel:notice', { key, detail });
+}
+
+/**
+ * Region capture through macOS's own selector.
+ *
+ * The system already ships a better selector than anything we would draw, so
+ * `-i` is used to borrow it: `-i` interactive, `-c` straight to the clipboard,
+ * `-x` silent. The result lands on the clipboard, which is exactly the input the
+ * panel already understands.
+ */
+async function runCapture() {
+  if (capturing) return { ok: false, error: 'busy' };
+
+  const status = systemPreferences.getMediaAccessStatus('screen');
+  if (status !== 'granted') {
+    shell.openExternal(SCREENSHOT_SETTINGS_URL);
+    notifyPanel('capture.permission', status);
+    return { ok: false, error: 'permission', detail: status };
+  }
+
+  // Remember what was on the clipboard so a cancelled selection (Esc) is not
+  // mistaken for a fresh screenshot.
+  const before = await clipboardBridge.readSource();
+
+  capturing = true;
+  try {
+    await execFileAsync(SCREENSHOT_BIN, ['-i', '-c', '-x'], { timeout: 180_000 });
+  } catch (error) {
+    const detail = String(error.stderr || error.message || '').trim().slice(0, 140);
+    notifyPanel('capture.failed', detail);
+    return { ok: false, error: 'capture_failed', detail };
+  } finally {
+    capturing = false;
+  }
+
+  const after = await clipboardBridge.readSource();
+  const unchanged =
+    before.kind === after.kind &&
+    (before.kind !== 'image' ||
+      (before.buffer && after.buffer && before.buffer.equals(after.buffer)));
+
+  // Esc closes the selector without touching the clipboard: stay quiet.
+  if (unchanged) return { ok: false, error: 'cancelled' };
+
+  showPanel();
+  panel?.webContents.send('panel:refresh');
   return { ok: true };
 }
 
@@ -426,6 +491,34 @@ function registerIpc() {
     return { ok: true, state: await buildState() };
   });
 
+  ipcMain.handle('appearance:set', (_event, theme) => {
+    // The vibrancy material only works behind the dark panel; the light theme
+    // paints its own paper, so the material is switched off.
+    panel?.setVibrancy(theme === 'light' ? null : 'under-window');
+    return true;
+  });
+
+  ipcMain.handle('clipboard:fullText', async () => {
+    const source = await clipboardBridge.readSource();
+    return { kind: source.kind, text: source.kind === 'text' ? source.text : '' };
+  });
+
+  ipcMain.handle('clipboard:writeText', async (_event, text) => {
+    if (typeof text !== 'string') {
+      return { ok: false, error: 'invalid_input', state: await buildState() };
+    }
+
+    const before = await clipboardBridge.readSource();
+    await clipboardBridge.writeText(text);
+    // The write came from us, so history must not record it as a new copy.
+    watcher?.expectText(text);
+    undoSource = before.kind === 'empty' ? null : before;
+
+    return { ok: true, state: await buildState() };
+  });
+
+  ipcMain.handle('capture:run', () => runCapture());
+
   ipcMain.handle('buckets:save', async (_event, input) => {
     if (!buckets) return { ok: false, error: 'unavailable' };
     const result = await buckets.save(input ?? {});
@@ -456,6 +549,11 @@ function registerIpc() {
 }
 
 function registerShortcuts() {
+  // Option+Command+S — region screenshot straight to the clipboard.
+  globalShortcut.register(CAPTURE_SHORTCUT, () => {
+    runCapture().catch((error) => console.error('capture failed', error));
+  });
+
   // Option+Command+V — show/hide the panel.
   globalShortcut.register('Alt+Command+V', togglePanel);
 
@@ -519,6 +617,19 @@ async function devCapture(target) {
       `localStorage.setItem('bar-tool.lang', ${JSON.stringify(forced)}); location.reload();`,
     );
     await new Promise((resolve) => setTimeout(resolve, 1400));
+  }
+
+  if (process.env.BAR_TOOL_THEME) {
+    await panel.webContents.executeJavaScript(
+      `localStorage.setItem('bar-tool.theme', ${JSON.stringify(process.env.BAR_TOOL_THEME)}); location.reload()`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+  }
+
+  if (process.env.BAR_TOOL_EVAL) {
+    const value = await panel.webContents.executeJavaScript(process.env.BAR_TOOL_EVAL);
+    console.log('[eval]', JSON.stringify(value));
+    await new Promise((resolve) => setTimeout(resolve, 1200));
   }
 
   if (process.env.BAR_TOOL_BUCKET) {

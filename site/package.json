@@ -1,0 +1,13 @@
+{
+  "name": "bar-tool-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Official site for bar-tool — Cloudflare Worker plus static assets.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.3"
+  }
+}

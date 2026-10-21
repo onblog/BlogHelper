@@ -3,5 +3,6 @@ dist
 release
 .DS_Store
 *.log
+.wrangler
 build/icon.iconset
 build/*.png

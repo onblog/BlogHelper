@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#353b43" />
+      <stop offset="1" stop-color="#14161a" />
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f9cd79" />
+      <stop offset="1" stop-color="#e2962a" />
+    </linearGradient>
+    <linearGradient id="counter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f9f2e4" />
+      <stop offset="1" stop-color="#e4d9c3" />
+    </linearGradient>
+    <clipPath id="cardClip">
+      <rect x="326" y="326" width="400" height="300" rx="52" />
+    </clipPath>
+  </defs>
+
+  <rect x="100" y="100" width="824" height="824" rx="188" fill="url(#bg)" />
+  <rect
+    x="101"
+    y="101"
+    width="822"
+    height="822"
+    rx="187"
+    fill="none"
+    stroke="#ffffff"
+    stroke-opacity="0.08"
+    stroke-width="2"
+  />
+
+  <!-- The bar counter -->
+  <rect x="162" y="626" width="700" height="60" rx="30" fill="url(#counter)" />
+
+  <!-- The photo resting on it -->
+  <rect x="326" y="326" width="400" height="300" rx="52" fill="url(#card)" />
+  <g clip-path="url(#cardClip)">
+    <circle cx="628" cy="406" r="32" fill="#fff8e8" fill-opacity="0.92" />
+    <path d="M326 626 L458 480 L546 580 L618 502 L726 626 Z" fill="#8a5a12" fill-opacity="0.45" />
+    <path d="M326 626 L458 508 L578 626 Z" fill="#ffffff" fill-opacity="0.24" />
+  </g>
+</svg>

@@ -25,6 +25,19 @@ contextBridge.exposeInMainWorld('bar', {
   /** Settings. */
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
 
+  /** Region screenshot into the clipboard. */
+  capture: () => ipcRenderer.invoke('capture:run'),
+  onNotice: (handler) => {
+    ipcRenderer.on('panel:notice', (_event, notice) => handler(notice));
+  },
+
+  /** Appearance: the window material changes with the theme. */
+  setAppearance: (theme) => ipcRenderer.invoke('appearance:set', theme),
+
+  /** Inline editing. */
+  fullText: () => ipcRenderer.invoke('clipboard:fullText'),
+  writeText: (text) => ipcRenderer.invoke('clipboard:writeText', text),
+
   /** Storage buckets. */
   bucketsSave: (input) => ipcRenderer.invoke('buckets:save', input),
   bucketsRemove: (id) => ipcRenderer.invoke('buckets:remove', id),

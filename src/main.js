@@ -17,7 +17,12 @@ const nodes = {
   viewTitle: document.getElementById('view-title'),
   version: document.getElementById('version'),
   langToggle: document.getElementById('lang-toggle'),
+  themeToggle: document.getElementById('theme-toggle'),
+  capture: document.getElementById('capture'),
   settings: document.getElementById('settings'),
+  clipEdit: document.getElementById('clip-edit'),
+  editSave: document.getElementById('edit-save'),
+  editCancel: document.getElementById('edit-cancel'),
 
   viewMain: document.getElementById('view-main'),
   viewHistory: document.getElementById('view-history'),
@@ -75,6 +80,8 @@ const state = {
   history: { enabled: true, count: 0, bytes: 0, recent: [] },
   settings: { maxItems: 100, launchAtLogin: false, historyEnabled: true },
   historyItems: [],
+  /** Non-null while the clipboard text is being edited inline. */
+  editing: null,
   buckets: [],
   editingBucketId: null,
   selectedId: null,
@@ -122,6 +129,115 @@ function showToast(message) {
   }, 1900);
 }
 
+/* ---------- appearance ---------- */
+
+const THEME_KEY = 'bar-tool.theme';
+
+function currentTheme() {
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+}
+
+function applyTheme(theme) {
+  const next = theme === 'light' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch {
+    /* ignore */
+  }
+
+  window.bar.setAppearance(next);
+}
+
+function storedTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/* ---------- inline editing ---------- */
+
+function setEditControls(editing) {
+  nodes.clipEdit.hidden = editing || state.preview.kind !== 'text';
+  nodes.editSave.hidden = !editing;
+  nodes.editCancel.hidden = !editing;
+}
+
+function renderEditor() {
+  nodes.preview.className = 'preview';
+  nodes.preview.replaceChildren();
+
+  const area = document.createElement('textarea');
+  area.className = 'preview__editor';
+  area.value = state.editing ?? '';
+  area.spellcheck = false;
+  area.setAttribute('aria-label', t('clip.edit'));
+
+  area.addEventListener('input', () => {
+    state.editing = area.value;
+  });
+
+  area.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      saveEdit();
+      return;
+    }
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      cancelEdit();
+    }
+  });
+
+  nodes.preview.append(area);
+  requestAnimationFrame(() => area.focus());
+}
+
+async function startEdit() {
+  try {
+    const full = await window.bar.fullText();
+    if (full.kind !== 'text') return;
+
+    state.editing = full.text;
+    renderEditor();
+    setEditControls(true);
+    // The hint belongs in the status line; the header only holds the buttons.
+    setStatus('edit.hint');
+  } catch (error) {
+    console.error('could not open the editor', error);
+  }
+}
+
+function cancelEdit() {
+  state.editing = null;
+  setEditControls(false);
+  state.signature = '';
+  renderPreview(state.preview);
+  renderFooter();
+}
+
+async function saveEdit() {
+  if (state.editing === null) return;
+
+  try {
+    const result = await window.bar.writeText(state.editing);
+    state.editing = null;
+    setEditControls(false);
+
+    state.signature = '';
+    paint(result.state ?? (await window.bar.state()));
+    setStatus('edit.saved');
+    showToast(t('edit.saved'));
+  } catch (error) {
+    console.error('saving the edit failed', error);
+  }
+}
+
 /* ---------- main view ---------- */
 
 function previewSignature(preview) {
@@ -144,6 +260,7 @@ function renderPreview(preview) {
     img.alt = '';
     nodes.preview.append(img);
     nodes.clipMeta.textContent = t('clip.imageMeta', { w: preview.width, h: preview.height });
+    setEditControls(false);
     return;
   }
 
@@ -155,6 +272,7 @@ function renderPreview(preview) {
 
     const size = t('clip.textMeta', { n: preview.length });
     nodes.clipMeta.textContent = preview.rich ? `${size} · ${t('clip.rich')}` : size;
+    setEditControls(false);
     return;
   }
 
@@ -167,6 +285,7 @@ function renderPreview(preview) {
   box.append(strong, span);
   nodes.preview.append(box);
   nodes.clipMeta.textContent = '';
+  setEditControls(false);
 }
 
 function actionButton(action) {
@@ -298,6 +417,12 @@ function paint(payload) {
   state.history = payload.history;
   state.settings = payload.settings;
   state.buckets = payload.buckets ?? [];
+
+  if (state.editing !== null) {
+    // The clipboard can change under the editor; keep the user's text intact.
+    renderFooter();
+    return;
+  }
 
   const ids = state.actions.map((action) => action.id).join(',');
   const recentIds = state.history.recent.map((item) => item.id).join(',');
@@ -713,6 +838,22 @@ function bindEvents() {
 
   nodes.undo.addEventListener('click', undo);
 
+  document.getElementById('settings-capture')?.addEventListener('click', () => {
+    window.bar.capture();
+  });
+
+  nodes.capture.addEventListener('click', () => {
+    window.bar.capture();
+  });
+
+  nodes.themeToggle.addEventListener('click', () => {
+    applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
+  });
+
+  nodes.clipEdit.addEventListener('click', startEdit);
+  nodes.editSave.addEventListener('click', saveEdit);
+  nodes.editCancel.addEventListener('click', cancelEdit);
+
   nodes.setHistory.addEventListener('click', () =>
     updateSetting({ historyEnabled: !state.settings.historyEnabled }),
   );
@@ -742,6 +883,8 @@ function bindEvents() {
   );
 
   document.addEventListener('keydown', (event) => {
+    if (state.editing !== null) return;
+
     if (event.key === 'Escape') {
       if (state.view !== 'main') setView('main');
       else window.bar.hide();
@@ -796,6 +939,7 @@ async function init() {
   applyStatic();
 
   bindEvents();
+  applyTheme(storedTheme() ?? 'dark');
   updateChrome();
   renderPreview(state.preview);
   renderHistoryStrip();
@@ -808,6 +952,9 @@ async function init() {
       return;
     }
     if (state.view === 'main') {
+      // Chromium focuses the first focusable element when a window appears; park
+      // it on the view itself so the buttons never light up on open.
+      nodes.viewMain.focus({ preventScroll: true });
       refresh();
       startPolling();
     }
@@ -815,6 +962,13 @@ async function init() {
 
   window.bar.onRefresh(() => {
     refresh();
+  });
+
+  window.bar.onNotice((notice) => {
+    if (!notice?.key) return;
+    const detail = notice.detail ? ` (${notice.detail})` : '';
+    showToast(`${t(notice.key)}${detail}`);
+    setStatus(notice.key, notice.key !== 'capture.done');
   });
 
   window.bar.onView((view) => {

@@ -11,6 +11,23 @@
   --ok: #46c07a;
   --bad: #e0674f;
   --radius: 12px;
+
+  /* Surface details that differ between the two themes. */
+  --preview-text: #d8d5cf;
+  --empty-strong: #c9c5be;
+  --knob: #cfcbc4;
+  --checker-overlay: rgba(0, 0, 0, 0.18);
+  --checker-cell: rgba(255, 255, 255, 0.035);
+  --toast-bg: rgba(16, 18, 21, 0.96);
+  --toast-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --scroll-thumb: rgba(255, 255, 255, 0.16);
+  --option-bg: #23262b;
+  --accent-line: rgba(242, 181, 68, 0.35);
+  --accent-line-strong: rgba(242, 181, 68, 0.5);
+  --accent-soft: rgba(242, 181, 68, 0.28);
+  --btn-from: #f6c96f;
+  --btn-to: #e5a52f;
+  --btn-ink: #241a05;
 }
 
 * {
@@ -162,8 +179,8 @@ body {
 .preview--image {
   padding: 0;
   background:
-    linear-gradient(0deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
-    repeating-conic-gradient(rgba(255, 255, 255, 0.035) 0% 25%, transparent 0% 50%) 50% / 12px 12px;
+    linear-gradient(0deg, var(--checker-overlay), var(--checker-overlay)),
+    repeating-conic-gradient(var(--checker-cell) 0% 25%, transparent 0% 50%) 50% / 12px 12px;
 }
 
 .preview__img {
@@ -183,7 +200,7 @@ body {
   overflow-y: auto;
   /* A one-line JSON blob must wrap instead of growing a horizontal scrollbar. */
   white-space: pre-wrap;
-  color: #d8d5cf;
+  color: var(--preview-text);
   font: 11.5px/1.55 ui-monospace, 'SF Mono', Menlo, monospace;
   user-select: text;
   overflow-wrap: anywhere;
@@ -199,7 +216,7 @@ body {
 }
 
 .preview__empty strong {
-  color: #c9c5be;
+  color: var(--empty-strong);
   font-size: 12px;
   font-weight: 600;
 }
@@ -272,7 +289,7 @@ body {
 }
 
 .action.is-selected {
-  border-color: rgba(242, 181, 68, 0.35);
+  border-color: var(--accent-line);
   background: var(--surface-strong);
 }
 
@@ -366,13 +383,13 @@ body {
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: rgba(16, 18, 21, 0.96);
+  background: var(--toast-bg);
   color: var(--text);
   font-size: 11.5px;
   line-height: 1.4;
   text-align: center;
   transform: translateX(-50%);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--toast-shadow);
   animation: toast-in 0.14s ease-out;
   pointer-events: none;
 }
@@ -392,7 +409,7 @@ body {
   border: 2px solid transparent;
   border-radius: 99px;
   background-clip: content-box;
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: var(--scroll-thumb);
 }
 
 /* ---------- views ---------- */
@@ -457,7 +474,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 7px;
   background: var(--surface);
-  color: #d8d5cf;
+  color: var(--preview-text);
   font: inherit;
   font-size: 11px;
   font-weight: 600;
@@ -465,7 +482,7 @@ body {
 }
 
 .chip-item:hover {
-  border-color: rgba(242, 181, 68, 0.35);
+  border-color: var(--accent-line);
   background: var(--surface-strong);
 }
 
@@ -541,7 +558,7 @@ body {
 }
 
 .hrow__thumb--text {
-  color: #d8d5cf;
+  color: var(--preview-text);
   font-size: 12px;
   font-weight: 600;
 }
@@ -614,13 +631,13 @@ body {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #cfcbc4;
+  background: var(--knob);
   transition: transform 0.15s, background 0.15s;
 }
 
 .switch[aria-checked='true'] {
-  border-color: rgba(242, 181, 68, 0.5);
-  background: rgba(242, 181, 68, 0.28);
+  border-color: var(--accent-line-strong);
+  background: var(--accent-soft);
 }
 
 .switch[aria-checked='true']::after {
@@ -646,7 +663,7 @@ body {
 }
 
 .select option {
-  background: #23262b;
+  background: var(--option-bg);
   color: var(--text);
 }
 
@@ -780,7 +797,7 @@ body {
 }
 
 .input:focus {
-  border-color: rgba(242, 181, 68, 0.5);
+  border-color: var(--accent-line-strong);
   outline: none;
   background: var(--surface-strong);
 }
@@ -803,8 +820,8 @@ body {
   height: 34px;
   border: 0;
   border-radius: 9px;
-  background: linear-gradient(180deg, #f6c96f, #e5a52f);
-  color: #241a05;
+  background: linear-gradient(180deg, var(--btn-from), var(--btn-to));
+  color: var(--btn-ink);
   font: inherit;
   font-size: 12.5px;
   font-weight: 650;
@@ -812,4 +829,105 @@ body {
 
 .btn-primary:hover {
   filter: brightness(1.05);
+}
+
+/* ---------- focus ---------- */
+
+:focus {
+  outline: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-line-strong);
+  outline-offset: 2px;
+}
+
+/* Programmatic focus lands on the view itself when the panel opens, so no
+   button steals a focus ring just because the window appeared. */
+.view:focus,
+.view:focus-visible {
+  outline: none;
+}
+
+/* ---------- inline editing ---------- */
+
+.block__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview__editor {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--preview-text);
+  font: 11.5px/1.55 ui-monospace, 'SF Mono', Menlo, monospace;
+  resize: none;
+}
+
+.preview__editor:focus-visible {
+  outline: none;
+}
+
+/* ---------- light appearance: the same bar, daytime ---------- */
+
+:root[data-theme='light'] {
+  --bg: rgba(250, 246, 239, 0.97);
+  --surface: rgba(36, 31, 26, 0.045);
+  --surface-strong: rgba(36, 31, 26, 0.085);
+  --line: rgba(36, 31, 26, 0.13);
+  --text: #241f1a;
+  --muted: #7d746a;
+  --amber: #b06e12;
+  --ok: #2f8a58;
+  --bad: #c0482f;
+
+  --preview-text: #3b342c;
+  --empty-strong: #4b4238;
+  --knob: #fffdf8;
+  --checker-overlay: rgba(36, 31, 26, 0.05);
+  --checker-cell: rgba(36, 31, 26, 0.05);
+  --toast-bg: rgba(255, 253, 248, 0.98);
+  --toast-shadow: 0 10px 26px rgba(80, 64, 45, 0.18);
+  --scroll-thumb: rgba(36, 31, 26, 0.22);
+  --option-bg: #fbf7ef;
+  --accent-line: rgba(176, 110, 18, 0.4);
+  --accent-line-strong: rgba(176, 110, 18, 0.55);
+  --accent-soft: rgba(176, 110, 18, 0.16);
+  --btn-from: #d9992f;
+  --btn-to: #b87714;
+  --btn-ink: #fffaf0;
+}
+
+/* The vibrancy material only makes sense behind the dark panel; the light panel
+   paints its own near-opaque paper, so the window material is turned off. */
+:root[data-theme='light'] .panel {
+  background: var(--bg);
+  border-color: rgba(36, 31, 26, 0.16);
+  box-shadow: 0 18px 40px rgba(64, 48, 30, 0.22);
+}
+
+:root[data-theme='light'] .switch::after {
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(36, 31, 26, 0.3);
+}
+
+:root[data-theme='light'] .switch[aria-checked='true'] {
+  border-color: rgba(176, 110, 18, 0.45);
+  background: rgba(176, 110, 18, 0.28);
+}
+
+:root[data-theme='light'] .switch[aria-checked='true']::after {
+  background: #fffdf8;
+}
+
+:root[data-theme='light'] .brand__accent {
+  stroke: var(--amber);
 }
