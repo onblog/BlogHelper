@@ -1,5 +1,5 @@
 /**
- * bar-tool — official site worker.
+ * miaomiao-bar — official site worker.
  *
  * Only /api/* reaches this script (see run_worker_first in wrangler.jsonc); every
  * other request is served straight from the static asset layer, which keeps the
@@ -119,7 +119,7 @@ async function handleDownload(request, env) {
     headers.set('content-length', String(range.length));
   } else {
     if (size) headers.set('content-length', String(size));
-    headers.set('content-disposition', `attachment; filename="${file.name ?? `bar-tool-${arch}.dmg`}"`);
+    headers.set('content-disposition', `attachment; filename="${file.name ?? `miaomiao-bar-${arch}.dmg`}"`);
   }
 
   return new Response(object.body, { status: range ? 206 : 200, headers });

@@ -1,8 +1,8 @@
 {
-  "name": "bar-tool-site",
+  "name": "miaomiao-bar-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Official site for bar-tool — Cloudflare Worker plus static assets.",
+  "description": "Official site for miaomiao-bar — Cloudflare Worker plus static assets.",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"

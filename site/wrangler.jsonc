@@ -20,8 +20,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "bar-tool",
-      "database_id": "fc9f6a9b-9c7e-4d20-ae33-1663885fc8e7",
+      "database_name": "miaomiao-bar",
+      "database_id": "fe66224a-d6c8-4d2a-b008-f993e702d7d8",
       "migrations_dir": "migrations"
     }
   ],
@@ -29,7 +29,7 @@
   "r2_buckets": [
     {
       "binding": "R2_RELEASES",
-      "bucket_name": "bar-tool"
+      "bucket_name": "miaomiao-bar"
     }
   ],
 
