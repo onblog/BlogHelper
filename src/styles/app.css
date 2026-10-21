@@ -657,3 +657,159 @@ body {
   margin-top: auto;
   padding: 12px 14px;
 }
+
+/* ---------- bucket settings ---------- */
+
+#view-settings {
+  overflow-y: auto;
+}
+
+.section {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section__title {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.buckets {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.buckets__empty {
+  padding: 2px 0 6px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.bucket {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.bucket__pick {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.bucket__pick.is-active {
+  color: var(--amber);
+}
+
+.bucket__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bucket__name {
+  overflow: hidden;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bucket__host {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- bucket form ---------- */
+
+.form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 4px 14px 12px;
+  overflow-y: auto;
+}
+
+.form__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form__label {
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+}
+
+.form__hint {
+  color: var(--muted);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.input {
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.input:focus {
+  border-color: rgba(242, 181, 68, 0.5);
+  outline: none;
+  background: var(--surface-strong);
+}
+
+.setting--flush {
+  padding: 4px 0;
+  border-bottom: 0;
+}
+
+.form__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+}
+
+.btn-primary {
+  flex: 1;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #f6c96f, #e5a52f);
+  color: #241a05;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}

@@ -35,6 +35,20 @@ const nodes = {
   hlist: document.getElementById('hlist'),
 
   setHistory: document.getElementById('set-history'),
+  setFormat: document.getElementById('set-format'),
+  bucketList: document.getElementById('bucket-list'),
+  bucketAdd: document.getElementById('bucket-add'),
+  viewBucket: document.getElementById('view-bucket'),
+  bName: document.getElementById('b-name'),
+  bEndpoint: document.getElementById('b-endpoint'),
+  bRegion: document.getElementById('b-region'),
+  bBucket: document.getElementById('b-bucket'),
+  bPublic: document.getElementById('b-public'),
+  bAccess: document.getElementById('b-access'),
+  bSecret: document.getElementById('b-secret'),
+  bPath: document.getElementById('b-path'),
+  bSave: document.getElementById('b-save'),
+  bDelete: document.getElementById('b-delete'),
   setMax: document.getElementById('set-max'),
   setLaunch: document.getElementById('set-launch'),
   settingsUsage: document.getElementById('settings-usage'),
@@ -61,6 +75,8 @@ const state = {
   history: { enabled: true, count: 0, bytes: 0, recent: [] },
   settings: { maxItems: 100, launchAtLogin: false, historyEnabled: true },
   historyItems: [],
+  buckets: [],
+  editingBucketId: null,
   selectedId: null,
   signature: '',
   running: false,
@@ -281,6 +297,7 @@ function paint(payload) {
   state.canUndo = payload.canUndo;
   state.history = payload.history;
   state.settings = payload.settings;
+  state.buckets = payload.buckets ?? [];
 
   const ids = state.actions.map((action) => action.id).join(',');
   const recentIds = state.history.recent.map((item) => item.id).join(',');
@@ -322,23 +339,25 @@ function setView(view) {
   nodes.viewMain.hidden = view !== 'main';
   nodes.viewHistory.hidden = view !== 'history';
   nodes.viewSettings.hidden = view !== 'settings';
+  nodes.viewBucket.hidden = view !== 'bucket';
 
   nodes.back.hidden = view === 'main';
   nodes.brand.hidden = view !== 'main';
   nodes.viewTitle.hidden = view === 'main';
-  nodes.settings.hidden = view === 'settings';
+  nodes.settings.hidden = view === 'settings' || view === 'bucket';
 
   if (view === 'history') nodes.viewTitle.textContent = t('history.strip');
   if (view === 'settings') nodes.viewTitle.textContent = t('settings.title');
+  if (view === 'bucket') nodes.viewTitle.textContent = t('bucket.title');
 
   renderFooter();
 
   if (view === 'history') {
     stopPolling();
     loadHistory();
-  } else if (view === 'settings') {
+  } else if (view === 'settings' || view === 'bucket') {
     stopPolling();
-    renderSettings();
+    if (view === 'settings') renderSettings();
   } else {
     startPolling();
   }
@@ -420,10 +439,126 @@ function renderHistoryList() {
 
 /* ---------- settings view ---------- */
 
+function renderBucketList() {
+  nodes.bucketList.replaceChildren();
+
+  if (state.buckets.length === 0) {
+    const empty = document.createElement('li');
+    empty.className = 'buckets__empty';
+    empty.textContent = t('bucket.empty');
+    nodes.bucketList.append(empty);
+    return;
+  }
+
+  for (const bucket of state.buckets) {
+    const row = document.createElement('li');
+    row.className = 'bucket';
+
+    const pick = document.createElement('button');
+    pick.type = 'button';
+    pick.className = `bucket__pick${bucket.active ? ' is-active' : ''}`;
+    pick.textContent = bucket.active ? '●' : '○';
+    pick.title = bucket.name;
+    pick.addEventListener('click', () => activateBucket(bucket.id));
+
+    const meta = document.createElement('div');
+    meta.className = 'bucket__meta';
+
+    const name = document.createElement('span');
+    name.className = 'bucket__name';
+    name.textContent = bucket.name;
+
+    const host = document.createElement('span');
+    host.className = 'bucket__host';
+    host.textContent = bucket.bucketName;
+
+    meta.append(name, host);
+
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'link';
+    edit.textContent = t('bucket.edit');
+    edit.addEventListener('click', () => openBucketForm(bucket.id));
+
+    row.append(pick, meta, edit);
+    nodes.bucketList.append(row);
+  }
+}
+
+function openBucketForm(id) {
+  const bucket = state.buckets.find((item) => item.id === id) ?? null;
+  state.editingBucketId = bucket?.id ?? null;
+
+  nodes.bName.value = bucket?.name ?? '';
+  nodes.bEndpoint.value = bucket?.endpoint ?? '';
+  nodes.bRegion.value = bucket?.region ?? 'auto';
+  nodes.bBucket.value = bucket?.bucketName ?? '';
+  nodes.bPublic.value = bucket?.publicBase ?? '';
+  nodes.bAccess.value = bucket?.accessKey ?? '';
+  nodes.bSecret.value = '';
+  nodes.bPath.setAttribute('aria-checked', String(bucket ? bucket.pathStyle : true));
+  nodes.bDelete.hidden = !bucket;
+
+  setView('bucket');
+}
+
+async function saveBucket() {
+  const input = {
+    id: state.editingBucketId ?? undefined,
+    name: nodes.bName.value,
+    endpoint: nodes.bEndpoint.value,
+    region: nodes.bRegion.value,
+    bucket: nodes.bBucket.value,
+    publicBase: nodes.bPublic.value,
+    accessKey: nodes.bAccess.value,
+    secret: nodes.bSecret.value,
+    pathStyle: nodes.bPath.getAttribute('aria-checked') === 'true',
+  };
+
+  try {
+    const result = await window.bar.bucketsSave(input);
+    if (!result.ok) {
+      showToast(t(`err.${result.error}`));
+      return;
+    }
+    paint(result.state);
+    setView('settings');
+    showToast(t('bucket.saved'));
+  } catch (error) {
+    console.error('bucket save failed', error);
+  }
+}
+
+async function deleteBucket() {
+  if (!state.editingBucketId) return;
+
+  try {
+    const result = await window.bar.bucketsRemove(state.editingBucketId);
+    paint(result.state);
+    setView('settings');
+    showToast(t('bucket.deleted'));
+  } catch (error) {
+    console.error('bucket delete failed', error);
+  }
+}
+
+async function activateBucket(id) {
+  try {
+    const result = await window.bar.bucketsActivate(id);
+    if (result.state) paint(result.state);
+    renderSettings();
+  } catch (error) {
+    console.error('bucket activate failed', error);
+  }
+}
+
 function renderSettings() {
   nodes.setHistory.setAttribute('aria-checked', String(Boolean(state.settings.historyEnabled)));
   nodes.setLaunch.setAttribute('aria-checked', String(Boolean(state.settings.launchAtLogin)));
   nodes.setMax.value = String(state.settings.maxItems ?? 100);
+  nodes.setFormat.value = state.settings.linkFormat ?? 'url';
+
+  renderBucketList();
 
   nodes.settingsUsage.textContent = t('history.stats', {
     n: state.history.count,
@@ -472,8 +607,9 @@ async function runAction(id) {
     paint(result.state);
 
     if (result.ok) {
-      setStatus('status.done');
-      showToast(t('status.done'));
+      const key = result.toast ?? 'status.done';
+      setStatus(key);
+      showToast(t(key));
     } else {
       setStatus(`err.${result.error}`, true);
     }
@@ -572,6 +708,7 @@ function bindEvents() {
     });
     if (state.view === 'history') renderHistoryList();
     if (state.view === 'settings') renderSettings();
+    if (state.view === 'bucket') nodes.viewTitle.textContent = t('bucket.title');
   });
 
   nodes.undo.addEventListener('click', undo);
@@ -585,6 +722,17 @@ function bindEvents() {
   nodes.setMax.addEventListener('change', () =>
     updateSetting({ maxItems: Number(nodes.setMax.value) }),
   );
+  nodes.setFormat.addEventListener('change', () =>
+    updateSetting({ linkFormat: nodes.setFormat.value }),
+  );
+
+  nodes.bucketAdd.addEventListener('click', () => openBucketForm(null));
+  nodes.bSave.addEventListener('click', saveBucket);
+  nodes.bDelete.addEventListener('click', deleteBucket);
+  nodes.bPath.addEventListener('click', () => {
+    const next = nodes.bPath.getAttribute('aria-checked') !== 'true';
+    nodes.bPath.setAttribute('aria-checked', String(next));
+  });
 
   nodes.aboutGithub.addEventListener('click', () =>
     window.bar.openExternal('https://github.com/onblog/bar-tool'),

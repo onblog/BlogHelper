@@ -130,6 +130,29 @@
           ></button>
         </div>
 
+        <div class="section">
+          <div class="section__title" data-i18n="settings.storage">存储</div>
+          <ul class="buckets" id="bucket-list"></ul>
+          <button class="link" id="bucket-add" type="button" data-i18n="settings.addBucket">
+            添加存储桶
+          </button>
+        </div>
+
+        <div class="setting">
+          <div class="setting__text">
+            <span class="setting__label" data-i18n="settings.linkFormat">复制格式</span>
+            <span class="setting__hint" data-i18n="settings.linkFormatHint">
+              上传后写回剪贴板的格式
+            </span>
+          </div>
+          <select class="select" id="set-format">
+            <option value="url">URL</option>
+            <option value="markdown">Markdown</option>
+            <option value="html">HTML</option>
+            <option value="bbcode">BBCode</option>
+          </select>
+        </div>
+
         <div class="about">
           <button class="link" id="about-github" type="button" data-i18n="settings.github">
             GitHub 仓库
@@ -138,6 +161,58 @@
             使用文档
           </button>
           <span class="chip" id="about-version"></span>
+        </div>
+      </div>
+
+      <!-- bucket form ------------------------------------------------------ -->
+      <div class="view" id="view-bucket" hidden>
+        <div class="form">
+          <label class="form__row">
+            <span class="form__label" data-i18n="bucket.name">名称</span>
+            <input class="input" id="b-name" type="text" autocomplete="off" />
+          </label>
+          <label class="form__row">
+            <span class="form__label" data-i18n="bucket.endpoint">Endpoint</span>
+            <input class="input" id="b-endpoint" type="text" placeholder="https://acc.r2.cloudflarestorage.com" autocomplete="off" />
+          </label>
+          <label class="form__row">
+            <span class="form__label" data-i18n="bucket.region">Region</span>
+            <input class="input" id="b-region" type="text" placeholder="auto" autocomplete="off" />
+          </label>
+          <label class="form__row">
+            <span class="form__label" data-i18n="bucket.bucket">桶名</span>
+            <input class="input" id="b-bucket" type="text" autocomplete="off" />
+          </label>
+          <label class="form__row">
+            <span class="form__label" data-i18n="bucket.publicBase">公开域名</span>
+            <input class="input" id="b-public" type="text" placeholder="https://img.example.com" autocomplete="off" />
+          </label>
+          <label class="form__row">
+            <span class="form__label">Access Key</span>
+            <input class="input" id="b-access" type="text" autocomplete="off" spellcheck="false" />
+          </label>
+          <label class="form__row">
+            <span class="form__label">Secret Key</span>
+            <input class="input" id="b-secret" type="password" autocomplete="new-password" spellcheck="false" />
+            <span class="form__hint" data-i18n="bucket.secretHint">留空则保留已保存的密钥</span>
+          </label>
+
+          <div class="setting setting--flush">
+            <div class="setting__text">
+              <span class="setting__label" data-i18n="bucket.pathStyle">路径风格寻址</span>
+              <span class="setting__hint" data-i18n="bucket.pathStyleHint">
+                endpoint/桶名/文件名，MinIO 与自建常用
+              </span>
+            </div>
+            <button class="switch" id="b-path" type="button" role="switch" aria-checked="true"></button>
+          </div>
+        </div>
+
+        <div class="form__actions">
+          <button class="btn-primary" id="b-save" type="button" data-i18n="bucket.save">保存</button>
+          <button class="link link--danger" id="b-delete" type="button" data-i18n="bucket.delete">
+            删除
+          </button>
         </div>
       </div>
 

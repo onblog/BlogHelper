@@ -25,6 +25,11 @@ contextBridge.exposeInMainWorld('bar', {
   /** Settings. */
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
 
+  /** Storage buckets. */
+  bucketsSave: (input) => ipcRenderer.invoke('buckets:save', input),
+  bucketsRemove: (id) => ipcRenderer.invoke('buckets:remove', id),
+  bucketsActivate: (id) => ipcRenderer.invoke('buckets:activate', id),
+
   hide: () => ipcRenderer.invoke('panel:hide'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
 

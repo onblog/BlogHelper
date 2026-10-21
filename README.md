@@ -14,7 +14,7 @@
 <img alt="electron" src="https://img.shields.io/badge/Electron-45-47848f?style=flat-square&logo=electron&logoColor=white">
 <img alt="runtime deps" src="https://img.shields.io/badge/runtime_deps-0-2f7d52?style=flat-square">
 <img alt="history" src="https://img.shields.io/badge/history-local_only-2f7d52?style=flat-square">
-<img alt="actions" src="https://img.shields.io/badge/actions-19-f2b544?style=flat-square">
+<img alt="actions" src="https://img.shields.io/badge/actions-21-f2b544?style=flat-square">
 <img alt="license" src="https://img.shields.io/badge/license-AGPL--3.0--only-6b7280?style=flat-square">
 
 <br/><br/>
@@ -58,8 +58,11 @@ One model, one job: **clipboard in → transformation → clipboard out**.
   belongs to the right script — the two things every Chinese writer fixes by hand.
 - **Undo is one keystroke.** Every action keeps the previous clipboard, so a wrong pick costs a
   ⌥⌘Z, not a re-copy.
-- **Zero runtime dependencies, offline by construction.** Only Electron itself; no telemetry, no
-  network request at all in this version.
+- **Images go to your own bucket.** One click on a screenshot uploads it to Cloudflare R2, Tencent
+  COS, Alibaba OSS or MinIO and puts the link back on the clipboard — as a URL, Markdown, HTML tag
+  or BBCode.
+- **Zero runtime dependencies.** Only Electron itself; signing, storage and every transformation are
+  hand-written on top of Node's built-ins.
 
 Who this is **not** for: there is no Base64 encoder, no regex playground and no timestamp converter
 here. Those are developer tools, and this app deliberately belongs to whoever copies text — writers,
@@ -76,9 +79,28 @@ Every action is a pure function; the registry decides what to show for the clipb
 | Typography | Space between Chinese and Latin · Punctuation → full-width · Punctuation → half-width |
 | Lists | Remove duplicate lines · Sort lines · Reverse line order · Number the lines · Join into a comma list |
 | Links | Clean tracking parameters · Decode `%20` in links · Extract every link |
+| Image | Upload to your bucket · Save to Downloads |
 
 Adding a tool means adding one file under `electron/actions/` — the panel, the tests and the IPC
 surface pick it up automatically.
+
+## Image hosting
+
+Add a bucket in **Settings → Storage** and the image actions appear whenever the clipboard holds a
+picture.
+
+| Field | What to put there |
+| --- | --- |
+| Endpoint | `https://<account-id>.r2.cloudflarestorage.com` for R2, `https://cos.<region>.myqcloud.com` for COS, `https://oss-<region>.aliyuncs.com` for OSS |
+| Region | `auto` for R2; the real region for COS/OSS |
+| Bucket | The bucket name |
+| Public domain | The domain your images are served from — this is the link you get back |
+| Access key / Secret | An S3 key with write access; the secret is encrypted with the macOS Keychain |
+| Path-style | On for MinIO and self-hosted, off for virtual-host buckets |
+
+Object keys are content addressed (`images/2026/10/4f9c1a2b.png`), so the same screenshot uploaded
+twice is one object. The link format (URL / Markdown / HTML / BBCode) is a setting, not a per-upload
+choice.
 
 ## History
 
@@ -124,7 +146,9 @@ Three rules keep it honest:
 - The clipboard is read while the panel is open, and polled in the background to build history —
   every 1.2 s for text, every 3 s for images.
 - History never leaves this Mac: it is an index plus image blobs in
-  `~/Library/Application Support/bar-tool/`. This version makes no network request at all.
+  `~/Library/Application Support/bar-tool/`.
+- The only network request the app ever makes is the `PUT` to the bucket you configured. No
+  telemetry, no crash reporting, no update check.
 - Turning history off stops recording immediately; **Clear history** deletes the index and every
   blob.
 - No telemetry, no crash reporting, no update check.
@@ -134,6 +158,10 @@ Three rules keep it honest:
 ```
 electron/           Main process: tray, panel window, clipboard, IPC surface
 electron/actions/   The transformation registry and its groups
+electron/sigv4.cjs
+                    AWS Signature V4 + S3 PUT, verified against the AWS test vector
+electron/storage.cjs
+                    Bucket configuration; secrets encrypted with the Keychain
 electron/history.cjs
                     History index + image blobs, Electron-free and unit tested
 electron/watcher.cjs
@@ -155,16 +183,16 @@ The renderer never touches Node: everything goes through a narrow `contextBridge
 ```bash
 npm install
 npm run dev            # Vite + Electron with hot reload
-npm test               # 67 unit tests, no dependencies
+npm test               # 102 unit tests, no dependencies
 npm run dist:arm64     # dmg for Apple Silicon, output in release/
 npm run dist:x64       # dmg for Intel
 ```
 
 ## Status
 
-`1.2.0` is in development: 19 text tools across four groups, local clipboard history for text and
-images, undo, settings and the bilingual three-view panel are in place. Next comes image upload to
-your own bucket, then the official site.
+`1.3.0`: 19 text tools, image upload to your own S3-compatible bucket, save-to-Downloads, local
+clipboard history for text and images, undo and the bilingual panel. The official site and the first
+release are next.
 
 ## License
 

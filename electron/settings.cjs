@@ -11,10 +11,13 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 
+const { ALLOWED_LINK_FORMATS } = require('./storage.cjs');
+
 const DEFAULTS = {
   historyEnabled: true,
   maxItems: 100,
   launchAtLogin: false,
+  linkFormat: 'url',
 };
 
 const ALLOWED_MAX_ITEMS = [50, 100, 200];
@@ -25,6 +28,7 @@ function normalise(patch, base) {
   if (typeof patch.historyEnabled === 'boolean') next.historyEnabled = patch.historyEnabled;
   if (typeof patch.launchAtLogin === 'boolean') next.launchAtLogin = patch.launchAtLogin;
   if (ALLOWED_MAX_ITEMS.includes(patch.maxItems)) next.maxItems = patch.maxItems;
+  if (ALLOWED_LINK_FORMATS.includes(patch.linkFormat)) next.linkFormat = patch.linkFormat;
 
   return next;
 }

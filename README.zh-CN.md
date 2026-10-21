@@ -14,7 +14,7 @@
 <img alt="electron" src="https://img.shields.io/badge/Electron-45-47848f?style=flat-square&logo=electron&logoColor=white">
 <img alt="运行时依赖" src="https://img.shields.io/badge/%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BE%9D%E8%B5%96-0-2f7d52?style=flat-square">
 <img alt="历史" src="https://img.shields.io/badge/%E5%8E%86%E5%8F%B2-%E4%BB%85%E6%9C%AC%E5%9C%B0-2f7d52?style=flat-square">
-<img alt="动作数" src="https://img.shields.io/badge/%E5%8A%A8%E4%BD%9C-19-f2b544?style=flat-square">
+<img alt="动作数" src="https://img.shields.io/badge/%E5%8A%A8%E4%BD%9C-21-f2b544?style=flat-square">
 <img alt="协议" src="https://img.shields.io/badge/%E5%8D%8F%E8%AE%AE-AGPL--3.0--only-6b7280?style=flat-square">
 
 <br/><br/>
@@ -52,7 +52,9 @@
 - **只显示用得上的动作。** 列表按剪贴板当下真实内容过滤：「转纯文本」只对富文本出现，中文排版组只在中英文相邻时出现，净化链接只对带跟踪参数的链接出现。
 - **中文排版做对了。** 中英文之间自动加空格、标点按语境转全角或半角——这两件是每个中文写作者天天手动改的事。
 - **撤销只要按一下 ⌥⌘Z。** 每个动作都留住了上一次的剪贴板，点错了不用重新复制。
-- **运行时零依赖、天然离线。** 除 Electron 本体外没有 npm 依赖；这个版本一次网络请求都不发。
+- **图片进你自己的桶。** 点一下就传到 Cloudflare R2 / 腾讯 COS / 阿里 OSS / MinIO，链接按
+  URL、Markdown、HTML 或 BBCode 写回剪贴板。
+- **运行时零依赖。** 除 Electron 本体外没有 npm 依赖；签名、存储和每个变换都是手写的。
 
 **它不是给程序员的**：这里没有 Base64 编码器、没有正则调试台、没有时间戳转换器。那些是开发者工具，而这个应用刻意属于所有会复制文字的人——写作者、运营、半夜整理名单的你。格式化 JS/CSS/HTML 也不做：那要引 formatter 依赖，正是这个项目拒绝的重量。
 
@@ -66,8 +68,25 @@
 | 中文排版 | 中英文之间加空格 · 标点转全角 · 标点转半角 |
 | 列表整理 | 去重行 · 排序行 · 反转行序 · 加序号 · 合并成逗号分隔 |
 | 链接 | 净化链接 · 链接里的 %20 解码 · 提取文中所有链接 |
+| 图片 | 上传到图床 · 存到下载目录 |
 
 加一个工具就是在 `electron/actions/` 下加一个文件——面板、测试和 IPC 都会自动接上。
+
+## 图片上传
+
+在**设置 → 存储**里加一个存储桶，之后剪贴板里有图片时，图片动作就会出现。
+
+| 字段 | 填什么 |
+| --- | --- |
+| Endpoint | R2 填 `https://<account-id>.r2.cloudflarestorage.com`，COS 填 `https://cos.<region>.myqcloud.com`，OSS 填 `https://oss-<region>.aliyuncs.com` |
+| Region | R2 填 `auto`，COS/OSS 填真实地域 |
+| 桶名 | 你的桶 |
+| 公开域名 | 图片对外提供服务的域名——回给你的链接就用它 |
+| Access Key / Secret | 有写权限的 S3 密钥；Secret 用 macOS 钥匙串加密 |
+| 路径风格 | MinIO 与自建一般要开，虚拟主机风格要关 |
+
+对象名按内容寻址（`images/2026/10/4f9c1a2b.png`），同一张图传两次只会有一个对象。
+链接格式（URL / Markdown / HTML / BBCode）是设置项，不是每次上传都问。
 
 ## 剪贴板历史
 
@@ -111,7 +130,7 @@ src/                面板渲染层：预览、动作网格、双语文案
 
 - 面板显示时会读剪贴板；为了攒历史，后台也会轮询——文字每 1.2 秒、图片每 3 秒。
 - 历史从不离开这台 Mac：它是 `~/Library/Application Support/bar-tool/` 下的一个索引加若干图片文件。
-  这个版本完全不发网络请求。
+- 应用发出的唯一网络请求，是 `PUT` 到你配置的那个存储桶。没有统计、没有崩溃上报、没有更新探测。
 - 关掉记录会立刻停止写入；「清空历史」会把索引和所有图片一起删掉。
 - 没有统计、没有崩溃上报、没有更新探测。
 
@@ -120,6 +139,10 @@ src/                面板渲染层：预览、动作网格、双语文案
 ```
 electron/           主进程：菜单栏图标、面板窗口、剪贴板、IPC
 electron/actions/   动作注册表与各分组
+electron/sigv4.cjs
+                    AWS Signature V4 + S3 PUT，对照 AWS 官方测试向量验证
+electron/storage.cjs
+                    存储桶配置；密钥用钥匙串加密
 electron/history.cjs
                     历史索引 + 图片文件，不依赖 Electron、有单元测试
 electron/watcher.cjs
@@ -141,15 +164,15 @@ tests/              动作的 node:test 测试
 ```bash
 npm install
 npm run dev            # Vite + Electron，带热更新
-npm test               # 67 个单元测试，零依赖
+npm test               # 102 个单元测试，零依赖
 npm run dist:arm64     # Apple Silicon 的 dmg，产物在 release/
 npm run dist:x64       # Intel 的 dmg
 ```
 
 ## 当前进度
 
-`1.2.0` 开发中：19 个文本工具（4 组）、本地剪贴板历史（文字 + 图片）、撤销、设置，以及双语三视图面板都已就位。
-接下来是图片上传到你自己的存储桶，最后是官网。
+`1.3.0`：19 个文本工具、图片上传到你自己的 S3 兼容存储桶、存到下载目录、本地剪贴板历史
+（文字 + 图片）、撤销，以及双语面板。接下来是官网与首个版本发布。
 
 ## 开源协议
 

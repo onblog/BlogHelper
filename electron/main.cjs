@@ -18,6 +18,7 @@ const {
   globalShortcut,
   ipcMain,
   nativeImage,
+  safeStorage,
   screen,
   shell,
 } = require('electron');
@@ -29,6 +30,8 @@ const actions = require('./actions/index.cjs');
 const { HistoryStore } = require('./history.cjs');
 const { SettingsStore } = require('./settings.cjs');
 const { ClipboardWatcher } = require('./watcher.cjs');
+const { BucketStore } = require('./storage.cjs');
+const sigv4 = require('./sigv4.cjs');
 
 const PANEL_WIDTH = 400;
 const PANEL_HEIGHT = 600;
@@ -53,6 +56,8 @@ let history = null;
 let settings = null;
 /** @type {ClipboardWatcher | null} */
 let watcher = null;
+/** @type {BucketStore | null} */
+let buckets = null;
 
 function trayImage() {
   const image = nativeImage.createFromPath(path.join(__dirname, 'assets', 'trayTemplate.png'));
@@ -240,6 +245,58 @@ async function restoreHistory(id) {
   return { ok: true };
 }
 
+/* ---------- uploads ---------- */
+
+async function uploadImage(image) {
+  const bucket = buckets?.active();
+  if (!bucket) return { ok: false, error: 'no_bucket' };
+
+  const key = sigv4.objectKey({ buffer: image.buffer, mime: image.mime });
+  const result = await sigv4.putObject({
+    endpoint: bucket.endpoint,
+    region: bucket.region,
+    bucket: bucket.bucketName,
+    key,
+    body: image.buffer,
+    contentType: image.mime || 'image/png',
+    accessKey: bucket.accessKey,
+    secretKey: bucket.secret,
+    pathStyle: bucket.pathStyle,
+    publicBase: bucket.publicBase || undefined,
+  });
+
+  if (!result.ok) {
+    console.error('upload failed', result.status, result.error);
+    return { ok: false, error: 'upload_failed' };
+  }
+
+  return { ok: true, url: result.url };
+}
+
+async function saveImageToDownloads(image) {
+  const pad = (value) => String(value).padStart(2, '0');
+  const now = new Date();
+  const name = [
+    'bar-tool',
+    `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`,
+    `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`,
+  ].join('-');
+
+  const file = path.join(app.getPath('downloads'), `${name}.png`);
+  await fs.writeFile(file, image.buffer);
+  return file;
+}
+
+/** Everything an action needs from the outside world. */
+function actionContext() {
+  return {
+    hasBucket: Boolean(buckets?.hasActive()),
+    linkFormat: settings?.get().linkFormat ?? 'url',
+    upload: uploadImage,
+    saveFile: saveImageToDownloads,
+  };
+}
+
 /* ---------- IPC surface ---------- */
 
 /**
@@ -249,13 +306,14 @@ async function restoreHistory(id) {
  */
 async function buildState() {
   const source = await clipboardBridge.readSource();
+  const context = actionContext();
   const stats = history ? history.stats() : { count: 0, bytes: 0 };
   const recent = history ? history.list(3) : [];
 
   return {
     version: app.getVersion(),
     preview: clipboardBridge.toPreview(source),
-    actions: actions.listFor(source),
+    actions: actions.listFor(source, context),
     groups: actions.GROUP_ORDER,
     canUndo: Boolean(undoSource),
     history: {
@@ -270,6 +328,7 @@ async function buildState() {
       })),
     },
     settings: settings?.get() ?? {},
+    buckets: buckets?.list() ?? [],
   };
 }
 
@@ -280,7 +339,7 @@ async function runAction(id) {
   const source = await clipboardBridge.readSource();
   if (!action.accepts.includes(source.kind)) return { ok: false, error: 'not_applicable' };
 
-  const result = action.run(source);
+  const result = await action.run(source, actionContext());
   if (result.error) return { ok: false, error: result.error };
 
   if (typeof result.text === 'string') {
@@ -294,7 +353,7 @@ async function runAction(id) {
   }
 
   undoSource = source;
-  return { ok: true };
+  return { ok: true, toast: result.toast };
 }
 
 async function undoLast() {
@@ -367,6 +426,24 @@ function registerIpc() {
     return { ok: true, state: await buildState() };
   });
 
+  ipcMain.handle('buckets:save', async (_event, input) => {
+    if (!buckets) return { ok: false, error: 'unavailable' };
+    const result = await buckets.save(input ?? {});
+    return { ...result, state: await buildState() };
+  });
+
+  ipcMain.handle('buckets:remove', async (_event, id) => {
+    if (!buckets) return { ok: false, error: 'unavailable' };
+    const result = await buckets.remove(id);
+    return { ...result, state: await buildState() };
+  });
+
+  ipcMain.handle('buckets:activate', async (_event, id) => {
+    if (!buckets) return { ok: false, error: 'unavailable' };
+    const result = await buckets.setActive(id);
+    return { ...result, state: await buildState() };
+  });
+
   ipcMain.handle('panel:hide', () => {
     hidePanel();
   });
@@ -396,6 +473,15 @@ async function initStores() {
   const userData = app.getPath('userData');
 
   settings = await new SettingsStore({ file: path.join(userData, 'settings.json') }).init();
+  buckets = await new BucketStore({
+    file: path.join(userData, 'buckets.json'),
+    encrypt: (value) => {
+      if (!safeStorage.isEncryptionAvailable()) throw new Error('keychain unavailable');
+      return safeStorage.encryptString(value).toString('base64');
+    },
+    decrypt: (value) => safeStorage.decryptString(Buffer.from(value, 'base64')),
+  }).init();
+
   history = await new HistoryStore({
     dir: path.join(userData, 'history'),
     maxItems: settings.get().maxItems,
@@ -435,8 +521,16 @@ async function devCapture(target) {
     await new Promise((resolve) => setTimeout(resolve, 1400));
   }
 
+  if (process.env.BAR_TOOL_BUCKET) {
+    await panel.webContents.executeJavaScript(
+      `window.bar.bucketsSave(${process.env.BAR_TOOL_BUCKET}).then(() => location.reload())`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1600));
+  }
+
   if (process.env.BAR_TOOL_VIEW) {
-    const buttonId = process.env.BAR_TOOL_VIEW === 'history' ? 'history-all' : process.env.BAR_TOOL_VIEW;
+    const targets = { history: 'history-all', bucket: 'bucket-add' };
+    const buttonId = targets[process.env.BAR_TOOL_VIEW] ?? process.env.BAR_TOOL_VIEW;
     await panel.webContents.executeJavaScript(
       `document.getElementById(${JSON.stringify(buttonId)})?.click()`,
     );
