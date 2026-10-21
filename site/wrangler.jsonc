@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bar-tool",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+
+  "r2_buckets": [
+    {
+      "binding": "R2_RELEASES",
+      "bucket_name": "bar-tool"
+    }
+  ],
+
+  "routes": [
+    {
+      "pattern": "tool.wordtk.com",
+      "custom_domain": true
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>吧台 bar-tool · macOS 菜单栏剪贴板工具箱</title>
+    <meta
+      name="description"
+      content="吧台是一个 macOS 菜单栏小工具：把剪贴板里乱糟糟的文字清理、排版、整理成能直接用的样子，截图还能一键传到你自己的图床。零依赖、纯本地。"
+    />
+    <meta name="theme-color" content="#15171b" />
+    <meta property="og:title" content="吧台 bar-tool · macOS 菜单栏剪贴板工具箱" />
+    <meta
+      property="og:description"
+      content="清理文字、中文排版、整理列表、净化链接，截图一键上传到自己的图床。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/assets/icon.svg" />
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <img src="/assets/icon.svg" alt="" width="24" height="24" />
+        <span data-i18n="brand">吧台</span>
+      </a>
+
+      <nav class="topbar__nav">
+        <a class="nav-link" href="#actions" data-i18n="nav.actions">动作</a>
+        <a class="nav-link" href="#bucket" data-i18n="nav.bucket">图床</a>
+        <a class="nav-link" href="#faq" data-i18n="nav.faq">常见问题</a>
+        <button class="lang-toggle" id="lang-toggle" type="button" aria-label="切换语言">
+          <span id="lang-label">EN</span>
+        </button>
+        <a class="nav-link" href="https://github.com/onblog/bar-tool" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <img class="hero__icon" src="/assets/icon.svg" alt="吧台图标" width="96" height="96" />
+        <h1 class="hero__title" data-i18n="hero.title">吧台</h1>
+        <p class="hero__tagline" data-i18n="hero.tagline">
+          把剪贴板里乱糟糟的内容，变成你下一步要用的样子
+        </p>
+        <p class="hero__desc" data-i18n="hero.desc">
+          截个图、复制一段网页、抄一列名单——点一下菜单栏，清理干净、排好版、整理成能直接粘的样子。
+          图片就传进你自己的图床。
+        </p>
+
+        <div class="downloads" id="downloads">
+          <button class="btn btn--primary" type="button" data-arch="arm64">
+            <span data-i18n="download.arm">下载 Apple Silicon 版</span>
+          </button>
+          <button class="btn btn--ghost" type="button" data-arch="x64">
+            <span data-i18n="download.intel">Intel 版</span>
+          </button>
+        </div>
+        <div class="download-progress" id="progress" hidden>
+          <div class="download-progress__bar"><span id="progress-bar"></span></div>
+          <span class="download-progress__text" id="progress-text"></span>
+        </div>
+
+        <p class="hero__meta">
+          <span data-i18n="hero.meta">macOS 12+ · 首次打开需右键 → 打开 · 不收集任何数据</span>
+        </p>
+      </section>
+
+      <section class="shots">
+        <figure>
+          <img src="/assets/panel-main.png" alt="bar-tool 面板" width="400" height="600" />
+          <figcaption data-i18n="shots.main">剪贴板里是什么，就列出能变成什么</figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/panel-history.png" alt="历史记录" width="400" height="600" />
+          <figcaption data-i18n="shots.history">最近复制过的东西，点一下就回去</figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/panel-settings.png" alt="设置" width="400" height="600" />
+          <figcaption data-i18n="shots.settings">历史、图床、开机启动，都在设置里</figcaption>
+        </figure>
+      </section>
+
+      <section class="block" id="actions">
+        <h2 data-i18n="actions.title">21 个动作，五个分组</h2>
+        <p class="block__lead" data-i18n="actions.lead">
+          面板不会把所有功能都摊在你脸上：剪贴板是图片就只出图片动作，是普通文字就不会出现「转纯文本」。
+        </p>
+
+        <div class="grid">
+          <article class="card">
+            <h3 data-i18n="group.clean">清理</h3>
+            <ul>
+              <li data-i18n="item.plain">转纯文本（剥掉网页样式）</li>
+              <li data-i18n="item.trim">去首尾空白 · 合并空行 · 删掉空行</li>
+              <li data-i18n="item.numbers">去掉行号 · 压成一行</li>
+              <li data-i18n="item.invisible">清除隐形字符（零宽、BOM）</li>
+              <li data-i18n="item.markdown">去掉 Markdown 标记</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3 data-i18n="group.typography">中文排版</h3>
+            <ul>
+              <li data-i18n="item.spacing">中英文之间自动加空格</li>
+              <li data-i18n="item.fullwidth">标点转全角</li>
+              <li data-i18n="item.halfwidth">标点转半角</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3 data-i18n="group.list">列表整理</h3>
+            <ul>
+              <li data-i18n="item.dedupe">去重行 · 排序行 · 反转行序</li>
+              <li data-i18n="item.number">加序号</li>
+              <li data-i18n="item.commas">合并成逗号分隔</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3 data-i18n="group.link">链接</h3>
+            <ul>
+              <li data-i18n="item.tracking">净化链接（去掉 utm_* 跟踪参数）</li>
+              <li data-i18n="item.decode">链接里的 %20 解码</li>
+              <li data-i18n="item.extract">提取文中所有链接</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3 data-i18n="group.image">图片</h3>
+            <ul>
+              <li data-i18n="item.upload">上传到图床 → 链接</li>
+              <li data-i18n="item.save">存到下载目录</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="block" id="bucket">
+        <h2 data-i18n="bucket.title">图片存在你自己的桶里</h2>
+        <p class="block__lead" data-i18n="bucket.lead">
+          没有官方图床，也没有账号。填一个 S3 兼容存储，链接就指向你自己的域名，费用和隐私都归你。
+        </p>
+
+        <div class="table">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="bucket.col.field">字段</th>
+                <th data-i18n="bucket.col.value">填什么</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Endpoint</td>
+                <td>
+                  <code>https://&lt;account-id&gt;.r2.cloudflarestorage.com</code>（R2）<br />
+                  <code>https://cos.&lt;region&gt;.myqcloud.com</code>（COS）<br />
+                  <code>https://oss-&lt;region&gt;.aliyuncs.com</code>（OSS）
+                </td>
+              </tr>
+              <tr>
+                <td>Region</td>
+                <td data-i18n="bucket.region">R2 填 auto，COS/OSS 填真实地域</td>
+              </tr>
+              <tr>
+                <td data-i18n="bucket.name">桶名</td>
+                <td data-i18n="bucket.nameValue">你的存储桶名称</td>
+              </tr>
+              <tr>
+                <td data-i18n="bucket.public">公开域名</td>
+                <td data-i18n="bucket.publicValue">图片对外服务的域名，回给你的链接就用它</td>
+              </tr>
+              <tr>
+                <td>Access Key / Secret</td>
+                <td data-i18n="bucket.keys">有写权限的 S3 密钥；Secret 用 macOS 钥匙串加密</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="note" data-i18n="bucket.note">
+          R2 最省：10 GB 免费、不收流出流量费。对象名按内容寻址，同一张图传两次只有一个文件。
+        </p>
+      </section>
+
+      <section class="block" id="faq">
+        <h2 data-i18n="faq.title">常见问题</h2>
+
+        <details>
+          <summary data-i18n="faq.q1">双击提示「未验证的开发者」怎么办？</summary>
+          <p data-i18n="faq.a1">
+            安装包是 ad-hoc 签名、没做 Apple 公证。在访达里右键图标 → 打开 → 再点一次「打开」即可；
+            也可以在「系统设置 → 隐私与安全性」里选仍要打开。
+          </p>
+        </details>
+
+        <details>
+          <summary data-i18n="faq.q2">它是怎么记录剪贴板历史的？</summary>
+          <p data-i18n="faq.a2">
+            macOS 没有剪贴板变更事件，只能轮询：文字每 1.2 秒读一次并比对哈希，图片每 3 秒采样一次、
+            且只在剪贴板没有文字时才读。副作用是连拍两张图时，第二张可能不会被记录。
+          </p>
+        </details>
+
+        <details>
+          <summary data-i18n="faq.q3">数据存在哪？会上传吗？</summary>
+          <p data-i18n="faq.a3">
+            历史存在本机 ~/Library/Application Support/bar-tool/，图片是一个索引加若干文件。
+            应用唯一的网络请求，就是把图片 PUT 到你配置的存储桶；没有统计、没有崩溃上报。
+          </p>
+        </details>
+
+        <details>
+          <summary data-i18n="faq.q4">需要什么系统权限？</summary>
+          <p data-i18n="faq.a4">
+            不需要辅助功能，也不需要屏幕录制。全局快捷键是 ⌥⌘V，如果和其他 App 冲突，直接点菜单栏图标也一样。
+          </p>
+        </details>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer__left">
+        <span data-i18n="footer.license">AGPL-3.0-only + 商业授权</span>
+        <a href="https://github.com/onblog/bar-tool" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://github.com/onblog/bar-tool/issues" target="_blank" rel="noreferrer" data-i18n="footer.issue">反馈</a>
+      </div>
+      <div class="footer__right">
+        <span id="version"></span>
+      </div>
+    </footer>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

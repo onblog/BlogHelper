@@ -7,6 +7,7 @@
 **一个 macOS 菜单栏工具箱，专治你每天粘来粘去的文字——清理干净、中文排版、列表理顺、链接去尾巴。**
 
 <a href="https://tool.wordtk.com"><img alt="下载" src="https://img.shields.io/badge/%E2%96%B6_%E4%B8%8B%E8%BD%BD-tool.wordtk.com-f2b544?style=for-the-badge"></a>
+<img alt="版本" src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.3.0-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -43,6 +44,15 @@
 | [开源协议](#开源协议) | |
 
 ---
+
+## 安装
+
+到 **[tool.wordtk.com](https://tool.wordtk.com)** 下载 dmg（Apple Silicon 与 Intel 各一个），拖进
+`Applications` 打开即可。安装包是 ad-hoc 签名、没做公证，所以第一次打开要**右键 → 打开 → 再点一次
+「打开」**（或在系统设置 → 隐私与安全性里放行）。
+
+文字动作开箱即用；图片上传需要先在「设置 → 存储」里加一个存储桶，官网的
+[图片上传一节](https://tool.wordtk.com/#bucket)写清了四个关键字段。
 
 ## 它做什么
 
@@ -171,8 +181,9 @@ npm run dist:x64       # Intel 的 dmg
 
 ## 当前进度
 
-`1.3.0`：19 个文本工具、图片上传到你自己的 S3 兼容存储桶、存到下载目录、本地剪贴板历史
-（文字 + 图片）、撤销，以及双语面板。接下来是官网与首个版本发布。
+`1.3.0` 已发布：19 个文本工具、图片上传到你自己的 S3 兼容存储桶、存到下载目录、本地剪贴板历史
+（文字 + 图片）、撤销，以及双语面板。官网在 **https://tool.wordtk.com**，双架构 dmg 由
+Cloudflare R2 分发。
 
 ## 开源协议
 

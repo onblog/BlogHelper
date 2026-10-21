@@ -7,6 +7,7 @@
 **A macOS menu bar toolbox for the text you paste all day — clean it up, space it the Chinese way, tidy a list, strip a tracking link.**
 
 <a href="https://tool.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-tool.wordtk.com-f2b544?style=for-the-badge"></a>
+<img alt="version" src="https://img.shields.io/badge/version-1.3.0-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -44,6 +45,17 @@
 | [License](#license) | |
 
 ---
+
+## Install
+
+Grab the dmg from **[tool.wordtk.com](https://tool.wordtk.com)** (Apple Silicon and Intel), drag the
+app into `Applications`, and launch it. The build is ad-hoc signed rather than notarised, so the
+first launch needs one extra click: **right-click → Open → Open** (or allow it under System Settings
+→ Privacy & Security).
+
+Nothing to configure for the text tools. For image uploads, add a bucket in Settings → Storage — the
+site's [image host section](https://tool.wordtk.com/#bucket) walks through the four fields that
+matter.
 
 ## What it does
 
@@ -190,9 +202,9 @@ npm run dist:x64       # dmg for Intel
 
 ## Status
 
-`1.3.0`: 19 text tools, image upload to your own S3-compatible bucket, save-to-Downloads, local
-clipboard history for text and images, undo and the bilingual panel. The official site and the first
-release are next.
+`1.3.0` is out: 19 text tools, image upload to your own S3-compatible bucket, save-to-Downloads,
+local clipboard history for text and images, undo and the bilingual panel. The site lives at
+**https://tool.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
 ## License
 
