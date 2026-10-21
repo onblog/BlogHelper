@@ -1,0 +1,39 @@
+appId: com.onblog.bartool
+productName: 吧台
+copyright: Copyright © 2026 onblog
+
+directories:
+  output: release
+  buildResources: build
+
+# Reuse the Electron shipped in node_modules instead of downloading it again.
+electronDist: node_modules/electron/dist
+
+files:
+  - dist/**/*
+  - electron/**/*
+  - package.json
+  - '!**/*.map'
+
+mac:
+  icon: build/icon.icns
+  category: public.app-category.productivity
+  darkModeSupport: false
+  # Architecture is chosen on the command line (--arm64 / --x64) so the two
+  # dmg files never fight over the same volume name.
+  target:
+    - target: dmg
+  # Ad-hoc signing happens in the afterPack hook: electron-builder does not
+  # accept `identity: "-"` and would silently skip signing.
+  identity: null
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  extendInfo:
+    # Pure menu bar app: no dock icon, no main window.
+    LSUIElement: true
+
+afterPack: scripts/after-pack.cjs
+
+dmg:
+  title: 吧台
+  artifactName: bar-tool-${version}-${arch}.${ext}
