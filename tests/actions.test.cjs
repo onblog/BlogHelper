@@ -204,8 +204,17 @@ test('registry', async (t) => {
     }
   });
 
-  await t.test('image clipboard offers no text actions', () => {
-    assert.equal(actions.listFor({ kind: 'image', width: 1, height: 1, dataUrl: 'data:,' }).length, 0);
+  await t.test('image clipboard offers only image actions', () => {
+    const image = { kind: 'image', width: 1, height: 1, dataUrl: 'data:', buffer: Buffer.from('x') };
+
+    const withBucket = actions.listFor(image, { hasBucket: true }).map((action) => action.id);
+    assert.deepEqual(withBucket, ['image.upload', 'image.save']);
+
+    const withoutBucket = actions.listFor(image, { hasBucket: false }).map((action) => action.id);
+    assert.deepEqual(withoutBucket, ['image.save'], 'no bucket means no upload offer');
+
+    const none = actions.listFor(image).map((action) => action.id);
+    assert.deepEqual(none, ['image.save']);
   });
 
   await t.test('empty clipboard offers nothing', () => {

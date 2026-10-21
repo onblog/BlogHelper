@@ -13,6 +13,7 @@ const modules = [
   require('./text/typography.cjs'),
   require('./text/list.cjs'),
   require('./text/link.cjs'),
+  require('./image.cjs'),
 ];
 
 const actions = modules.flat();
@@ -23,7 +24,7 @@ const actions = modules.flat();
  * Grouped by what a person is trying to do, not by which technology is
  * involved — the audience is anyone who copies text, not just developers.
  */
-const GROUP_ORDER = ['clean', 'typography', 'list', 'link'];
+const GROUP_ORDER = ['clean', 'typography', 'list', 'link', 'image'];
 
 const byId = new Map(actions.map((action) => [action.id, action]));
 
@@ -34,12 +35,12 @@ const byId = new Map(actions.map((action) => [action.id, action]));
  * an image hides every text action, and "To plain text" only shows up when the
  * clipboard really carries rich text.
  */
-function listFor(input) {
+function listFor(input, ctx) {
   if (!input || input.kind === 'empty') return [];
 
   return actions
     .filter((action) => action.accepts.includes(input.kind))
-    .filter((action) => !action.isAvailable || action.isAvailable(input))
+    .filter((action) => !action.isAvailable || action.isAvailable(input, ctx))
     .map((action) => ({ id: action.id, group: action.group, title: action.title }));
 }
 

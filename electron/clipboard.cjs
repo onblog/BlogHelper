@@ -115,6 +115,24 @@ function toPreview(source) {
   return { kind: 'empty' };
 }
 
+/** Cheap probe for the watcher: the plain-text flavour only. */
+async function readText() {
+  try {
+    return await clipboard.readText();
+  } catch {
+    return '';
+  }
+}
+
+/** Cheap probe for the watcher: does the pasteboard hold an image at all? */
+async function hasImage() {
+  try {
+    return (await clipboard.has('image/png')) || (await clipboard.has('image/tiff'));
+  } catch {
+    return false;
+  }
+}
+
 async function writeText(text) {
   await clipboard.write([new ClipboardItem({ 'text/plain': text })]);
 }
@@ -131,4 +149,4 @@ async function restore(source) {
   else if (source.kind === 'image') await writeImage(source);
 }
 
-module.exports = { readSource, toPreview, writeText, writeImage, restore };
+module.exports = { readSource, readText, hasImage, toPreview, writeText, writeImage, restore };

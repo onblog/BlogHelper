@@ -17,6 +17,19 @@ contextBridge.exposeInMainWorld('bar', {
   run: (id) => ipcRenderer.invoke('action:run', id),
   undo: () => ipcRenderer.invoke('action:undo'),
 
+  /** Clipboard history. */
+  historyAll: () => ipcRenderer.invoke('history:all'),
+  historyRestore: (id) => ipcRenderer.invoke('history:restore', id),
+  historyClear: () => ipcRenderer.invoke('history:clear'),
+
+  /** Settings. */
+  updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
+
+  /** Storage buckets. */
+  bucketsSave: (input) => ipcRenderer.invoke('buckets:save', input),
+  bucketsRemove: (id) => ipcRenderer.invoke('buckets:remove', id),
+  bucketsActivate: (id) => ipcRenderer.invoke('buckets:activate', id),
+
   hide: () => ipcRenderer.invoke('panel:hide'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
 
@@ -25,5 +38,8 @@ contextBridge.exposeInMainWorld('bar', {
   },
   onRefresh: (handler) => {
     ipcRenderer.on('panel:refresh', () => handler());
+  },
+  onView: (handler) => {
+    ipcRenderer.on('panel:view', (_event, view) => handler(view));
   },
 });
