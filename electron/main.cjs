@@ -167,7 +167,7 @@ function togglePanel() {
 
 function contextMenu() {
   return Menu.buildFromTemplate([
-    { label: '打开吧台', click: showPanel },
+    { label: '打开喵喵吧台', click: showPanel },
     { label: '设置…', click: () => openSettings() },
     { type: 'separator' },
     {
@@ -186,7 +186,7 @@ function contextMenu() {
 
 function createTray() {
   tray = new Tray(trayImage());
-  tray.setToolTip('吧台 · bar-tool');
+  tray.setToolTip('喵喵吧台 · bar-tool');
   tray.on('click', togglePanel);
   tray.on('right-click', () => tray.popUpContextMenu(contextMenu()));
 }
@@ -602,6 +602,50 @@ function registerShortcuts() {
 
 /* ---------- startup ---------- */
 
+/**
+ * Carry a 1.7-era install across the rename.
+ *
+ * `app.getPath('userData')` follows the product name, so renaming the app would
+ * otherwise start from an empty profile and look like the history vanished. Only
+ * our own files are copied — never Chromium's caches.
+ *
+ * BAR_TOOL_MIGRATE_FROM exists so this can be exercised against a fixture.
+ */
+const MIGRATED_ENTRIES = ['settings.json', 'buckets.json', 'device.json', 'history'];
+
+async function migrateUserData() {
+  const next = app.getPath('userData');
+  const previous = process.env.BAR_TOOL_MIGRATE_FROM || path.join(app.getPath('appData'), '吧台');
+
+  if (next === previous) return;
+  if (await exists(path.join(next, 'settings.json'))) return;
+
+  const source = [];
+  for (const entry of MIGRATED_ENTRIES) {
+    if (await exists(path.join(previous, entry))) source.push(entry);
+  }
+  if (source.length === 0) return;
+
+  try {
+    await fs.mkdir(next, { recursive: true });
+    for (const entry of source) {
+      await fs.cp(path.join(previous, entry), path.join(next, entry), { recursive: true, force: true });
+    }
+    console.log('[migrate] carried over', JSON.stringify(source));
+  } catch (error) {
+    console.error('[migrate] could not copy the old user data', error);
+  }
+}
+
+async function exists(target) {
+  try {
+    await fs.access(target);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function initStores() {
   const userData = app.getPath('userData');
 
@@ -706,8 +750,9 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(async () => {
     // A menu bar app never shows a dock icon.
     app.dock?.hide();
-    app.setName('吧台');
+    app.setName('喵喵吧台');
 
+    await migrateUserData();
     await initStores();
 
     createPanel();

@@ -2,7 +2,7 @@
 
 <img src="build/icon.svg" width="104" alt="bar-tool" />
 
-# bar-tool · 吧台
+# bar-tool · 喵喵吧台
 
 **The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
@@ -249,4 +249,4 @@ Dual-licensed:
 - **Commercial** — if AGPL does not fit your product (for example, you want to ship a closed-source
   derivative) see [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md).
 
-The name "吧台 / bar-tool" and the icon are not covered by the open-source grant.
+The name "喵喵吧台 / bar-tool" and the icon are not covered by the open-source grant.

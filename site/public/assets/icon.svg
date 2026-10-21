@@ -43,14 +43,14 @@
     <!-- soft ground shadow so the head sits on the board -->
     <ellipse cx="512" cy="838" rx="250" ry="34" fill="#8A4B12" opacity="0.18" filter="url(#soft)" />
 
-    <!-- ears: the mascot's round lobes, not a cat's points -->
+    <!-- ears: soft triangles, so the mascot reads as a cat at a glance -->
     <g fill="url(#fur)">
-      <circle cx="316" cy="330" r="112" />
-      <circle cx="708" cy="330" r="112" />
+      <path d="M330 392 C296 316 268 250 288 214 C310 176 392 232 452 296 Z" />
+      <path d="M694 392 C728 316 756 250 736 214 C714 176 632 232 572 296 Z" />
     </g>
     <g fill="url(#innerEar)">
-      <circle cx="330" cy="318" r="62" />
-      <circle cx="694" cy="318" r="62" />
+      <path d="M348 372 C322 312 302 262 316 240 C334 214 392 258 430 306 Z" />
+      <path d="M676 372 C702 312 722 262 708 240 C690 214 632 258 594 306 Z" />
     </g>
 
     <!-- head -->
@@ -78,6 +78,16 @@
       d="M486 604 C486 594 500 588 512 596 C524 588 538 594 538 604 C538 615 522 626 512 626 C502 626 486 615 486 604 Z"
       fill="#FF8064"
     />
+
+    <!-- whiskers: the one cat cue that survives down to 16px -->
+    <g stroke="#3A2E23" stroke-opacity="0.72" stroke-width="9" stroke-linecap="round">
+      <path d="M300 612 L196 596" />
+      <path d="M296 648 L190 650" />
+      <path d="M304 684 L204 708" />
+      <path d="M724 612 L828 596" />
+      <path d="M728 648 L834 650" />
+      <path d="M720 684 L820 708" />
+    </g>
 
     <!-- mouth: the small ω that makes it read friendly -->
     <path

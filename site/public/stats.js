@@ -5,7 +5,7 @@
 
 const messages = {
   zh: {
-    brand: '吧台',
+    brand: '喵喵吧台',
     'nav.home': '首页',
     'stats.title': '使用数据',
     'stats.sub': '只统计匿名启动信号，不收集个人信息，不含 IP 与设备指纹。',

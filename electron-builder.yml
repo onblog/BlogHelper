@@ -1,5 +1,5 @@
 appId: com.onblog.bartool
-productName: 吧台
+productName: 喵喵吧台
 copyright: Copyright © 2026 onblog
 
 directories:
@@ -40,5 +40,5 @@ mac:
 afterPack: scripts/after-pack.cjs
 
 dmg:
-  title: 吧台
+  title: 喵喵吧台
   artifactName: bar-tool-${version}-${arch}.${ext}
