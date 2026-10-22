@@ -17,11 +17,17 @@
     "run_worker_first": ["/api/*"]
   },
 
+  // Shared D1 database with sendtk / codetk / miaomiao-notes (`common`): the free plan
+  // allows 10 databases and this site only keeps a handful of launch rows.
+  // This project's table and indexes carry the `bar_` prefix (bar_launches +
+  // idx_bar_launches_*). `d1_migrations` is a database-wide ledger keyed by file name,
+  // so every file in migrations/ must include the project name — hence
+  // `0001_bar_init.sql` instead of `0001_init.sql` (sendtk already recorded that name).
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "miaomiao-bar",
-      "database_id": "fe66224a-d6c8-4d2a-b008-f993e702d7d8",
+      "database_name": "common",
+      "database_id": "ba170df9-05e6-427e-a081-099306e7fc77",
       "migrations_dir": "migrations"
     }
   ],

@@ -197,6 +197,12 @@ npm run dist:x64       # Intel 的 dmg（会先补齐 x64 原生模块）
 
 应用已不再携带原生模块，两个架构都是纯 Electron 构建。
 
+官网在 `site/`，作为独立的 Cloudflare Worker 部署（进去跑 `npm run deploy`）。它和
+sendtk、codetk、miaomiao-notes 共用**同一个 `common` D1 库**（免费额度只给 10 个库），
+所以表名是 `bar_launches`、索引带 `bar_` 前缀。建表用
+`npx wrangler d1 migrations apply common --remote`；`d1_migrations` 是按文件名记账的
+全库共享台账，因此 `site/migrations/` 里的文件名要带项目名（`0001_bar_init.sql`）。
+
 ## 当前进度
 
 `1.8.0`：21 个动作、图片上传到你自己的 S3 兼容存储桶、存到下载目录与「预览」、本地剪贴板历史

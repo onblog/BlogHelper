@@ -234,6 +234,13 @@ npm run dist:x64       # dmg for Intel (fetches the x64 native addon first)
 
 No native modules ship with the app any more, so both architectures are pure Electron builds.
 
+The marketing site lives in `site/` and deploys as its own Cloudflare Worker (`npm run deploy`
+from inside it). It shares the **`common` D1 database** with sendtk, codetk and miaomiao-notes
+(the free plan allows 10 databases), so its table is `bar_launches` with `bar_`-prefixed
+indexes. Schema setup is `npx wrangler d1 migrations apply common --remote`; since
+`d1_migrations` is a database-wide ledger keyed by file name, files in `site/migrations/`
+keep the project prefix (`0001_bar_init.sql`).
+
 ## Status
 
 `1.8.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
