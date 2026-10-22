@@ -304,6 +304,13 @@ function resetSpeed() {
   speedState.speed = 0;
 }
 
+/** Below 1000 KB/s keep KB (3000 KB/s is unreadable); above it, MB with one decimal. */
+function formatSpeed(bytesPerSecond) {
+  const speed = Math.max(0, bytesPerSecond);
+  if (speed < 1000 * 1024) return `${Math.round(speed / 1024)} KB/s`;
+  return `${(speed / (1024 * 1024)).toFixed(1)} MB/s`;
+}
+
 function setProgress(loaded, total) {
   const wrap = document.getElementById('progress');
   const bar = document.getElementById('progress-bar');
@@ -329,12 +336,12 @@ function setProgress(loaded, total) {
   const ratio = total ? Math.min(1, Math.max(0, loaded / total)) : 0;
   bar.style.width = `${Math.round(ratio * 100)}%`;
 
-  // The user asked for the percentage to be dropped and the speed kept, always
-  // in KB/s so the number stays comparable while a download is in flight.
-  const kbps = Math.max(0, Math.round(speedState.speed / 1024));
+  // The user asked for the percentage to be dropped and the speed kept: KB/s
+  // below 1000, MB/s above, so a fast link never shows "3000 KB/s".
+  const speed = formatSpeed(speedState.speed);
   text.textContent = total
-    ? `${formatBytes(loaded)} / ${formatBytes(total)} · ${kbps} KB/s`
-    : `${formatBytes(loaded)} · ${kbps} KB/s`;
+    ? `${formatBytes(loaded)} / ${formatBytes(total)} · ${speed}`
+    : `${formatBytes(loaded)} · ${speed}`;
 }
 
 function createProgressReporter(total) {
