@@ -292,25 +292,61 @@ const CHUNK_MIN_SIZE = 20 * 1024 * 1024;
 const CHUNK_COUNT = 8;
 const CHUNK_RETRIES = 3;
 
+/**
+ * Live transfer speed. Chunks report bytes while streaming, so the window is
+ * sampled over the last half second and smoothed instead of jumping around.
+ */
+const speedState = { at: 0, bytes: 0, speed: 0 };
+
+function resetSpeed() {
+  speedState.at = 0;
+  speedState.bytes = 0;
+  speedState.speed = 0;
+}
+
 function setProgress(loaded, total) {
   const wrap = document.getElementById('progress');
   const bar = document.getElementById('progress-bar');
   const text = document.getElementById('progress-text');
 
+  const now = performance.now();
+  if (!speedState.at) {
+    speedState.at = now;
+    speedState.bytes = loaded;
+  } else {
+    const elapsed = now - speedState.at;
+    if (elapsed >= 500) {
+      const delta = Math.max(0, loaded - speedState.bytes);
+      const instant = (delta / elapsed) * 1000;
+      speedState.speed = speedState.speed ? speedState.speed * 0.6 + instant * 0.4 : instant;
+      speedState.at = now;
+      speedState.bytes = loaded;
+    }
+  }
+
   wrap.hidden = false;
-  const ratio = total ? loaded / total : 0;
-  bar.style.width = `${Math.min(100, Math.round(ratio * 100))}%`;
+  // A retried chunk may briefly report more than the total; never show > 100%.
+  const ratio = total ? Math.min(1, Math.max(0, loaded / total)) : 0;
+  bar.style.width = `${Math.round(ratio * 100)}%`;
+
+  // The user asked for the percentage to be dropped and the speed kept, always
+  // in KB/s so the number stays comparable while a download is in flight.
+  const kbps = Math.max(0, Math.round(speedState.speed / 1024));
   text.textContent = total
-    ? `${formatBytes(loaded)} / ${formatBytes(total)} (${Math.round(ratio * 100)}%)`
-    : formatBytes(loaded);
+    ? `${formatBytes(loaded)} / ${formatBytes(total)} · ${kbps} KB/s`
+    : `${formatBytes(loaded)} · ${kbps} KB/s`;
 }
 
 function createProgressReporter(total) {
-  let last = 0;
+  let lastBytes = 0;
+  let lastAt = 0;
   return (loaded) => {
-    // Repaint at most every 256 KiB, plus the final frame.
-    if (loaded < total && loaded - last < 256 * 1024) return;
-    last = loaded;
+    const now = performance.now();
+    // Repaint on 256 KiB of progress, but at least every 400 ms so the speed
+    // number keeps moving on a slow link too.
+    if (loaded < total && loaded - lastBytes < 256 * 1024 && now - lastAt < 400) return;
+    lastBytes = loaded;
+    lastAt = now;
     setProgress(loaded, total);
   };
 }
@@ -337,7 +373,7 @@ function timeoutSignal(ms) {
   return controller.signal;
 }
 
-async function fetchRange(url, start, end, onBytes) {
+async function fetchRange(url, start, end, onBytes, onReset) {
   let lastError;
 
   for (let attempt = 0; attempt < CHUNK_RETRIES; attempt += 1) {
@@ -352,6 +388,9 @@ async function fetchRange(url, start, end, onBytes) {
       return await readBlob(response, onBytes);
     } catch (error) {
       lastError = error;
+      // The retry re-reads this range from byte 0, so the caller must drop the
+      // bytes this attempt already counted.
+      onReset?.();
       // Give a flaky range a moment before trying again.
       await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
     }
@@ -366,12 +405,27 @@ async function downloadFile(url, size, onProgress) {
   if (!total || total < CHUNK_MIN_SIZE) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`status ${response.status}`);
-    return readBlob(response, onProgress);
+    let received = 0;
+    return readBlob(response, (bytes) => {
+      received += bytes;
+      onProgress(received, total || received);
+    });
   }
 
   const chunkSize = Math.ceil(total / CHUNK_COUNT);
   const parts = new Array(CHUNK_COUNT).fill(null);
-  let loaded = 0;
+  // Bytes counted per chunk for the current attempt, plus the chunks that are
+  // done. Keeping them apart is what stops retries from pushing past 100%.
+  const received = new Array(CHUNK_COUNT).fill(0);
+  const committed = new Array(CHUNK_COUNT).fill(0);
+
+  const report = () => {
+    let loaded = 0;
+    for (let index = 0; index < CHUNK_COUNT; index += 1) {
+      loaded += committed[index] + received[index];
+    }
+    onProgress(Math.min(loaded, total), total);
+  };
 
   await Promise.all(
     parts.map(async (_unused, index) => {
@@ -379,10 +433,23 @@ async function downloadFile(url, size, onProgress) {
       const end = Math.min(start + chunkSize - 1, total - 1);
       if (start > end) return;
 
-      parts[index] = await fetchRange(url, start, end, (bytes) => {
-        loaded += bytes;
-        onProgress(loaded, total);
-      });
+      parts[index] = await fetchRange(
+        url,
+        start,
+        end,
+        (bytes) => {
+          received[index] += bytes;
+          report();
+        },
+        () => {
+          received[index] = 0;
+          report();
+        },
+      );
+
+      committed[index] = received[index];
+      received[index] = 0;
+      report();
     }),
   );
 
@@ -437,6 +504,7 @@ async function startDownload(arch) {
   link.setAttribute('aria-disabled', 'true');
   link.querySelector('span').textContent = t('download.wait');
   // Show the bar immediately, so the click always has visible feedback.
+  resetSpeed();
   setProgress(0, file.size);
 
   try {
