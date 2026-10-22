@@ -250,6 +250,22 @@ code {
   box-shadow: 2px 2px 0 var(--shadow);
 }
 
+/* The download controls are real links, so a plain click always works even
+   before (or without) the manifest script. The scripted path only enhances. */
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn.is-busy {
+  opacity: 0.55;
+  cursor: progress;
+  pointer-events: none;
+  box-shadow: 2px 2px 0 var(--shadow);
+}
+
 .download-progress {
   max-width: 340px;
   margin: 16px auto 0;

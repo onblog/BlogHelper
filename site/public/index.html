@@ -56,12 +56,12 @@
         </p>
 
         <div class="downloads" id="downloads">
-          <button class="btn btn--primary" type="button" data-arch="arm64">
+          <a class="btn btn--primary" data-arch="arm64" href="/api/download?arch=arm64" download>
             <span data-i18n="download.arm">下载 Apple Silicon 版</span>
-          </button>
-          <button class="btn btn--ghost" type="button" data-arch="x64">
+          </a>
+          <a class="btn btn--ghost" data-arch="x64" href="/api/download?arch=x64" download>
             <span data-i18n="download.intel">Intel 版</span>
-          </button>
+          </a>
         </div>
         <div class="download-progress" id="progress" hidden>
           <div class="download-progress__bar"><span id="progress-bar"></span></div>

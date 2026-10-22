@@ -22,6 +22,7 @@ const dict = {
     'download.done': '已开始下载',
     'download.toast': '下载完成：{name} 已存入「下载」文件夹',
     'download.failed': '下载失败，请到 GitHub 反馈',
+    'download.fallback': '多线程下载失败，已改用直链下载',
     'download.unavailable': '安装包还在上传，稍后再来',
     'shots.main': '剪贴板里是什么，就列出能变成什么',
     'shots.history': '最近复制过的东西，点一下就回去',
@@ -107,6 +108,7 @@ const dict = {
     'download.done': 'Download started',
     'download.toast': 'Download complete — {name} is in your Downloads folder',
     'download.failed': 'Download failed — please open an issue on GitHub',
+    'download.fallback': 'Chunked download failed — switched to the direct link',
     'download.unavailable': 'The build is still uploading, check back soon',
     'shots.main': 'What is on the clipboard decides what the panel offers',
     'shots.history': 'Everything you copied recently, one click away',
@@ -239,7 +241,6 @@ async function loadRelease() {
 
     if (!payload.ok) {
       downloads.dataset.unavailable = 'true';
-      for (const button of downloads.querySelectorAll('button')) button.disabled = true;
       versionNode.textContent = t('download.unavailable');
       return;
     }
@@ -248,24 +249,31 @@ async function loadRelease() {
     const preferred = detectArch();
 
     // Re-render the static copy first: it would otherwise overwrite the size
-    // suffix that the loop below appends to each button label.
+    // suffix that the loop below appends to each label.
     applyLanguage();
 
-    for (const button of downloads.querySelectorAll('button')) {
-      const arch = button.dataset.arch;
+    for (const link of downloads.querySelectorAll('a[data-arch]')) {
+      const arch = link.dataset.arch;
       const file = payload.data.files[arch];
-      button.disabled = !file;
+
+      // The href is already a working download URL; the manifest only adds the
+      // size suffix and marks missing builds.
+      if (file) {
+        delete link.dataset.unavailable;
+      } else {
+        link.dataset.unavailable = 'true';
+      }
 
       const label = t(arch === 'arm64' ? 'download.arm' : 'download.intel');
-      button.querySelector('span').textContent = file
+      link.querySelector('span').textContent = file
         ? `${label} · ${formatBytes(file.size)}`
         : label;
 
       // Highlight the build that matches this machine. Ghost and primary both
-      // set a background, so exactly one of them may be on a button.
+      // set a background, so exactly one of them may be on a link.
       const recommended = arch === preferred && Boolean(file);
-      button.classList.toggle('btn--primary', recommended);
-      button.classList.toggle('btn--ghost', !recommended);
+      link.classList.toggle('btn--primary', recommended);
+      link.classList.toggle('btn--ghost', !recommended);
     }
 
     versionNode.textContent = payload.data.version
@@ -297,22 +305,51 @@ function setProgress(loaded, total) {
     : formatBytes(loaded);
 }
 
-async function fetchRange(url, start, end) {
+function createProgressReporter(total) {
+  let last = 0;
+  return (loaded) => {
+    // Repaint at most every 256 KiB, plus the final frame.
+    if (loaded < total && loaded - last < 256 * 1024) return;
+    last = loaded;
+    setProgress(loaded, total);
+  };
+}
+
+async function readBlob(response, onBytes) {
+  const reader = response.body.getReader();
+  const parts = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value);
+    onBytes(value.length);
+  }
+  return new Blob(parts);
+}
+
+/** AbortSignal.timeout is Safari 16+; keep the older engines working too. */
+function timeoutSignal(ms) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+}
+
+async function fetchRange(url, start, end, onBytes) {
   let lastError;
 
   for (let attempt = 0; attempt < CHUNK_RETRIES; attempt += 1) {
     try {
-      const response = await fetch(url, { headers: { Range: `bytes=${start}-${end}` } });
+      const response = await fetch(url, {
+        headers: { Range: `bytes=${start}-${end}` },
+        // A direct connection without a proxy can hang for minutes on a single
+        // range; give up early so the caller can fall back to the plain link.
+        signal: timeoutSignal(45000),
+      });
       if (response.status !== 206) throw new Error(`unexpected status ${response.status}`);
-
-      const reader = response.body.getReader();
-      const parts = [];
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        parts.push(value);
-      }
-      return new Blob(parts);
+      return await readBlob(response, onBytes);
     } catch (error) {
       lastError = error;
       // Give a flaky range a moment before trying again.
@@ -323,27 +360,29 @@ async function fetchRange(url, start, end) {
   throw lastError;
 }
 
-async function downloadFile(url, size) {
-  if (!size || size < CHUNK_MIN_SIZE) {
+async function downloadFile(url, size, onProgress) {
+  const total = Number(size) || 0;
+
+  if (!total || total < CHUNK_MIN_SIZE) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`status ${response.status}`);
-    return response.blob();
+    return readBlob(response, onProgress);
   }
 
-  const chunkSize = Math.ceil(size / CHUNK_COUNT);
+  const chunkSize = Math.ceil(total / CHUNK_COUNT);
   const parts = new Array(CHUNK_COUNT).fill(null);
   let loaded = 0;
 
   await Promise.all(
     parts.map(async (_unused, index) => {
       const start = index * chunkSize;
-      const end = Math.min(start + chunkSize - 1, size - 1);
+      const end = Math.min(start + chunkSize - 1, total - 1);
       if (start > end) return;
 
-      const blob = await fetchRange(url, start, end);
-      parts[index] = blob;
-      loaded += blob.size;
-      setProgress(loaded, size);
+      parts[index] = await fetchRange(url, start, end, (bytes) => {
+        loaded += bytes;
+        onProgress(loaded, total);
+      });
     }),
   );
 
@@ -374,37 +413,59 @@ function saveBlob(blob, filename) {
 }
 
 async function startDownload(arch) {
-  if (state.busy || !state.release) return;
+  if (state.busy) return;
 
-  const file = state.release.files[arch];
+  // The manifest may still be in flight when the page first becomes clickable.
+  if (!state.release) {
+    showToast(t('download.wait'));
+    return;
+  }
+
+  const file = state.release.files?.[arch];
   if (!file) return;
 
+  const link = document.querySelector(`a[data-arch="${arch}"]`);
+  if (!link) {
+    // No enhanced control in the DOM: use the plain endpoint.
+    window.location.href = `/api/download?arch=${arch}`;
+    return;
+  }
+
   state.busy = true;
-  const button = document.querySelector(`[data-arch="${arch}"]`);
-  const label = button.querySelector('span').textContent;
-  button.disabled = true;
-  button.querySelector('span').textContent = t('download.wait');
+  const label = link.querySelector('span').textContent;
+  link.classList.add('is-busy');
+  link.setAttribute('aria-disabled', 'true');
+  link.querySelector('span').textContent = t('download.wait');
+  // Show the bar immediately, so the click always has visible feedback.
+  setProgress(0, file.size);
 
   try {
-    const blob = await downloadFile(file.url, file.size);
+    const blob = await downloadFile(file.url, file.size, createProgressReporter(file.size));
     saveBlob(blob, file.name);
     document.getElementById('progress').hidden = true;
-    button.querySelector('span').textContent = t('download.done');
+    link.classList.remove('is-busy');
+    link.removeAttribute('aria-disabled');
+    link.querySelector('span').textContent = t('download.done');
 
     // Confirm the finished download for three seconds, then let the button settle.
     showToast(t('download.toast', { name: file.name }), 3000);
 
     setTimeout(() => {
-      button.querySelector('span').textContent = label;
-      button.disabled = false;
+      link.querySelector('span').textContent = label;
     }, 3000);
   } catch (error) {
-    console.error('download failed', error);
+    // The server sends Content-Disposition, so a plain navigation is the
+    // fallback that always works when the chunked blob path is blocked.
+    console.error('chunked download failed, falling back to the direct link', error);
     document.getElementById('progress').hidden = true;
-    button.querySelector('span').textContent = t('download.failed');
+    link.classList.remove('is-busy');
+    link.removeAttribute('aria-disabled');
+    link.querySelector('span').textContent = t('download.failed');
+    showToast(t('download.fallback'), 4000);
+    window.location.href = file.url;
+
     setTimeout(() => {
-      button.querySelector('span').textContent = label;
-      button.disabled = false;
+      link.querySelector('span').textContent = label;
     }, 2500);
   } finally {
     state.busy = false;
@@ -417,6 +478,19 @@ applyLanguage();
 loadRelease();
 
 document.getElementById('downloads').addEventListener('click', (event) => {
-  const button = event.target.closest('button[data-arch]');
-  if (button && !button.disabled) startDownload(button.dataset.arch);
+  const link = event.target.closest('a[data-arch]');
+  if (!link) return;
+
+  if (link.dataset.unavailable === 'true') {
+    event.preventDefault();
+    showToast(t('download.unavailable'));
+    return;
+  }
+
+  // Before the manifest arrives — or if this script failed to boot — the href
+  // is already the download URL, so let the browser handle the click natively.
+  if (state.busy || !state.release) return;
+
+  event.preventDefault();
+  startDownload(link.dataset.arch);
 });
