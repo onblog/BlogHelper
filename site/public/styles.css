@@ -128,6 +128,20 @@ code {
   text-underline-offset: 3px;
 }
 
+/* GitHub mark and wordmark as one unit: the icon scales with the text */
+.gh-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  white-space: nowrap;
+}
+
+.gh-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+}
+
 .lang-toggle {
   min-width: 38px;
   padding: 4px 10px;
