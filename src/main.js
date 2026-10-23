@@ -957,9 +957,11 @@ function bindEvents() {
   nodes.aboutGithub.addEventListener('click', () =>
     window.bar.openExternal('https://github.com/onblog/miaomiao-bar'),
   );
-  nodes.aboutDocs.addEventListener('click', () =>
-    window.bar.openExternal('https://bar.wordtk.com/docs'),
-  );
+  // 官网地址来自构建环境（VITE_SITE_URL），仓库里不写死线上域名。
+  const siteUrl = import.meta.env.VITE_SITE_URL ?? '';
+  nodes.aboutDocs.addEventListener('click', () => {
+    if (siteUrl) window.bar.openExternal(`${siteUrl}/docs`);
+  });
 
   document.addEventListener('keydown', (event) => {
     if (state.editing !== null) return;

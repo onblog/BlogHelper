@@ -41,10 +41,7 @@
     }
   ],
 
-  "routes": [
-    {
-      "pattern": "bar.wordtk.com",
-      "custom_domain": true
-    }
-  ]
+  // 域名绑定不写在这里：生产域名属于部署配置，统一在 Cloudflare Dashboard 的
+  // Worker → Settings → Domains & Routes 维护，仓库里不出现线上域名。
+  "workers_dev": false
 }

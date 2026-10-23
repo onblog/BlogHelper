@@ -41,7 +41,8 @@ const { ClipboardWatcher } = require('./watcher.cjs');
 const { BucketStore } = require('./storage.cjs');
 const sigv4 = require('./sigv4.cjs');
 
-const SITE_ORIGIN = 'https://bar.wordtk.com';
+// 官网地址由打包环境注入（SITE_URL），仓库里不写死线上域名。
+const SITE_ORIGIN = process.env.SITE_URL ?? '';
 const STATS_URL = `${SITE_ORIGIN}/api/ping`;
 
 const PANEL_WIDTH = 420;
@@ -172,7 +173,9 @@ function contextMenu() {
     { type: 'separator' },
     {
       label: '使用文档',
-      click: () => shell.openExternal('https://bar.wordtk.com/docs'),
+      click: () => {
+        if (SITE_ORIGIN) shell.openExternal(`${SITE_ORIGIN}/docs`);
+      },
     },
     {
       label: 'GitHub',

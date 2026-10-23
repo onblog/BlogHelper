@@ -6,3 +6,6 @@ release
 .wrangler
 build/icon.iconset
 build/*.png
+
+# Local environment (never commit the production domain)
+.env

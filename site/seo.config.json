@@ -1,0 +1,5 @@
+{
+  "outDir": "public",
+  "html": ["public/index.html", "public/stats.html"],
+  "pages": ["/"]
+}
