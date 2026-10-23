@@ -10,7 +10,10 @@
  * below — a random device id, the UTC date and coarse geo from Cloudflare.
  */
 
-const MANIFEST_KEY = 'releases/latest.json';
+// The bucket (`common`) is shared with the other projects, so every key carries
+// this project's prefix: common → miaomiao-bar/releases/latest.json.
+const KEY_PREFIX = 'miaomiao-bar/';
+const MANIFEST_KEY = `${KEY_PREFIX}releases/latest.json`;
 const CACHE_TTL_MS = 60_000;
 const ALLOWED_ARCH = new Set(['arm64', 'x64']);
 

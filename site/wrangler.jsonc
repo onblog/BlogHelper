@@ -32,10 +32,12 @@
     }
   ],
 
+  // Installers live in the shared `common` R2 bucket (onblog / miaomiao-notes also
+  // use it); every object key carries the `miaomiao-bar/` prefix to avoid collisions.
   "r2_buckets": [
     {
       "binding": "R2_RELEASES",
-      "bucket_name": "miaomiao-bar"
+      "bucket_name": "common"
     }
   ],
 
