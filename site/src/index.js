@@ -144,6 +144,15 @@ function utcDate() {
 async function handlePing(request, env) {
   if (request.method !== 'POST') return fail(405, 'method_not_allowed', '只支持 POST');
 
+  // Shared secret baked into the app at build time (see electron/main.cjs) and
+  // provisioned on the worker with `wrangler secret put PING_TOKEN`. This doesn't
+  // identify a device, but it does stop randoms on the internet from forging
+  // launch events for arbitrary UUIDs without going through the app at all.
+  const token = request.headers.get('x-ping-token');
+  if (!env.PING_TOKEN || token !== env.PING_TOKEN) {
+    return fail(401, 'unauthorized', '未授权的请求');
+  }
+
   let body;
   try {
     body = await request.json();
