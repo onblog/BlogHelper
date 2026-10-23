@@ -945,7 +945,12 @@ function bindEvents() {
   });
 
   document.getElementById('donate')?.addEventListener('click', () => {
-    window.bar.openExternal('https://github.com/onblog/miaomiao-bar');
+    // The tip link points at the author's profile, not the repository.
+    window.bar.openExternal('https://github.com/onblog');
+  });
+
+  document.getElementById('about-author')?.addEventListener('click', () => {
+    window.bar.openExternal('https://github.com/onblog');
   });
 
 

@@ -898,6 +898,24 @@ select:focus-visible {
   color: var(--ink-soft);
 }
 
+/* Martin is a link to the author's GitHub profile; keep the span look. */
+.about__item--link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.about__item--link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.about__item--link:hover svg {
+  color: var(--ink);
+}
+
 .donate {
   display: flex;
   align-items: center;
