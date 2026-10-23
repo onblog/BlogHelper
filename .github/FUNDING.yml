@@ -1,0 +1,3 @@
+# 微信赞赏：落到个人主页的「联系与赞赏」面板，二维码就在那里。
+# 数组里含冒号的 URL 必须加引号，否则 YAML 会把 https: 里的冒号当分隔符。
+custom: ["https://wordtk.com/#contact"]
