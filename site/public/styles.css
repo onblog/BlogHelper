@@ -832,3 +832,141 @@ footer {
     width: 280px;
   }
 }
+
+/* ---------- gatekeeper ---------- */
+.gk {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(58, 46, 35, 0.42);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.gk[hidden] {
+  display: none;
+}
+
+.gk-card {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  padding: 26px 26px 20px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--drop-lg);
+}
+
+.gk-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gk-close:hover {
+  border-color: var(--line);
+  background: var(--amber-soft);
+  color: var(--ink);
+}
+
+.gk-card h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.gk-intro {
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.gk-steps {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.gk-steps li + li {
+  margin-top: 6px;
+}
+
+.gk-note {
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.gk-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 9px 10px 9px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-deep);
+}
+
+.gk-cmd code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  color: var(--ink);
+  font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+  font-size: 11.5px;
+}
+
+.gk-cmd button {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--amber-soft);
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gk-ok {
+  display: block;
+  width: 100%;
+  height: 38px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--amber);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--drop);
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .gk-card {
+    padding: 22px 18px 16px;
+  }
+}

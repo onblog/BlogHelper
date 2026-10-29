@@ -48,8 +48,7 @@
 ## 安装
 
 到 **[bar.wordtk.com](https://bar.wordtk.com)** 下载 dmg（Apple Silicon 与 Intel 各一个），拖进
-`Applications` 打开即可。安装包是 ad-hoc 签名、没做公证，所以第一次打开要**右键 → 打开 → 再点一次
-「打开」**（或在系统设置 → 隐私与安全性里放行）。
+`Applications` 打开即可。安装包是 ad-hoc 签名、没做公证，所以第一次打开需要在「系统设置 → 隐私与安全性」点「仍要打开」（macOS 14 及更早可右键图标 → 打开）。
 
 文字动作开箱即用；图片上传需要先在「设置 → 存储」里加一个存储桶，官网的
 [图片上传一节](https://bar.wordtk.com/#bucket)写清了四个关键字段。

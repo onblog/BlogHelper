@@ -15,12 +15,25 @@ const dict = {
     'hero.title': '喵喵吧台',
     'hero.tagline': '文字和图片进了剪贴板，就变成你要的样子',
     'hero.desc': '给文字工作者用的：复制一段文字或一张图——清理干净、排好版、富文本与 Markdown 互转；图片能传进你自己的图床拿回链接，也能交给「预览」慢慢改。一条龙，都在菜单栏里。',
-    'hero.meta': 'macOS 13+ · 最新版本 v{v} · 首次打开需右键 → 打开',
+    'hero.meta': 'macOS 13+ · 最新版本 v{v} · 首次打开需在「隐私与安全性」放行一次',
     'download.arm': '下载 Apple Silicon 版',
     'download.intel': 'Intel 版',
     'download.wait': '正在准备下载…',
     'download.done': '已开始下载',
     'download.toast': '下载完成：{name} 已存入「下载」文件夹',
+
+    'gk.title': '首次打开需要允许一次',
+    'gk.intro':
+      '下载完成。应用不是从 App Store 安装的，macOS 第一次会拦下它——这是正常现象，放行一次即可。',
+    'gk.step1':
+      '把「喵喵吧台.app」拖进「应用程序」，双击打开；看到「未打开」的提示时点「完成」。',
+    'gk.step2':
+      '打开「系统设置 → 隐私与安全性」，在「安全性」区域找到被阻止的应用，点「仍要打开」。',
+    'gk.step3': '输入 Mac 密码或使用触控 ID，之后就能正常双击打开。',
+    'gk.note': '如果系统提示「已损坏」，在「终端」里执行一次：',
+    'gk.copy': '复制',
+    'gk.copied': '已复制',
+    'gk.ok': '我知道了',
     'download.failed': '下载失败，请到 GitHub 反馈',
     'download.fallback': '多线程下载失败，已改用直链下载',
     'download.unavailable': '安装包还在上传，稍后再来',
@@ -78,7 +91,7 @@ const dict = {
     'faq.title': '常见问题',
     'faq.q1': '双击提示「未验证的开发者」怎么办？',
     'faq.a1':
-      '安装包是 ad-hoc 签名、没做 Apple 公证。在访达里右键图标 → 打开 → 再点一次「打开」即可；也可以在「系统设置 → 隐私与安全性」里选仍要打开。',
+      '安装包是 ad-hoc 签名、没做 Apple 公证。点「完成」关闭提示后，到「系统设置 → 隐私与安全性」点「仍要打开」（macOS 14 及更早可右键图标 → 打开）。',
     'faq.q2': '它是怎么记录剪贴板历史的？',
     'faq.a2':
       'macOS 没有剪贴板变更事件，只能轮询：文字每 1.2 秒读一次并比对哈希，图片每 3 秒采样一次、且只在剪贴板没有文字时才读。副作用是连拍两张图时，第二张可能不会被记录。',
@@ -101,12 +114,25 @@ const dict = {
     'hero.title': 'Miaomiao Bar',
     'hero.tagline': 'A screenshot or a snippet of text lands on the clipboard, and leaves in the shape you need',
     'hero.desc': 'For people who write: copy some text or a picture — it comes back cleaned, spaced and converted between rich text and Markdown; images go to your own bucket as links, or open in Preview for a slower pass.',
-    'hero.meta': 'macOS 13+ · latest v{v} · right-click to open the first time',
+    'hero.meta': 'macOS 13+ · latest v{v} · allow it once in Privacy & Security on first launch',
     'download.arm': 'Download for Apple Silicon',
     'download.intel': 'Intel build',
     'download.wait': 'Preparing the download…',
     'download.done': 'Download started',
     'download.toast': 'Download complete — {name} is in your Downloads folder',
+
+    'gk.title': 'Allow it once on first launch',
+    'gk.intro':
+      'Download complete. The app is not distributed through the App Store, so macOS blocks it once — that is expected. Allow it and it opens normally from then on.',
+    'gk.step1':
+      'Drag “喵喵吧台.app” into Applications and double-click it. When macOS says it cannot verify the app, choose “Done”.',
+    'gk.step2':
+      'Open System Settings → Privacy & Security. In the Security section, find the blocked app and choose “Open Anyway”.',
+    'gk.step3': 'Enter your Mac password or use Touch ID. The app opens normally afterwards.',
+    'gk.note': 'If macOS reports the app is damaged, run this once in Terminal:',
+    'gk.copy': 'Copy',
+    'gk.copied': 'Copied',
+    'gk.ok': 'Got it',
     'download.failed': 'Download failed — please open an issue on GitHub',
     'download.fallback': 'Chunked download failed — switched to the direct link',
     'download.unavailable': 'The build is still uploading, check back soon',
@@ -524,6 +550,9 @@ async function startDownload(arch) {
 
     // Confirm the finished download for three seconds, then let the button settle.
     showToast(t('download.toast', { name: file.name }), 3000);
+    // A non-notarized macOS build is blocked once on first launch; show the
+    // allow steps right away so the download flow does not end in a dead end.
+    setTimeout(showGatekeeper, 800);
 
     setTimeout(() => {
       link.querySelector('span').textContent = label;
@@ -547,9 +576,52 @@ async function startDownload(arch) {
   }
 }
 
+/* ---------- 首次打开说明（未公证应用） ---------- */
+
+function showGatekeeper() {
+  const modal = document.getElementById('gk');
+  if (!modal) return;
+  modal.hidden = false;
+  document.getElementById('gk-ok')?.focus();
+}
+
+function closeGatekeeper() {
+  const modal = document.getElementById('gk');
+  if (modal) modal.hidden = true;
+}
+
+function initGatekeeper() {
+  const modal = document.getElementById('gk');
+  if (!modal) return;
+
+  document.getElementById('gk-ok')?.addEventListener('click', closeGatekeeper);
+  document.getElementById('gk-close')?.addEventListener('click', closeGatekeeper);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) closeGatekeeper();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.hidden) closeGatekeeper();
+  });
+
+  const copy = document.getElementById('gk-copy');
+  copy?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(document.getElementById('gk-cmd')?.textContent ?? '');
+      const label = copy.textContent;
+      copy.textContent = t('gk.copied');
+      setTimeout(() => {
+        copy.textContent = label;
+      }, 1600);
+    } catch {
+      /* clipboard may be blocked; the command stays selectable */
+    }
+  });
+}
+
 /* ---------- boot ---------- */
 
 applyLanguage();
+initGatekeeper();
 loadRelease();
 
 document.getElementById('downloads').addEventListener('click', (event) => {

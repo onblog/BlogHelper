@@ -50,8 +50,8 @@
 
 Grab the dmg from **[bar.wordtk.com](https://bar.wordtk.com)** (Apple Silicon and Intel), drag the
 app into `Applications`, and launch it. The build is ad-hoc signed rather than notarised, so the
-first launch needs one extra click: **right-click → Open → Open** (or allow it under System Settings
-→ Privacy & Security).
+first launch needs one extra step: after macOS blocks it, open **System Settings → Privacy & Security**
+and choose **Open Anyway** (macOS 14 and older: right-click → Open).
 
 Nothing to configure for the text tools. For image uploads, add a bucket in Settings → Storage — the
 site's [image host section](https://bar.wordtk.com/#bucket) walks through the four fields that

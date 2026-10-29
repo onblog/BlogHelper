@@ -278,6 +278,29 @@
 
     <div class="toast" id="toast" hidden></div>
 
+    <div class="gk" id="gk" hidden>
+      <div class="gk-card" role="dialog" aria-modal="true" aria-labelledby="gk-title">
+        <button class="gk-close" id="gk-close" type="button" aria-label="关闭">×</button>
+        <h2 id="gk-title" data-i18n="gk.title">首次打开需要允许一次</h2>
+        <p class="gk-intro" data-i18n="gk.intro">
+          下载完成。应用不是从 App Store 安装的，macOS 第一次会拦下它——这是正常现象，放行一次即可。
+        </p>
+        <ol class="gk-steps">
+          <li data-i18n="gk.step1">把「喵喵吧台.app」拖进「应用程序」，双击打开；看到「未打开」的提示时点「完成」。</li>
+          <li data-i18n="gk.step2">打开「系统设置 → 隐私与安全性」，在「安全性」区域找到被阻止的应用，点「仍要打开」。</li>
+          <li data-i18n="gk.step3">输入 Mac 密码或使用触控 ID，之后就能正常双击打开。</li>
+        </ol>
+        <p class="gk-note" data-i18n="gk.note">如果系统提示「已损坏」，在「终端」里执行一次：</p>
+        <div class="gk-cmd">
+          <code id="gk-cmd">sudo xattr -cr "/Applications/喵喵吧台.app"</code>
+          <button id="gk-copy" type="button" data-i18n="gk.copy">复制</button>
+        </div>
+        <button class="gk-ok" id="gk-ok" type="button" data-i18n="gk.ok">我知道了</button>
+      </div>
+    </div>
+
+
+
     <script type="module" src="/app.js"></script>
   </body>
 </html>
