@@ -17,6 +17,7 @@
   --checker-b: transparent;
   --toast-bg: #fffdf6;
   --scroll-thumb: rgba(58, 46, 35, 0.25);
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%233A2E23' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
 
   --radius-panel: 20px;
   --radius-card: 14px;
@@ -24,22 +25,28 @@
 }
 
 :root[data-theme='dark'] {
-  /* 夜间贴纸 */
-  --paper: #241f1a;
-  --card: #2e2823;
-  --card-hover: #3a332b;
-  --ink: #f5eedf;
-  --ink-soft: #a89880;
-  --line: #c9b99a;
-  --amber: #f2a93b;
-  --coral: #e8695f;
-  --mint: #6fb573;
-  --sky: #5aa0e8;
-  --shadow: rgba(0, 0, 0, 0.45);
-  --checker-a: rgba(255, 255, 255, 0.06);
+  /* 夜间贴纸「夜墨」：底色压到近黑，靠 2px 墨线和卡片明度差撑住贴纸感。
+     对比度：正文 17.2:1、次要文字 8.4:1、描边 3.6:1（UI 组件下限 3:1）。 */
+  --paper: #0b0a09;
+  --card: #191512;
+  --card-hover: #221d18;
+  --ink: #f7f0e5;
+  --ink-soft: #b8a996;
+  --line: #7a6753;
+  --amber: #f5b040;
+  --coral: #ff8a80;
+  --mint: #7fc98a;
+  --sky: #6fb0f0;
+  --shadow: rgba(0, 0, 0, 0.75);
+  --checker-a: rgba(255, 255, 255, 0.05);
   --checker-b: transparent;
-  --toast-bg: #2e2823;
-  --scroll-thumb: rgba(201, 185, 154, 0.35);
+  --toast-bg: #191512;
+  --scroll-thumb: rgba(201, 185, 154, 0.32);
+  /* 下拉箭头跟着文字走，深色下才不会“箭头消失” */
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23B8A996' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+
+  /* 让原生控件（下拉菜单、滚动条）也跟着深色走 */
+  color-scheme: dark;
 }
 
 * {
@@ -836,7 +843,7 @@ select:focus-visible {
   border: 2px solid var(--line);
   border-radius: 9px;
   background-color: var(--card);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%233A2E23' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: var(--select-arrow);
   background-repeat: no-repeat;
   background-position: right 9px center;
   background-size: 9px 6px;
