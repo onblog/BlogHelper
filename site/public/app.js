@@ -21,6 +21,8 @@ const dict = {
     'download.wait': '正在准备下载…',
     'download.done': '已开始下载',
     'download.toast': '下载完成：{name} 已存入「下载」文件夹',
+    'download.cancel': '取消',
+    'download.canceled': '已取消下载，临时数据已清理',
 
     'gk.title': '首次打开需要允许一次',
     'gk.intro':
@@ -120,6 +122,8 @@ const dict = {
     'download.wait': 'Preparing the download…',
     'download.done': 'Download started',
     'download.toast': 'Download complete — {name} is in your Downloads folder',
+    'download.cancel': 'Cancel',
+    'download.canceled': 'Download canceled — temporary data cleared',
 
     'gk.title': 'Allow it once on first launch',
     'gk.intro':
@@ -319,6 +323,42 @@ const CHUNK_COUNT = 8;
 const CHUNK_RETRIES = 3;
 
 /**
+ * 正在进行的下载。点「取消」时用它中断全部 range 请求，并让已经攒下的分片
+ * 随闭包一起释放——不留半截 Blob，也不留没用的进度条。
+ */
+let activeDownload = null;
+
+function cancelDownload() {
+  const current = activeDownload;
+  if (!current) return;
+  current.canceled = true;
+  current.controller.abort();
+}
+
+/** 收起进度条并归零，下一次下载从头开始。 */
+function hideProgress() {
+  const wrap = document.getElementById('progress');
+  if (wrap) wrap.hidden = true;
+  const bar = document.getElementById('progress-bar');
+  if (bar) bar.style.width = '0%';
+  const text = document.getElementById('progress-text');
+  if (text) text.textContent = '';
+  resetSpeed();
+}
+
+function initDownloadControls() {
+  document.getElementById('progress-cancel')?.addEventListener('click', cancelDownload);
+
+  // Esc 也能取消：下载中它比去找那颗小按钮快。
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && activeDownload) {
+      event.preventDefault();
+      cancelDownload();
+    }
+  });
+}
+
+/**
  * Live transfer speed. Chunks report bytes while streaming, so the window is
  * sampled over the last half second and smoothed instead of jumping around.
  */
@@ -384,16 +424,32 @@ function createProgressReporter(total) {
   };
 }
 
-async function readBlob(response, onBytes) {
+async function readBlob(response, onBytes, signal) {
   const reader = response.body.getReader();
   const parts = [];
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    parts.push(value);
-    onBytes(value.length);
+  try {
+    while (true) {
+      if (signal?.aborted) throw abortError();
+      const { done, value } = await reader.read();
+      if (done) break;
+      parts.push(value);
+      onBytes(value.length);
+    }
+    return new Blob(parts);
+  } catch (error) {
+    // 取消或失败：先把已攒下的分片松手，别等 GC 才回收这几十 MB。
+    parts.length = 0;
+    try {
+      await reader.cancel();
+    } catch {
+      /* the stream is already gone */
+    }
+    throw error;
   }
-  return new Blob(parts);
+}
+
+function abortError() {
+  return new DOMException('the download was canceled', 'AbortError');
 }
 
 /** AbortSignal.timeout is Safari 16+; keep the older engines working too. */
@@ -406,43 +462,69 @@ function timeoutSignal(ms) {
   return controller.signal;
 }
 
-async function fetchRange(url, start, end, onBytes, onReset) {
+/** 用户的取消信号 + 本段超时合成一个：任一方触发都中断这段请求。 */
+function linkedSignal(signal, ms) {
+  const timeout = timeoutSignal(ms);
+  if (!signal) return timeout;
+
+  if (typeof AbortSignal.any === 'function') return AbortSignal.any([signal, timeout]);
+
+  const controller = new AbortController();
+  const forward = () => controller.abort();
+  if (signal.aborted || timeout.aborted) controller.abort();
+  else {
+    signal.addEventListener('abort', forward, { once: true });
+    timeout.addEventListener('abort', forward, { once: true });
+  }
+  return controller.signal;
+}
+
+async function fetchRange(url, start, end, onBytes, onReset, signal) {
   let lastError;
 
   for (let attempt = 0; attempt < CHUNK_RETRIES; attempt += 1) {
+    if (signal?.aborted) throw abortError();
+
     try {
       const response = await fetch(url, {
         headers: { Range: `bytes=${start}-${end}` },
         // A direct connection without a proxy can hang for minutes on a single
-        // range; give up early so the caller can fall back to the plain link.
-        signal: timeoutSignal(45000),
+        // range; give up early so the caller can retry or fall back.
+        signal: linkedSignal(signal, 45000),
       });
       if (response.status !== 206) throw new Error(`unexpected status ${response.status}`);
-      return await readBlob(response, onBytes);
+      return await readBlob(response, onBytes, signal);
     } catch (error) {
       lastError = error;
+      // 用户点了取消就不再重试，否则等于“取消失败”。
+      if (signal?.aborted) throw abortError();
       // The retry re-reads this range from byte 0, so the caller must drop the
       // bytes this attempt already counted.
       onReset?.();
       // Give a flaky range a moment before trying again.
       await new Promise((resolve) => setTimeout(resolve, 400 * (attempt + 1)));
+      if (signal?.aborted) throw abortError();
     }
   }
 
   throw lastError;
 }
 
-async function downloadFile(url, size, onProgress) {
+async function downloadFile(url, size, onProgress, signal) {
   const total = Number(size) || 0;
 
   if (!total || total < CHUNK_MIN_SIZE) {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal });
     if (!response.ok) throw new Error(`status ${response.status}`);
     let received = 0;
-    return readBlob(response, (bytes) => {
-      received += bytes;
-      onProgress(received, total || received);
-    });
+    return readBlob(
+      response,
+      (bytes) => {
+        received += bytes;
+        onProgress(received, total || received);
+      },
+      signal,
+    );
   }
 
   const chunkSize = Math.ceil(total / CHUNK_COUNT);
@@ -478,6 +560,7 @@ async function downloadFile(url, size, onProgress) {
           received[index] = 0;
           report();
         },
+        signal,
       );
 
       committed[index] = received[index];
@@ -512,6 +595,18 @@ function saveBlob(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 }
 
+/**
+ * 下载进行中把两个版本按钮一起置灰：另一条路只能走取消之后再点，
+ * 否则会多出一路浏览器原生下载，那一路是没法取消的。
+ */
+function setDownloadsBusy(busy) {
+  for (const node of document.querySelectorAll('a[data-arch]')) {
+    node.classList.toggle('is-busy', busy);
+    if (busy) node.setAttribute('aria-disabled', 'true');
+    else node.removeAttribute('aria-disabled');
+  }
+}
+
 async function startDownload(arch) {
   if (state.busy) return;
 
@@ -533,19 +628,25 @@ async function startDownload(arch) {
 
   state.busy = true;
   const label = link.querySelector('span').textContent;
-  link.classList.add('is-busy');
-  link.setAttribute('aria-disabled', 'true');
+  setDownloadsBusy(true);
   link.querySelector('span').textContent = t('download.wait');
   // Show the bar immediately, so the click always has visible feedback.
   resetSpeed();
   setProgress(0, file.size);
 
+  const controller = new AbortController();
+  activeDownload = { controller, canceled: false };
+
   try {
-    const blob = await downloadFile(file.url, file.size, createProgressReporter(file.size));
+    const blob = await downloadFile(
+      file.url,
+      file.size,
+      createProgressReporter(file.size),
+      controller.signal,
+    );
     saveBlob(blob, file.name);
-    document.getElementById('progress').hidden = true;
-    link.classList.remove('is-busy');
-    link.removeAttribute('aria-disabled');
+    hideProgress();
+    setDownloadsBusy(false);
     link.querySelector('span').textContent = t('download.done');
 
     // Confirm the finished download for three seconds, then let the button settle.
@@ -558,13 +659,21 @@ async function startDownload(arch) {
       link.querySelector('span').textContent = label;
     }, 3000);
   } catch (error) {
+    const canceled = controller.signal.aborted;
+    // 界面先回到干净状态：进度条归零、按钮还原，不残留半截数据。
+    hideProgress();
+    setDownloadsBusy(false);
+    link.querySelector('span').textContent = canceled ? label : t('download.failed');
+
+    if (canceled) {
+      // 取消就是取消：绝不退回直链下载，否则等于没取消。
+      showToast(t('download.canceled'));
+      return;
+    }
+
     // The server sends Content-Disposition, so a plain navigation is the
     // fallback that always works when the chunked blob path is blocked.
     console.error('chunked download failed, falling back to the direct link', error);
-    document.getElementById('progress').hidden = true;
-    link.classList.remove('is-busy');
-    link.removeAttribute('aria-disabled');
-    link.querySelector('span').textContent = t('download.failed');
     showToast(t('download.fallback'), 4000);
     window.location.href = file.url;
 
@@ -572,6 +681,7 @@ async function startDownload(arch) {
       link.querySelector('span').textContent = label;
     }, 2500);
   } finally {
+    activeDownload = null;
     state.busy = false;
   }
 }
@@ -622,6 +732,7 @@ function initGatekeeper() {
 
 applyLanguage();
 initGatekeeper();
+initDownloadControls();
 loadRelease();
 
 document.getElementById('downloads').addEventListener('click', (event) => {
@@ -634,9 +745,15 @@ document.getElementById('downloads').addEventListener('click', (event) => {
     return;
   }
 
+  // 下载进行中：不要再开第二条无法取消的下载
+  if (state.busy) {
+    event.preventDefault();
+    return;
+  }
+
   // Before the manifest arrives — or if this script failed to boot — the href
   // is already the download URL, so let the browser handle the click natively.
-  if (state.busy || !state.release) return;
+  if (!state.release) return;
 
   event.preventDefault();
   startDownload(link.dataset.arch);

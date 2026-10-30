@@ -288,12 +288,53 @@ a.btn {
   transition: width 0.12s linear;
 }
 
+.download-progress__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 7px;
+}
+
 .download-progress__text {
   display: block;
-  margin-top: 7px;
   color: var(--ink-soft);
   font-size: 12px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 取消是条窄按钮：下载进行中唯一可点的东西，所以描边和纸色都跟着站点走 */
+.download-progress__cancel {
+  flex: none;
+  padding: 2px 10px;
+  border: 2px solid var(--line);
+  border-radius: 99px;
+  background: var(--paper);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  box-shadow: 1px 1px 0 var(--shadow);
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease, transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+.download-progress__cancel:hover {
+  background: var(--paper-deep);
+  color: var(--ink);
+}
+
+.download-progress__cancel:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.download-progress__cancel:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
 }
 
 .hero__meta {

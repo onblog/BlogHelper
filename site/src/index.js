@@ -115,7 +115,13 @@ async function handleDownload(request, env) {
   const headers = new Headers();
   headers.set('content-type', 'application/octet-stream');
   headers.set('accept-ranges', 'bytes');
-  headers.set('cache-control', 'public, max-age=31536000, immutable');
+  // Only whole-file responses are worth caching. A ranged response belongs to one
+  // chunked download: keeping it would leave partial installers in the browser
+  // cache even after the user cancels.
+  headers.set(
+    'cache-control',
+    range ? 'no-store' : 'public, max-age=31536000, immutable',
+  );
 
   if (range) {
     headers.set('content-range', `bytes ${range.start}-${range.end}/${size}`);
