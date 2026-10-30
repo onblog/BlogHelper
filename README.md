@@ -192,7 +192,8 @@ Three rules keep it honest:
   turning **Anonymous usage** off in Settings stops it immediately. No content, no IP, no user agent,
   no crash reporting, and the update check is a plain GET of the public release manifest.
 - Turning history off stops recording immediately; **Clear history** deletes the index and every
-  blob.
+  blob. Any single entry can also be deleted from the full list — hover a row and the delete button
+  floats up on the right, which removes that entry and its blobs.
 - There is no capture of our own: the app never reads the screen, so no Screen Recording permission
   is ever requested.
 - No telemetry, no crash reporting, no update check.

@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('bar', {
   historyAll: () => ipcRenderer.invoke('history:all'),
   historyRestore: (id) => ipcRenderer.invoke('history:restore', id),
   historyClear: () => ipcRenderer.invoke('history:clear'),
+  historyDelete: (id) => ipcRenderer.invoke('history:delete', id),
 
   /** Settings. */
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),

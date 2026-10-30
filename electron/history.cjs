@@ -104,6 +104,17 @@ class HistoryStore {
     }
   }
 
+  /** Delete one entry and its blobs. Returns false when the id is already gone. */
+  async remove(id) {
+    const item = this.find(id);
+    if (!item) return false;
+
+    this.items = this.items.filter((entry) => entry.id !== id);
+    await this.dropBlobs(item);
+    await this.save();
+    return true;
+  }
+
   async addText(text) {
     if (!text || !text.trim()) return null;
 

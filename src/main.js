@@ -545,9 +545,63 @@ function historyRow(item) {
   time.textContent = formatAge(item.at);
 
   meta.append(line, time);
-  row.append(thumb, meta);
+
+  // Delete affordance: revealed on hover/focus, so a row still reads as one tap
+  // target that restores the entry.
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'hrow__del';
+  remove.dataset.i18nTitle = 'history.delete';
+  remove.title = t('history.delete');
+  remove.setAttribute('aria-label', t('history.delete'));
+  remove.innerHTML =
+    '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M2.8 4.4h10.4" />' +
+    '<path d="M6.4 4.4V2.9h3.2v1.5" />' +
+    '<path d="M4.4 4.4l.5 7.9a1.5 1.5 0 0 0 1.5 1.4h2.8a1.5 1.5 0 0 0 1.5-1.4l.5-7.9" />' +
+    '</svg>';
+  remove.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    deleteHistoryItem(item, row);
+  });
+
+  row.append(thumb, meta, remove);
   row.addEventListener('click', () => restoreHistory(item.id, { backToMain: true }));
   return row;
+}
+
+const HROW_LEAVE_MS = 160;
+
+async function deleteHistoryItem(item, row) {
+  if (row.dataset.leaving === '1') return;
+  row.dataset.leaving = '1';
+  row.classList.add('hrow--leaving');
+
+  try {
+    const result = await window.bar.historyDelete(item.id);
+    paint(result.state);
+
+    if (!result.ok) {
+      row.classList.remove('hrow--leaving');
+      delete row.dataset.leaving;
+      loadHistory();
+      showToast(t(`err.${result.error}`));
+      return;
+    }
+
+    state.historyItems = state.historyItems.filter((entry) => entry.id !== item.id);
+    // Let the row finish fading before the list closes the gap.
+    setTimeout(() => {
+      row.classList.remove('hrow--leaving');
+      renderHistoryList();
+    }, HROW_LEAVE_MS + 20);
+    showToast(t('history.deleted'));
+  } catch (error) {
+    console.error('history delete failed', error);
+    row.classList.remove('hrow--leaving');
+    delete row.dataset.leaving;
+  }
 }
 
 function renderHistoryList() {

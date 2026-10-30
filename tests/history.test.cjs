@@ -55,6 +55,27 @@ test('history store', async (t) => {
     assert.equal(list[0].snippet, '甲');
   });
 
+  await t.test('remove drops one entry, its blobs, and survives a reload', async () => {
+    const dir = await tempDir();
+    let clock = 1_000;
+    const store = await new HistoryStore({ dir, now: () => (clock += 1000) }).init();
+
+    await store.addImage({ buffer: pngBuffer(0x47), thumb: pngBuffer(0x48, 8) });
+    await store.addText('留下的');
+
+    const doomed = store.list().find((entry) => entry.kind === 'image');
+    assert.equal(await store.remove(doomed.id), true);
+
+    assert.equal(store.find(doomed.id), null);
+    assert.equal(store.stats().count, 1);
+    assert.deepEqual(await fs.readdir(path.join(dir, 'blobs')), [], 'blobs are gone');
+
+    const reopened = await new HistoryStore({ dir }).init();
+    assert.equal(reopened.list().length, 1);
+    assert.equal(reopened.list()[0].snippet, '留下的');
+    assert.equal(await reopened.remove(doomed.id), false, 'unknown ids are a no-op');
+  });
+
   await t.test('blank text is not recorded', async () => {
     const store = await new HistoryStore({ dir: await tempDir() }).init();
     assert.equal(await store.addText('   \n  '), null);

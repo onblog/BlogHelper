@@ -622,6 +622,7 @@ select:focus-visible {
 }
 
 .hrow {
+  position: relative;
   display: grid;
   grid-template-columns: 34px 1fr;
   align-items: center;
@@ -634,6 +635,14 @@ select:focus-visible {
   transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
 }
 
+/* The snippet dissolves under the delete button instead of colliding with it.
+   A mask (not extra padding) keeps the text width fixed, so nothing jumps. */
+.hrow:hover .hrow__meta,
+.hrow:focus-within .hrow__meta {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 54px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 54px), transparent);
+}
+
 .hrow:hover {
   background: var(--card-hover);
   transform: translateY(-1px);
@@ -643,6 +652,60 @@ select:focus-visible {
 .hrow:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 var(--shadow);
+}
+
+/* ---------- history row: delete on hover ---------- */
+
+.hrow__del {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 7px;
+  background: var(--paper);
+  color: var(--ink-soft);
+  box-shadow: 1px 1px 0 var(--shadow);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(4px, -50%) scale(0.9);
+  transition: opacity 0.14s ease, transform 0.14s ease, color 0.12s ease,
+    border-color 0.12s ease, background 0.12s ease;
+}
+
+.hrow:hover .hrow__del,
+.hrow:focus-within .hrow__del {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(0, -50%) scale(1);
+}
+
+.hrow__del:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.hrow__del:active {
+  transform: translate(0, -50%) scale(0.92);
+}
+
+/* Exit: the row slides away, then the list closes the gap. */
+.hrow--leaving {
+  pointer-events: none;
+  animation: hrow-leave 0.16s ease forwards;
+}
+
+@keyframes hrow-leave {
+  to {
+    opacity: 0;
+    transform: translateX(10px) scale(0.97);
+  }
 }
 
 .hrow__thumb {

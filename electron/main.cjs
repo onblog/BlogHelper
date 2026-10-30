@@ -484,6 +484,15 @@ function registerIpc() {
     return { ok: true, state: await buildState() };
   });
 
+  // Drop a single entry; the panel offers this on hover in the full list.
+  ipcMain.handle('history:delete', async (_event, id) => {
+    const removed = (await history?.remove(id)) ?? false;
+    if (!removed) {
+      return { ok: false, error: 'not_found', state: await buildState() };
+    }
+    return { ok: true, state: await buildState() };
+  });
+
   ipcMain.handle('settings:update', async (_event, patch) => {
     if (!settings) return { ok: false, error: 'unavailable' };
 
