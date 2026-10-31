@@ -128,14 +128,16 @@ async function shoot(win, name) {
   );
 
   const buffer = Buffer.from(data, 'base64');
-  const target = path.join(OUT, `panel-${name}.png`);
+  // 两套外观各出一份：panel-main.png / panel-main-dark.png
+  const file = `panel-${name}${THEME === 'dark' ? '-dark' : ''}.png`;
+  const target = path.join(OUT, file);
   fs.writeFileSync(target, buffer);
   if (SITE) {
     fs.mkdirSync(SITE, { recursive: true });
-    fs.copyFileSync(target, path.join(SITE, `panel-${name}.png`));
+    fs.copyFileSync(target, path.join(SITE, file));
   }
   const { width, height } = nativeImage.createFromBuffer(buffer).getSize();
-  console.log(`  panel-${name}.png  ${width}×${height}`);
+  console.log(`  ${file}  ${width}×${height}`);
 }
 
 app.whenReady().then(async () => {

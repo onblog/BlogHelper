@@ -376,6 +376,22 @@ a.btn {
   box-shadow: var(--drop-lg);
 }
 
+.shots--dark {
+  margin-top: 44px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.shots__label {
+  flex: 0 0 100%;
+  margin: 0 0 4px;
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
 .shots figcaption {
   margin-top: 12px;
   color: var(--ink-soft);

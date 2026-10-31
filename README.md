@@ -65,6 +65,17 @@ matter.
   <img src="docs/screenshots/panel-settings.png" width="240" alt="settings" />
 </p>
 
+### Dark mode
+
+Toggle in the top bar — the choice is remembered, and the panel never changes appearance behind
+your back when the system switches.
+
+<p align="center">
+  <img src="docs/screenshots/panel-main-dark.png" width="240" alt="clipboard actions in dark mode" />
+  <img src="docs/screenshots/panel-history-dark.png" width="240" alt="clipboard history in dark mode" />
+  <img src="docs/screenshots/panel-settings-dark.png" width="240" alt="settings in dark mode" />
+</p>
+
 ## What it does
 
 One model, one job: **clipboard in → transformation → clipboard out**.

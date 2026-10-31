@@ -53,6 +53,22 @@
 文字动作开箱即用；图片上传需要先在「设置 → 存储」里加一个存储桶，官网的
 [图片上传一节](https://bar.wordtk.com/#bucket)写清了四个关键字段。
 
+## 界面
+
+<p align="center">
+  <img src="docs/screenshots/panel-main.png" width="240" alt="面板：剪贴板能变成什么" />
+  <img src="docs/screenshots/panel-history.png" width="240" alt="历史记录" />
+  <img src="docs/screenshots/panel-settings.png" width="240" alt="设置" />
+</p>
+
+深色模式在顶栏切换，选择会记住；系统换外观时不会把你脚下的地板抽走。
+
+<p align="center">
+  <img src="docs/screenshots/panel-main-dark.png" width="240" alt="深色模式的面板" />
+  <img src="docs/screenshots/panel-history-dark.png" width="240" alt="深色模式的历史记录" />
+  <img src="docs/screenshots/panel-settings-dark.png" width="240" alt="深色模式的设置" />
+</p>
+
 ## 它做什么
 
 一个模型、一件事：**剪贴板进 → 变换 → 剪贴板出**。
