@@ -2,7 +2,7 @@
 
 <img src="build/icon.png" width="104" alt="miaomiao-bar" />
 
-# miaomiao-bar · 喵喵吧台
+# miaomiao-bar · 喵喵剪贴板
 
 **The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
@@ -196,7 +196,7 @@ Three rules keep it honest:
 - The clipboard is read while the panel is open, and polled in the background to build history —
   every 1.2 s for text, every 3 s for images.
 - History never leaves this Mac: it is an index plus image blobs in
-  `~/Library/Application Support/喵喵吧台/`.
+  `~/Library/Application Support/喵喵剪贴板/`.
 - Two network calls, both listed here. One is the `PUT` to the bucket you configured. The other is a
   single anonymous launch signal (a random device id generated on this Mac, the UTC date and the
   coarse country/city Cloudflare derives) that feeds [the usage page](https://bar.wordtk.com/stats);
@@ -262,7 +262,7 @@ keep the project prefix (`0001_bar_init.sql`).
 ## Status
 
 `1.8.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
-local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. Since 1.8.0 the app is called 喵喵吧台 (Miaomiao Bar) and lives at **bar.wordtk.com**. The site lives at
+local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. The app is now called 喵喵剪贴板 (Miaomiao Bar) and lives at **bar.wordtk.com**. The site lives at
 **https://bar.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
 ## License
@@ -274,4 +274,4 @@ Dual-licensed:
 - **Commercial** — if AGPL does not fit your product (for example, you want to ship a closed-source
   derivative) see [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md).
 
-The name "喵喵吧台 / miaomiao-bar" and the icon are not covered by the open-source grant.
+The name "喵喵剪贴板 / miaomiao-bar" and the icon are not covered by the open-source grant.

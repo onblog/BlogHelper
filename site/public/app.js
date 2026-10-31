@@ -6,13 +6,13 @@
 
 const dict = {
   zh: {
-    brand: '喵喵吧台',
+    brand: '喵喵剪贴板',
     'nav.actions': '动作',
     'nav.details': '细节',
     'nav.bucket': '图床',
     'nav.faq': '常见问题',
     'nav.stats': '统计',
-    'hero.title': '喵喵吧台',
+    'hero.title': '喵喵剪贴板',
     'hero.tagline': '文字和图片进了剪贴板，就变成你要的样子',
     'hero.desc': '给文字工作者用的：复制一段文字或一张图——清理干净、排好版、富文本与 Markdown 互转；图片能传进你自己的图床拿回链接，也能交给「预览」慢慢改。一条龙，都在菜单栏里。',
     'hero.meta': 'macOS 13+ · 最新版本 v{v} · 首次打开需在「隐私与安全性」放行一次',
@@ -28,7 +28,7 @@ const dict = {
     'gk.intro':
       '下载完成。应用不是从 App Store 安装的，macOS 第一次会拦下它——这是正常现象，放行一次即可。',
     'gk.step1':
-      '把「喵喵吧台.app」拖进「应用程序」，双击打开；看到「未打开」的提示时点「完成」。',
+      '把「喵喵剪贴板.app」拖进「应用程序」，双击打开；看到「未打开」的提示时点「完成」。',
     'gk.step2':
       '打开「系统设置 → 隐私与安全性」，在「安全性」区域找到被阻止的应用，点「仍要打开」。',
     'gk.step3': '输入 Mac 密码或使用触控 ID，之后就能正常双击打开。',
@@ -42,11 +42,11 @@ const dict = {
     'shots.main': '剪贴板里是什么，就列出能变成什么',
     'shots.history': '最近复制过的东西，点一下就回去',
     'shots.settings': '历史、图床、开机启动，都在设置里',
-    'shots.darkLabel': '深色模式 · 打烊后的喵喵吧台',
+    'shots.darkLabel': '深色模式 · 深夜里的喵喵剪贴板',
     'details.title': '三个顺手的小细节',
-    'details.themeTitle': '默认白天营业',
+    'details.themeTitle': '默认白天模式',
     'details.theme1': '奶油纸 + 焦糖墨，点开像张便签',
-    'details.theme2': '右上角的小太阳可以换成打烊的炭黑',
+    'details.theme2': '右上角的小太阳可以换成深夜的炭黑',
     'details.theme3': '手动切换、记住选择，不跟随系统',
     'details.imageTitle': '图片三件事',
     'details.image1': '复制到剪贴板，随时贴进别的应用',
@@ -100,10 +100,10 @@ const dict = {
       'macOS 没有剪贴板变更事件，只能轮询：文字每 1.2 秒读一次并比对哈希，图片每 3 秒采样一次、且只在剪贴板没有文字时才读。副作用是连拍两张图时，第二张可能不会被记录。',
     'faq.q3': '数据存在哪？会上传吗？',
     'faq.a3':
-      '历史存在本机 ~/Library/Application Support/喵喵吧台/，图片是一个索引加若干文件。网络请求只有两类：图片 PUT 到你配置的存储桶，以及每次启动一条匿名信号（随机设备 ID + 城市级定位，可在设置关闭）。',
+      '历史存在本机 ~/Library/Application Support/喵喵剪贴板/，图片是一个索引加若干文件。网络请求只有两类：图片 PUT 到你配置的存储桶，以及每次启动一条匿名信号（随机设备 ID + 城市级定位，可在设置关闭）。',
     'faq.q4': '需要什么系统权限？',
     'faq.a4':
-      '完全不需要系统权限：⌥⌘V 呼出面板，文字与图片处理都直接可用。截图交给 macOS 自带的 ⌘⇧⌃4（直接进剪贴板），喵喵吧台只负责把它变成你要的样子。',
+      '完全不需要系统权限：⌥⌘V 呼出面板，文字与图片处理都直接可用。截图交给 macOS 自带的 ⌘⇧⌃4（直接进剪贴板），喵喵剪贴板只负责把它变成你要的样子。',
     'footer.license': 'AGPL-3.0-only + 商业授权',
     'footer.issue': '反馈',
   },
@@ -130,7 +130,7 @@ const dict = {
     'gk.intro':
       'Download complete. The app is not distributed through the App Store, so macOS blocks it once — that is expected. Allow it and it opens normally from then on.',
     'gk.step1':
-      'Drag “喵喵吧台.app” into Applications and double-click it. When macOS says it cannot verify the app, choose “Done”.',
+      'Drag “喵喵剪贴板.app” into Applications and double-click it. When macOS says it cannot verify the app, choose “Done”.',
     'gk.step2':
       'Open System Settings → Privacy & Security. In the Security section, find the blocked app and choose “Open Anyway”.',
     'gk.step3': 'Enter your Mac password or use Touch ID. The app opens normally afterwards.',
@@ -203,7 +203,7 @@ const dict = {
       'macOS has no clipboard change event, so it polls: text every 1.2 s compared by hash, images every 3 s and only when the clipboard holds no text. Side effect: when you copy two images back to back, the second may be missed.',
     'faq.q3': 'Where does the data go?',
     'faq.a3':
-      'History stays in ~/Library/Application Support/喵喵吧台/ as an index plus image files. Two network calls exist: the PUT to your bucket, and one anonymous launch signal (random device id plus coarse city) that you can switch off in Settings.',
+      'History stays in ~/Library/Application Support/喵喵剪贴板/ as an index plus image files. Two network calls exist: the PUT to your bucket, and one anonymous launch signal (random device id plus coarse city) that you can switch off in Settings.',
     'faq.q4': 'Does it need special permissions?',
     'faq.a4':
       'No system permission is needed at all: ⌥⌘V shows the panel, and text and image handling work as-is. For screenshots use macOS\'s own ⌘⇧⌃4, which already lands in the clipboard.',

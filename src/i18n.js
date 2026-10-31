@@ -9,9 +9,9 @@ const STORAGE_KEY = 'miaomiao-bar.lang';
 
 const dict = {
   zh: {
-    brand: '喵喵吧台',
+    brand: '喵喵剪贴板',
     'action.theme': '切换外观',
-    'settings.quit': '退出喵喵吧台',
+    'settings.quit': '退出喵喵剪贴板',
     'action.close': '关闭面板',
     'settings.telemetry': '匿名使用统计',
     'settings.telemetryHint': '只上报随机设备 ID 与地区，用来知道有多少人在用',
@@ -61,7 +61,7 @@ const dict = {
     'settings.launchHint': '登录后自动常驻菜单栏',
     'settings.github': 'GitHub 仓库',
     'donate.title': '请我喝杯咖啡',
-    'donate.sub': '你的支持让喵喵吧台继续更新',
+    'donate.sub': '你的支持让喵喵剪贴板继续更新',
     'settings.website': '官网',
     'age.now': '刚刚',
     'age.minutes': '{n} 分钟前',

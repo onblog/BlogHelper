@@ -1,5 +1,5 @@
 appId: com.onblog.miaomiaobar
-productName: 喵喵吧台
+productName: 喵喵剪贴板
 copyright: Copyright © 2026 onblog
 
 directories:
@@ -40,5 +40,5 @@ mac:
 afterPack: scripts/after-pack.cjs
 
 dmg:
-  title: 喵喵吧台
+  title: 喵喵剪贴板
   artifactName: miaomiao-bar-${version}-${arch}.${ext}

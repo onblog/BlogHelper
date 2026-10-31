@@ -171,7 +171,7 @@ function togglePanel() {
 
 function contextMenu() {
   return Menu.buildFromTemplate([
-    { label: '打开喵喵吧台', click: showPanel },
+    { label: '打开喵喵剪贴板', click: showPanel },
     { label: '设置…', click: () => openSettings() },
     { type: 'separator' },
     {
@@ -190,7 +190,7 @@ function contextMenu() {
 
 function createTray() {
   tray = new Tray(trayImage());
-  tray.setToolTip('喵喵吧台 · Miaomiao Bar');
+  tray.setToolTip('喵喵剪贴板 · Miaomiao Bar');
   tray.on('click', togglePanel);
   tray.on('right-click', () => tray.popUpContextMenu(contextMenu()));
 }
@@ -722,7 +722,7 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(async () => {
     // A menu bar app never shows a dock icon.
     app.dock?.hide();
-    app.setName('喵喵吧台');
+    app.setName('喵喵剪贴板');
 
     await initStores();
 
