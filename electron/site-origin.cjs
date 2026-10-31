@@ -32,4 +32,21 @@ function siteOrigin() {
   }
 }
 
-module.exports = { siteOrigin };
+/**
+ * Contact address baked in at packaging time, same contract as `siteOrigin()`:
+ * an environment override wins, the bundled file is the fallback, and '' means
+ * "not configured" so the About panel can hide the entry.
+ */
+function contactEmail() {
+  const fromEnv = normalise(process.env.CONTACT_EMAIL);
+  if (fromEnv) return fromEnv;
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+    return normalise(parsed && parsed.contactEmail);
+  } catch {
+    return '';
+  }
+}
+
+module.exports = { siteOrigin, contactEmail };

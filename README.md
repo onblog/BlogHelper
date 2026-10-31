@@ -252,6 +252,9 @@ git-ignored). `npm run dist` then bakes it into the bundle, which feeds the sett
 The domain never reaches the repository. Without it those features stay off and the buttons fall
 back to the GitHub repository.
 
+`CONTACT_EMAIL=you@example.com` in the same `.env` is optional: it fills the About panel's mail
+entry, and the entry stays hidden when it is absent.
+
 The marketing site lives in `site/` and deploys as its own Cloudflare Worker (`npm run deploy`
 from inside it). It shares the **`common` D1 database** with sendtk, codetk and miaomiao-notes
 (the free plan allows 10 databases), so its table is `bar_launches` with `bar_`-prefixed

@@ -215,7 +215,10 @@ npm run dist:x64       # Intel 的 dmg（会先补齐 x64 原生模块）
 
 在仓库根目录放一个 `.env`（已被 git 忽略）写入 `VITE_SITE_URL=https://你的域名`，`npm run dist`
 会把它打进包里；设置页的 **官网** 按钮、菜单栏的「官网」项、检查更新和匿名启动统计都读它。
-域名不进仓库；没配时这些功能自动关闭，按钮退回 GitHub 仓库首页。。
+域名不进仓库；没配时这些功能自动关闭，按钮退回 GitHub 仓库首页。
+
+同一个 `.env` 里可再写 `CONTACT_EMAIL=你的邮箱`（可选）：它填进关于面板的邮箱项，
+不配置时该项自动隐藏。
 
 官网在 `site/`，作为独立的 Cloudflare Worker 部署（进去跑 `npm run deploy`）。它和
 sendtk、codetk、miaomiao-notes 共用**同一个 `common` D1 库**（免费额度只给 10 个库），

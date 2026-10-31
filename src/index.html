@@ -223,12 +223,13 @@
             </svg>
             Martin
           </button>
-          <span class="about__item">
+          <!-- 邮箱是部署配置：打包时由 CONTACT_EMAIL 注入，未配置时整块保持隐藏 -->
+          <span class="about__item" id="about-email" hidden>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="1.8" y="3.6" width="12.4" height="8.8" rx="1.8" />
               <path d="M2.4 4.6L8 8.6l5.6-4" />
             </svg>
-            hello@wordtk.com
+            <span id="about-email-text"></span>
           </span>
           <button class="link" id="about-github" type="button" data-i18n="settings.github">
             GitHub 仓库

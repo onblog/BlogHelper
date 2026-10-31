@@ -1056,6 +1056,15 @@ async function init() {
   state.version = info.version;
   state.locale = info.locale ?? 'zh';
 
+  // 邮箱来自打包时注入的 site.json，仓库里不出现真实地址；没配置就隐藏这一项。
+  const emailItem = document.getElementById('about-email');
+  const emailText = document.getElementById('about-email-text');
+  const contactEmail = String(info.contactEmail ?? '');
+  if (emailItem && contactEmail) {
+    if (emailText) emailText.textContent = contactEmail;
+    emailItem.hidden = false;
+  }
+
   setLang(storedLang() ?? (state.locale.startsWith('zh') ? 'zh' : 'en'));
   applyStatic();
 

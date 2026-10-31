@@ -43,9 +43,10 @@ const sigv4 = require('./sigv4.cjs');
 
 // 官网地址在打包时写进 electron/site.json（见 tools/write-site-origin.cjs），
 // 仓库里不写死线上域名；SITE_URL 环境变量仍然优先，方便本地指向别的站点。
-const { siteOrigin } = require('./site-origin.cjs');
+const { siteOrigin, contactEmail } = require('./site-origin.cjs');
 
 const SITE_ORIGIN = siteOrigin();
+const CONTACT_EMAIL = contactEmail();
 const STATS_URL = `${SITE_ORIGIN}/api/ping`;
 
 const PANEL_WIDTH = 420;
@@ -457,6 +458,8 @@ function registerIpc() {
     locale: app.getLocale(),
     dev: isDev,
     actionCount: actions.count,
+    // 打包时由 CONTACT_EMAIL 注入；空串表示本次构建没有配置，关于面板据此隐藏邮箱。
+    contactEmail: CONTACT_EMAIL,
   }));
 
   ipcMain.handle('panel:state', () => buildState());
