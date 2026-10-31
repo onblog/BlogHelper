@@ -1,7 +1,7 @@
 {
   "name": "miaomiao-bar",
   "productName": "喵喵剪贴板",
-  "version": "1.10.2",
+  "version": "1.11.0",
   "description": "A macOS clipboard workbench for text and images: whatever lands on the clipboard leaves as something you can paste right away. 喵喵剪贴板：macOS 上的剪贴板工作台，文字和图片进了剪贴板就变成能直接用的样子。",
   "main": "electron/main.cjs",
   "author": "Martin",
@@ -16,9 +16,10 @@
     "build": "vite build",
     "start": "npm run build && electron .",
     "test": "node --test tests/*.test.cjs",
-    "dist": "node tools/write-site-origin.cjs && npm run dist:arm64 && npm run dist:x64",
+    "dist": "node tools/write-site-origin.cjs && npm run dist:arm64 && npm run dist:x64 && npm run clean",
     "dist:arm64": "electron-builder --mac --arm64",
-    "dist:x64": "electron-builder --mac --x64"
+    "dist:x64": "electron-builder --mac --x64",
+    "clean": "node scripts/clean-release.cjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

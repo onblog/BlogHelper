@@ -223,6 +223,17 @@ sendtk、codetk、miaomiao-notes 共用**同一个 `common` D1 库**（免费额
 `npx wrangler d1 migrations apply common --remote`；`d1_migrations` 是按文件名记账的
 全库共享台账，因此 `site/migrations/` 里的文件名要带项目名（`0001_bar_init.sql`）。
 
+## 发布新版本
+
+```bash
+npm run build && npm run dist     # 两个架构的 dmg 都进 release/
+cd site && npm run release        # 上传 R2、重写清单、清理上一版
+```
+
+`site/scripts/publish-release.mjs` 会把 `release/*.dmg` 以 `miaomiao-bar/` 前缀传到共用的
+`common` 桶，重写 `site/latest.json`（Worker 读的清单），然后删除上一版清单指向的两个安装包，
+让桶里只留当前版本。上线依然只走 `git push`，由 Cloudflare Workers Builds 部署站点。
+
 ## 当前进度
 
 `1.8.0`：21 个动作、图片上传到你自己的 S3 兼容存储桶、存到下载目录与「预览」、本地剪贴板历史

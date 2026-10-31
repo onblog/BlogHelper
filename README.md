@@ -7,7 +7,7 @@
 **The clipboard workbench for macOS: whatever lands on it — a paragraph, a column of names, a picture — comes back cleaned, tidied and ready to paste.**
 
 <a href="https://bar.wordtk.com"><img alt="Download" src="https://img.shields.io/badge/%E2%96%B6_Download-bar.wordtk.com-f2b544?style=for-the-badge"></a>
-<img alt="version" src="https://img.shields.io/badge/version-1.10.0-f2b544?style=for-the-badge">
+<img alt="version" src="https://img.shields.io/badge/version-1.11.0-f2b544?style=for-the-badge">
 
 <br/>
 
@@ -258,6 +258,18 @@ from inside it). It shares the **`common` D1 database** with sendtk, codetk and 
 indexes. Schema setup is `npx wrangler d1 migrations apply common --remote`; since
 `d1_migrations` is a database-wide ledger keyed by file name, files in `site/migrations/`
 keep the project prefix (`0001_bar_init.sql`).
+
+## Releasing
+
+```bash
+npm run build && npm run dist     # both architectures -> release/
+cd site && npm run release        # upload to R2, rewrite the manifest, prune the old version
+```
+
+`site/scripts/publish-release.mjs` uploads `release/*.dmg` under the `miaomiao-bar/` prefix in
+the shared `common` bucket, rewrites `site/latest.json` (the manifest the Worker serves) and then
+deletes the installers the previous manifest advertised, so R2 only ever holds the live version.
+Shipping to production is still `git push`: Cloudflare Workers Builds deploys the site.
 
 ## Status
 

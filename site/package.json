@@ -5,7 +5,8 @@
   "description": "Official site for miaomiao-bar — Cloudflare Worker plus static assets.",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "release": "node scripts/publish-release.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.151.3"
