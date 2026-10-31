@@ -7,6 +7,8 @@ const src = path.join(root, 'src');
 
 export default defineConfig({
   root: src,
+  // `.env` 放仓库根目录，不藏进 src/，打包时 VITE_SITE_URL 才读得到。
+  envDir: root,
   // Relative asset paths: the panel is loaded from file:// in the packaged app.
   base: './',
   build: {

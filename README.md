@@ -228,12 +228,16 @@ The renderer never touches Node: everything goes through a narrow `contextBridge
 ```bash
 npm install
 npm run dev            # Vite + Electron with hot reload
-npm test               # 102 unit tests, no dependencies
+npm test               # 120 unit tests, no dependencies
 npm run dist:arm64     # dmg for Apple Silicon, output in release/
 npm run dist:x64       # dmg for Intel (fetches the x64 native addon first)
 ```
 
 No native modules ship with the app any more, so both architectures are pure Electron builds.
+
+Put `VITE_SITE_URL=https://your-site.example` in a `.env` file at the repo root (it is
+git-ignored) and the settings page's **Website** link opens that site; the domain is injected at
+build time instead of being committed. Without it the link falls back to the GitHub repository.
 
 The marketing site lives in `site/` and deploys as its own Cloudflare Worker (`npm run deploy`
 from inside it). It shares the **`common` D1 database** with sendtk, codetk and miaomiao-notes

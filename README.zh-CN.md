@@ -195,7 +195,10 @@ npm run dist:arm64     # Apple Silicon 的 dmg，产物在 release/
 npm run dist:x64       # Intel 的 dmg（会先补齐 x64 原生模块）
 ```
 
-应用已不再携带原生模块，两个架构都是纯 Electron 构建。
+应用已不再携带原生模块，两个架构都是纯 Electron 构建
+
+在仓库根目录放一个 `.env`（已被 git 忽略）写入 `VITE_SITE_URL=https://你的域名`，设置页的
+**官网** 按钮就会跳到该站；域名在构建时注入，不进仓库。没配时按钮退回 GitHub 仓库首页。。
 
 官网在 `site/`，作为独立的 Cloudflare Worker 部署（进去跑 `npm run deploy`）。它和
 sendtk、codetk、miaomiao-notes 共用**同一个 `common` D1 库**（免费额度只给 10 个库），

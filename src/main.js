@@ -56,14 +56,14 @@ const nodes = {
   bDelete: document.getElementById('b-delete'),
   setMax: document.getElementById('set-max'),
   checkUpdate: document.getElementById('check-update'),
-  quit: document.getElementById('quit'),
+  close: document.getElementById('close'),
   updateHint: document.getElementById('update-hint'),
   setLaunch: document.getElementById('set-launch'),
   setTelemetry: document.getElementById('set-telemetry'),
   settingsUsage: document.getElementById('settings-usage'),
   aboutVersion: document.getElementById('about-version'),
   aboutGithub: document.getElementById('about-github'),
-  aboutDocs: document.getElementById('about-docs'),
+  aboutSite: document.getElementById('about-site'),
 
   foot: document.getElementById('foot'),
   dot: document.getElementById('dot'),
@@ -959,7 +959,7 @@ function bindEvents() {
 
   nodes.undo.addEventListener('click', undo);
 
-  nodes.quit?.addEventListener('click', () => window.bar.quit());
+  nodes.close?.addEventListener('click', () => window.bar.hide());
 
   nodes.checkUpdate?.addEventListener('click', () => {
     checkForUpdates({ manual: true }).catch((error) => console.error('update check failed', error));
@@ -1012,10 +1012,11 @@ function bindEvents() {
     window.bar.openExternal('https://github.com/onblog/miaomiao-bar'),
   );
   // 官网地址来自构建环境（VITE_SITE_URL），仓库里不写死线上域名。
+  // 构建时没注入就退回仓库首页，避免出现点了没反应的死按钮。
   const siteUrl = import.meta.env.VITE_SITE_URL ?? '';
-  nodes.aboutDocs.addEventListener('click', () => {
-    if (siteUrl) window.bar.openExternal(`${siteUrl}/docs`);
-  });
+  nodes.aboutSite.addEventListener('click', () =>
+    window.bar.openExternal(siteUrl || 'https://github.com/onblog/miaomiao-bar'),
+  );
 
   document.addEventListener('keydown', (event) => {
     if (state.editing !== null) return;
