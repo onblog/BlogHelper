@@ -3,8 +3,8 @@
 # 从位图母版重新生成全部图标（应用图标 / favicon / 站点图标）。
 #
 # 母版（提交进仓库，不再从 SVG 渲染）：
-#   build/icon-source.png   1024²，暖色圆角底 + 橘猫全图，四角透明
-#   build/icon-favicon.png  1024²，同一套底 + 猫脸特写，供 16/32px 小尺寸用
+#   build/icon-source.png   1024²，纯白圆角底 + 橘猫全图，四角透明
+#   build/icon-favicon.png  1024²，同一套白底 + 猫脸特写，供 16/32px 小尺寸用
 #
 # 为什么 16/32 用猫脸：整张构图缩到 16px 会糊成一团橙色，特写还能认出是猫。
 # 为什么不用 rsvg-convert：图标源已是手绘位图，矢量管线只会增加偏差。
@@ -47,12 +47,21 @@ magick "$FACE" -resize 32x32 "$tmp/f32.png"
 magick "$SRC" -resize 48x48 "$tmp/f48.png"
 magick "$tmp/f16.png" "$tmp/f32.png" "$tmp/f48.png" site/public/favicon.ico
 
-# 5) apple-touch-icon：iOS 会把透明区域涂黑，压到暖底上
-magick "$SRC" -resize 180x180 -background '#FFF7EE' -alpha remove -alpha off \
+# 5) apple-touch-icon：iOS 会把透明区域涂黑，压到纯白底上
+magick "$SRC" -resize 180x180 -background '#FFFFFF' -alpha remove -alpha off \
   site/public/apple-touch-icon.png
+
+# 6) 菜单栏模板图：单色剪影，22/44；反色交给 macOS 的模板机制
+if command -v rsvg-convert >/dev/null; then
+  rsvg-convert -w 22 -h 22 -o electron/assets/trayTemplate.png build/tray.svg
+  rsvg-convert -w 44 -h 44 -o electron/assets/trayTemplate@2x.png build/tray.svg
+else
+  echo "跳过菜单栏图标：缺少 rsvg-convert（brew install librsvg）" >&2
+fi
 
 echo "已生成："
 printf "  %-32s %s\n" build/icon.icns "$(stat -f%z build/icon.icns) bytes"
 printf '  %-32s %s\n' build/icon.png "$(magick identify -format '%wx%h' build/icon.png)"
 printf '  %-32s %s\n' site/public/favicon.ico "$(magick identify -format '%wx%h' 'site/public/favicon.ico[0]')"
 printf '  %-32s %s\n' site/public/apple-touch-icon.png "$(magick identify -format '%wx%h' site/public/apple-touch-icon.png)"
+printf '  %-32s %s\n' electron/assets/trayTemplate.png "$(magick identify -format '%wx%h' electron/assets/trayTemplate.png)"
