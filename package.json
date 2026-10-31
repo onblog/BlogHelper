@@ -1,7 +1,7 @@
 {
   "name": "miaomiao-bar",
   "productName": "喵喵吧台",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "description": "A macOS clipboard workbench for text and images: whatever lands on the clipboard leaves as something you can paste right away. 喵喵吧台：macOS 上的剪贴板工作台，文字和图片进了剪贴板就变成能直接用的样子。",
   "main": "electron/main.cjs",
   "author": "Martin",
@@ -12,11 +12,11 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "concurrently -k -n VITE,ELECTRON -c cyan,magenta \"vite\" \"wait-on tcp:5199 && VITE_DEV_SERVER_URL=http://localhost:5199 electron .\"",
+    "dev": "node tools/write-site-origin.cjs && concurrently -k -n VITE,ELECTRON -c cyan,magenta \"vite\" \"wait-on tcp:5199 && VITE_DEV_SERVER_URL=http://localhost:5199 electron .\"",
     "build": "vite build",
     "start": "npm run build && electron .",
     "test": "node --test tests/*.test.cjs",
-    "dist": "npm run dist:arm64 && npm run dist:x64",
+    "dist": "node tools/write-site-origin.cjs && npm run dist:arm64 && npm run dist:x64",
     "dist:arm64": "electron-builder --mac --arm64",
     "dist:x64": "electron-builder --mac --x64"
   },

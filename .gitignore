@@ -13,3 +13,4 @@ build/*.png
 
 # Local environment (never commit the production domain)
 .env
+electron/site.json

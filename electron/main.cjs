@@ -41,8 +41,11 @@ const { ClipboardWatcher } = require('./watcher.cjs');
 const { BucketStore } = require('./storage.cjs');
 const sigv4 = require('./sigv4.cjs');
 
-// 官网地址由打包环境注入（SITE_URL），仓库里不写死线上域名。
-const SITE_ORIGIN = process.env.SITE_URL ?? '';
+// 官网地址在打包时写进 electron/site.json（见 tools/write-site-origin.cjs），
+// 仓库里不写死线上域名；SITE_URL 环境变量仍然优先，方便本地指向别的站点。
+const { siteOrigin } = require('./site-origin.cjs');
+
+const SITE_ORIGIN = siteOrigin();
 const STATS_URL = `${SITE_ORIGIN}/api/ping`;
 
 const PANEL_WIDTH = 420;
@@ -172,10 +175,8 @@ function contextMenu() {
     { label: '设置…', click: () => openSettings() },
     { type: 'separator' },
     {
-      label: '使用文档',
-      click: () => {
-        if (SITE_ORIGIN) shell.openExternal(`${SITE_ORIGIN}/docs`);
-      },
+      label: '官网',
+      click: () => shell.openExternal(SITE_ORIGIN || 'https://github.com/onblog/miaomiao-bar'),
     },
     {
       label: 'GitHub',
@@ -351,6 +352,7 @@ function deviceId() {
 
 /** One ping per launch, silently skipped when the user turned reporting off. */
 async function reportLaunch() {
+  if (!SITE_ORIGIN) return;
   if (settings?.get().telemetry === false) return;
 
   try {
@@ -569,6 +571,8 @@ function registerIpc() {
   });
 
   ipcMain.handle('update:check', async () => {
+    if (!SITE_ORIGIN) return { ok: false, error: 'no_site' };
+
     try {
       const response = await net.fetch(`${SITE_ORIGIN}/api/release`, {
         cache: 'no-store',

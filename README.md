@@ -247,8 +247,10 @@ npm run dist:x64       # dmg for Intel (fetches the x64 native addon first)
 No native modules ship with the app any more, so both architectures are pure Electron builds.
 
 Put `VITE_SITE_URL=https://your-site.example` in a `.env` file at the repo root (it is
-git-ignored) and the settings page's **Website** link opens that site; the domain is injected at
-build time instead of being committed. Without it the link falls back to the GitHub repository.
+git-ignored). `npm run dist` then bakes it into the bundle, which feeds the settings page's
+**Website** button, the tray's website item, the update check and the anonymous launch ping.
+The domain never reaches the repository. Without it those features stay off and the buttons fall
+back to the GitHub repository.
 
 The marketing site lives in `site/` and deploys as its own Cloudflare Worker (`npm run deploy`
 from inside it). It shares the **`common` D1 database** with sendtk, codetk and miaomiao-notes
