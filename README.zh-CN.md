@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="build/icon.svg" width="104" alt="喵喵吧台" />
+<img src="build/icon.png" width="104" alt="喵喵吧台" />
 
 # 喵喵吧台 · miaomiao-bar
 
@@ -177,7 +177,7 @@ electron/settings.cjs
                     持久化的开关与上限
 src/                渲染层：面板结构、样式、双语文案、DOM 逻辑
 src/styles/         一套深色玻璃主题，不引 CSS 框架
-build/              应用图标源文件（SVG）与生成的 icns
+build/              图标母版（PNG）与生成的 icns
 scripts/            afterPack 钩子，负责 ad-hoc 签名
 tests/              动作的 node:test 测试
 ```

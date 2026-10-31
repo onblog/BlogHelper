@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="build/icon.svg" width="104" alt="miaomiao-bar" />
+<img src="build/icon.png" width="104" alt="miaomiao-bar" />
 
 # miaomiao-bar · 喵喵吧台
 
@@ -215,7 +215,7 @@ electron/settings.cjs
                     Persisted switches and limits
 src/                Renderer: panel markup, styles, i18n, DOM logic
 src/styles/         One dark glass theme, no CSS framework
-build/              App icon sources (SVG) and the generated icns
+build/              Icon masters (PNG) and the generated icns
 scripts/            afterPack hook that ad-hoc signs the bundle
 tests/              node:test suites for the actions
 ```

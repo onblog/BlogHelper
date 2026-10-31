@@ -1,49 +1,63 @@
-/* 喵喵吧台 panel — sticker cartoon: cream paper, 2px ink outlines, hard shadows. */
+/* 喵喵吧台 panel — paper minimal: near-white paper, hairline rules, soft shadows. */
 
 :root {
-  /* 白天贴纸 */
-  --paper: #fff7e8;
-  --card: #fffdf6;
-  --card-hover: #fff2d4;
-  --ink: #3a2e23;
-  --ink-soft: #7a6a57;
-  --line: #3a2e23;
-  --amber: #ffb020;
-  --coral: #ff6b6b;
-  --mint: #7bc47f;
-  --sky: #5ab0ff;
-  --shadow: rgba(58, 46, 35, 0.18);
-  --checker-a: rgba(58, 46, 35, 0.09);
+  /* 白天纸感：纸色压到近白，卡片纯白，层次交给 1px 发丝线与柔和投影。
+     对比度：正文 16.9:1、次要文字 4.9:1；发丝线只做结构提示，不承担文字对比。 */
+  --paper: #fbfbf9;
+  --card: #ffffff;
+  --card-hover: #f4f2ed;
+  --ink: #1b1a18;
+  --ink-soft: #6e6a63;
+  --line: #e9e5de;
+  --line-soft: #f1eee8;
+  --accent: #e8731f;
+  --amber: var(--accent);
+  --coral: #d4483e;
+  --mint: #3f9f63;
+  --sky: #2f7fd1;
+  --shadow-soft: 0 1px 2px rgba(24, 20, 14, 0.04), 0 8px 20px -14px rgba(24, 20, 14, 0.2);
+  --shadow-panel: 0 2px 6px rgba(24, 20, 14, 0.05), 0 18px 40px -28px rgba(24, 20, 14, 0.35);
+  --shadow: rgba(24, 20, 14, 0.06);
+  --checker-a: rgba(27, 26, 24, 0.06);
   --checker-b: transparent;
-  --toast-bg: #fffdf6;
-  --scroll-thumb: rgba(58, 46, 35, 0.25);
-  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%233A2E23' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --toast-bg: #ffffff;
+  --scroll-thumb: rgba(27, 26, 24, 0.2);
+  --switch-off: #dcd7cf;
+  --primary-bg: #1b1a18;
+  --primary-fg: #fbfbf9;
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236E6A63' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
 
-  --radius-panel: 20px;
-  --radius-card: 14px;
-  --radius-btn: 12px;
+  --radius-panel: 14px;
+  --radius-card: 12px;
+  --radius-btn: 9px;
 }
 
 :root[data-theme='dark'] {
-  /* 夜间贴纸「夜墨」：底色压到近黑，靠 2px 墨线和卡片明度差撑住贴纸感。
-     对比度：正文 17.2:1、次要文字 8.4:1、描边 3.6:1（UI 组件下限 3:1）。 */
-  --paper: #0b0a09;
-  --card: #191512;
-  --card-hover: #221d18;
-  --ink: #f7f0e5;
-  --ink-soft: #b8a996;
-  --line: #7a6753;
-  --amber: #f5b040;
-  --coral: #ff8a80;
-  --mint: #7fc98a;
-  --sky: #6fb0f0;
-  --shadow: rgba(0, 0, 0, 0.75);
+  /* 夜间纸感「夜墨」：底色压到近黑，卡片只比底色亮一级，发丝线不抢视线。
+     对比度：正文 16.6:1、次要文字 5.8:1；描边刻意做低对比，靠卡片明度撑结构。 */
+  --paper: #0a0a0a;
+  --card: #141415;
+  --card-hover: #1d1d1f;
+  --ink: #f3f2ef;
+  --ink-soft: #918d87;
+  --line: #262628;
+  --line-soft: #202022;
+  --accent: #ff8a3d;
+  --amber: var(--accent);
+  --coral: #ff6b5e;
+  --mint: #4fbf7f;
+  --sky: #6ba6ee;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 24px -16px rgba(0, 0, 0, 0.8);
+  --shadow-panel: 0 2px 6px rgba(0, 0, 0, 0.6);
+  --shadow: rgba(0, 0, 0, 0.5);
   --checker-a: rgba(255, 255, 255, 0.05);
   --checker-b: transparent;
-  --toast-bg: #191512;
-  --scroll-thumb: rgba(201, 185, 154, 0.32);
-  /* 下拉箭头跟着文字走，深色下才不会“箭头消失” */
-  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23B8A996' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+  --toast-bg: #17171a;
+  --scroll-thumb: rgba(243, 242, 239, 0.2);
+  --switch-off: #2e2e31;
+  --primary-bg: #f3f2ef;
+  --primary-fg: #0a0a0a;
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23918D87' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
 
   /* 让原生控件（下拉菜单、滚动条）也跟着深色走 */
   color-scheme: dark;
@@ -79,10 +93,10 @@ body {
   flex-direction: column;
   height: 100%;
   padding: 12px 12px 0;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius-panel);
   background: var(--paper);
-  box-shadow: 5px 5px 0 var(--shadow);
+  box-shadow: var(--shadow-panel);
   overflow: hidden;
 }
 
@@ -92,7 +106,8 @@ body {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding-bottom: 11px;
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .brand {
@@ -100,37 +115,37 @@ body {
   align-items: center;
   gap: 7px;
   color: var(--ink);
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.01em;
+  font-size: 14.5px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
 }
 
 .brand__glyph {
   display: block;
-  width: 20px;
-  height: 20px;
-  color: var(--ink);
-}
-
-.brand__accent {
-  stroke: var(--amber);
+  width: 22px;
+  height: 22px;
+  padding: 1px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--card);
+  object-fit: contain;
 }
 
 .brand__version {
-  padding: 1px 8px;
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
+  padding: 2px 7px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--card-hover);
   color: var(--ink-soft);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .view-title {
   color: var(--ink);
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 14.5px;
+  font-weight: 650;
 }
 
 .topbar__actions {
@@ -142,29 +157,26 @@ body {
 .icon-btn {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: 2px solid var(--line);
-  border-radius: 50%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   background: var(--card);
-  color: var(--ink);
+  color: var(--ink-soft);
   font: inherit;
-  font-size: 10.5px;
-  font-weight: 800;
-  box-shadow: 2px 2px 0 var(--shadow);
-  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  font-size: 10px;
+  font-weight: 700;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
 
 .icon-btn:hover {
   background: var(--card-hover);
-  transform: translateY(-1px);
-  box-shadow: 2px 3px 0 var(--shadow);
+  color: var(--ink);
 }
 
 .icon-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--shadow);
+  background: var(--line-soft);
 }
 
 .icon-btn svg {
@@ -201,7 +213,7 @@ select:focus-visible {
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding-top: 12px;
+  padding-top: 10px;
 }
 
 .block__head {
@@ -214,9 +226,10 @@ select:focus-visible {
 
 .block__title {
   margin: 0;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 800;
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
 }
 
 .block__head-actions {
@@ -230,25 +243,23 @@ select:focus-visible {
   display: grid;
   flex: none;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   padding: 0;
-  border: 2px solid var(--line);
-  border-radius: 50%;
-  background: var(--amber);
-  color: #3a2e23;
-  box-shadow: 2px 2px 0 var(--shadow);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--accent);
   cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s, background 0.12s;
+  transition: transform 0.1s, background 0.12s;
 }
 
 .undo-btn:hover {
-  background: #ffc24a;
+  background: var(--card-hover);
 }
 
 .undo-btn:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 var(--shadow);
+  transform: scale(0.94);
 }
 
 .undo-btn[hidden] {
@@ -266,12 +277,12 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 104px;
+  height: 100px;
   padding: 8px 10px;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--card);
-  box-shadow: 3px 3px 0 var(--shadow);
+  box-shadow: 0 1px 2px rgba(24, 20, 14, 0.03);
   overflow: hidden;
 }
 
@@ -348,83 +359,107 @@ select:focus-visible {
 }
 
 .group {
-  margin-bottom: 7px;
+  margin-bottom: 10px;
 }
 
+/* 分组标题：图标 + 文字 + 一条发丝线把计数推到右边，不再用实心胶囊。 */
 .group__head {
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin: 0 2px 7px;
+  gap: 6px;
+  margin: 0 2px 6px;
+}
+
+.group__head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+  order: 2;
 }
 
 .group__icon {
   display: grid;
+  flex: none;
   place-items: center;
-  width: 20px;
-  height: 20px;
-  color: var(--ink);
+  order: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--ink-soft);
+}
+
+.group__icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .tag {
-  padding: 2px 9px;
-  border: 2px solid var(--line);
-  border-radius: 999px;
-  background: var(--amber);
-  color: #3a2e23;
-  font-size: 11px;
-  font-weight: 800;
-  box-shadow: 2px 2px 0 var(--shadow);
+  order: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  box-shadow: none;
 }
 
 .group__count {
+  order: 3;
   color: var(--ink-soft);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .group__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 5px;
 }
 
 .action {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 32px;
+  gap: 7px;
+  height: 30px;
   padding: 0 9px;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius-btn);
   background: var(--card);
   color: var(--ink);
   font: inherit;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11.5px;
+  font-weight: 600;
   text-align: left;
-  box-shadow: 3px 3px 0 var(--shadow);
-  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  transition: background 0.12s, border-color 0.12s;
 }
 
 .action:hover {
   background: var(--card-hover);
-  transform: translateY(-2px);
-  box-shadow: 3px 5px 0 var(--shadow);
+  border-color: var(--line-soft);
 }
 
 .action:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--shadow);
+  background: var(--line-soft);
 }
 
 .action__icon {
   display: grid;
   flex: none;
   place-items: center;
-  width: 20px;
-  height: 20px;
-  color: var(--ink);
+  width: 14px;
+  height: 14px;
+  color: var(--ink-soft);
+}
+
+.action__icon svg {
+  width: 14px;
+  height: 14px;
+  /* 手绘图标各带一点强调色；在纸感界面里压低饱和度，只留形状识别。 */
+  filter: saturate(0.35);
 }
 
 .action__name {
@@ -438,7 +473,7 @@ select:focus-visible {
   place-items: center;
   height: 100%;
   padding: 16px;
-  border: 2px dashed var(--line);
+  border: 1px dashed var(--line);
   border-radius: var(--radius-card);
   color: var(--ink-soft);
   font-size: 11.5px;
@@ -452,14 +487,15 @@ select:focus-visible {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 2px;
+  padding: 9px 2px;
+  border-top: 1px solid var(--line-soft);
 }
 
 .history-strip__label {
   flex: none;
   color: var(--ink-soft);
   font-size: 10.5px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .history-strip__chips {
@@ -478,29 +514,25 @@ select:focus-visible {
 .chip-item {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 24px;
   padding: 0;
-  border: 2px solid var(--line);
-  border-radius: 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
   background: var(--card);
   color: var(--ink);
   font: inherit;
-  font-size: 11px;
-  font-weight: 800;
-  box-shadow: 2px 2px 0 var(--shadow);
-  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  font-size: 10.5px;
+  font-weight: 600;
+  transition: background 0.12s, border-color 0.12s;
 }
 
 .chip-item:hover {
   background: var(--card-hover);
-  transform: translateY(-2px);
-  box-shadow: 2px 4px 0 var(--shadow);
 }
 
 .chip-item:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--shadow);
+  background: var(--line-soft);
 }
 
 /* ---------- links ---------- */
@@ -512,9 +544,9 @@ select:focus-visible {
   color: var(--ink-soft);
   font: inherit;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 2.5px;
 }
 
 .link:hover {
@@ -536,12 +568,12 @@ select:focus-visible {
   align-items: center;
   gap: 8px;
   margin: 0 -12px;
-  padding: 10px 14px;
-  border-top: 2px solid var(--line);
-  background: var(--card);
+  padding: 9px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
   color: var(--ink-soft);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10.5px;
+  font-weight: 600;
 }
 
 .foot__text {
@@ -554,9 +586,9 @@ select:focus-visible {
 
 .dot {
   flex: none;
-  width: 9px;
-  height: 9px;
-  border: 1.5px solid var(--line);
+  width: 7px;
+  height: 7px;
+  border: 0;
   border-radius: 50%;
   background: var(--ink-soft);
   transition: background 0.15s, transform 0.15s;
@@ -600,17 +632,17 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2px 8px;
+  padding: 0 2px 7px;
 }
 
 .hlist {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
   min-height: 0;
   margin: 0;
-  padding: 0 2px 10px;
+  padding: 0 2px 8px;
   overflow-y: auto;
   list-style: none;
 }
@@ -620,7 +652,7 @@ select:focus-visible {
   flex: 1;
   place-items: center;
   padding: 20px;
-  border: 2px dashed var(--line);
+  border: 1px dashed var(--line);
   border-radius: var(--radius-card);
   color: var(--ink-soft);
   font-size: 11.5px;
@@ -635,11 +667,10 @@ select:focus-visible {
   align-items: center;
   gap: 9px;
   padding: 6px 8px 6px 6px;
-  border: 2px solid var(--line);
-  border-radius: var(--radius-btn);
+  border: 1px solid var(--line);
+  border-radius: 10px;
   background: var(--card);
-  box-shadow: 2px 2px 0 var(--shadow);
-  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  transition: background 0.12s, border-color 0.12s;
 }
 
 /* The snippet dissolves under the delete button instead of colliding with it.
@@ -652,13 +683,10 @@ select:focus-visible {
 
 .hrow:hover {
   background: var(--card-hover);
-  transform: translateY(-1px);
-  box-shadow: 2px 3px 0 var(--shadow);
 }
 
 .hrow:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--shadow);
+  background: var(--line-soft);
 }
 
 /* ---------- history row: delete on hover ---------- */
@@ -673,11 +701,11 @@ select:focus-visible {
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 1.5px solid var(--line);
-  border-radius: 7px;
-  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
   color: var(--ink-soft);
-  box-shadow: 1px 1px 0 var(--shadow);
+  box-shadow: var(--shadow-soft);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
@@ -721,9 +749,9 @@ select:focus-visible {
   width: 34px;
   height: 34px;
   overflow: hidden;
-  border: 1.5px solid var(--line);
-  border-radius: 8px;
-  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--card-hover);
   color: var(--ink);
   font-size: 13px;
   font-weight: 800;
@@ -766,8 +794,8 @@ select:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 2px;
-  border-bottom: 2px dashed var(--line);
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .setting:last-of-type {
@@ -796,14 +824,13 @@ select:focus-visible {
 .switch {
   position: relative;
   flex: none;
-  width: 40px;
-  height: 24px;
+  width: 38px;
+  height: 22px;
   padding: 0;
-  border: 2px solid var(--line);
+  border: 0;
   border-radius: 999px;
-  background: var(--card);
-  box-shadow: 2px 2px 0 var(--shadow);
-  transition: background 0.15s;
+  background: var(--switch-off);
+  transition: background 0.18s;
 }
 
 .switch::after {
@@ -811,12 +838,13 @@ select:focus-visible {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 14px;
-  height: 14px;
-  border: 1.5px solid var(--line);
+  width: 16px;
+  height: 16px;
+  border: 0;
   border-radius: 50%;
-  background: var(--paper);
-  transition: transform 0.15s, background 0.15s;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(24, 20, 14, 0.28);
+  transition: transform 0.18s;
 }
 
 .switch[aria-checked='true'] {
@@ -825,7 +853,6 @@ select:focus-visible {
 
 .switch[aria-checked='true']::after {
   transform: translateX(16px);
-  background: #fffdf6;
 }
 
 .switch:active::after {
@@ -840,8 +867,8 @@ select:focus-visible {
   flex: none;
   height: 28px;
   padding: 0 26px 0 10px;
-  border: 2px solid var(--line);
-  border-radius: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   background-color: var(--card);
   background-image: var(--select-arrow);
   background-repeat: no-repeat;
@@ -850,8 +877,13 @@ select:focus-visible {
   color: var(--ink);
   font: inherit;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   appearance: none;
+  transition: border-color 0.12s;
+}
+
+.select:focus {
+  border-color: var(--accent);
 }
 
 .select option {
@@ -861,15 +893,15 @@ select:focus-visible {
 
 .section {
   padding: 12px 2px 10px;
-  border-bottom: 2px dashed var(--line);
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .section__title {
   margin-bottom: 7px;
   color: var(--ink-soft);
   font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.14em;
 }
 
 .buckets {
@@ -950,7 +982,7 @@ select:focus-visible {
   gap: 8px 14px;
   margin-top: 10px;
   padding: 12px 2px 2px;
-  border-top: 2px dashed var(--line);
+  border-top: 1px solid var(--line-soft);
 }
 
 .about__item {
@@ -995,25 +1027,21 @@ select:focus-visible {
   /* stick to the bottom of the settings page when there is room to spare */
   margin-top: auto;
   padding: 10px 12px;
-  border: 2px dashed var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--card);
   color: var(--ink);
   font: inherit;
   text-align: left;
-  box-shadow: 2px 2px 0 var(--shadow);
-  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  transition: background 0.12s;
 }
 
 .donate:hover {
   background: var(--card-hover);
-  transform: translateY(-1px);
-  box-shadow: 2px 4px 0 var(--shadow);
 }
 
 .donate:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--shadow);
+  background: var(--line-soft);
 }
 
 .donate__icon {
@@ -1022,10 +1050,10 @@ select:focus-visible {
   place-items: center;
   width: 26px;
   height: 26px;
-  border: 2px solid var(--line);
-  border-radius: 50%;
-  background: var(--amber);
-  color: #3a2e23;
+  border: 0;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
 }
 
 .donate__text {
@@ -1085,17 +1113,17 @@ select:focus-visible {
 .input {
   height: 30px;
   padding: 0 10px;
-  border: 2px solid var(--line);
-  border-radius: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
   background: var(--card);
   color: var(--ink);
   font: inherit;
   font-size: 12px;
-  box-shadow: 2px 2px 0 var(--shadow);
+  transition: border-color 0.12s;
 }
 
 .input:focus {
-  background: var(--card-hover);
+  border-color: var(--accent);
 }
 
 .setting--flush {
@@ -1108,31 +1136,29 @@ select:focus-visible {
   align-items: center;
   gap: 12px;
   padding: 10px 2px;
-  border-top: 2px solid var(--line);
+  border-top: 1px solid var(--line);
 }
 
 .btn-primary {
   flex: 1;
-  height: 36px;
-  border: 2px solid var(--line);
+  height: 34px;
+  border: 0;
   border-radius: var(--radius-btn);
-  background: var(--amber);
-  color: #3a2e23;
+  background: var(--primary-bg);
+  color: var(--primary-fg);
   font: inherit;
   font-size: 12.5px;
-  font-weight: 800;
-  box-shadow: 3px 3px 0 var(--shadow);
-  transition: transform 0.1s, box-shadow 0.1s;
+  font-weight: 650;
+  transition: opacity 0.12s, transform 0.1s;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 3px 4px 0 var(--shadow);
+  opacity: 0.88;
 }
 
 .btn-primary:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 0 var(--shadow);
+  opacity: 0.8;
 }
 
 /* ---------- toast (errors and notices only) ---------- */
@@ -1146,14 +1172,14 @@ select:focus-visible {
   left: 12px;
   right: 12px;
   padding: 8px 14px;
-  border: 2px solid var(--line);
-  border-radius: 999px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   background: var(--toast-bg);
   color: var(--ink);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
-  box-shadow: 3px 3px 0 var(--shadow);
+  box-shadow: var(--shadow-soft);
   pointer-events: none;
   z-index: 6;
 }

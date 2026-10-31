@@ -1,64 +1,58 @@
 #!/usr/bin/env bash
 #
-# 从 SVG 源文件重新生成站点图标。
+# 从位图母版重新生成全部图标（应用图标 / favicon / 站点图标）。
 #
-# 依赖：rsvg-convert（brew install librsvg） + ImageMagick 7（brew install imagemagick）
+# 母版（提交进仓库，不再从 SVG 渲染）：
+#   build/icon-source.png   1024²，暖色圆角底 + 橘猫全图，四角透明
+#   build/icon-favicon.png  1024²，同一套底 + 猫脸特写，供 16/32px 小尺寸用
 #
-# 为什么不用 `magick icon.svg favicon.ico` 一步到位：
-# 没装 librsvg 时 ImageMagick 会退回自带的 MSVG 内部渲染器，它**不认** rx 圆角、
-# 渐变、clipPath 和 alpha —— 结果是四角本该透明却变成实心、图形中间发黑，
-# 渲染出来的东西和原 SVG 完全不是一回事（本项目踩过这个坑）。
-# 所以：SVG → PNG 一律交给 rsvg-convert，magick 只负责把多张 PNG 组装成 .ico。
-#
-# **源文件不参与删除**：脚本只写 ico / png 产物，SVG 源文件始终保留在仓库里。
+# 为什么 16/32 用猫脸：整张构图缩到 16px 会糊成一团橙色，特写还能认出是猫。
+# 为什么不用 rsvg-convert：图标源已是手绘位图，矢量管线只会增加偏差。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-SRC="${ICON_SRC:-site/public/assets/icon.svg}"
-OUT="${ICON_OUT:-site/public}"
-NAME="${ICON_NAME:-favicon.ico}"
-# 额外 PNG 产物：`尺寸:文件名`，空格分隔。apple-touch 开头的一律压到白底上
-# （iOS 会把透明区域涂黑，压白底才不难看）。
-PNGS="${ICON_PNGS:-}"
+SRC=build/icon-source.png
+FACE=build/icon-favicon.png
 
-command -v rsvg-convert >/dev/null || { echo "缺少 rsvg-convert：brew install librsvg" >&2; exit 1; }
-command -v magick       >/dev/null || { echo "缺少 ImageMagick 7：brew install imagemagick" >&2; exit 1; }
-[ -f "$SRC" ] || { echo "找不到 SVG 源文件：$SRC" >&2; exit 1; }
+command -v magick >/dev/null || { echo "缺少 ImageMagick 7：brew install imagemagick" >&2; exit 1; }
+command -v iconutil >/dev/null || { echo "缺少 iconutil（macOS 自带）" >&2; exit 1; }
+[ -f "$SRC" ] || { echo "找不到母版：$SRC" >&2; exit 1; }
+[ -f "$FACE" ] || { echo "找不到母版：$FACE" >&2; exit 1; }
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
-# 16 给标签页、32 给书签/工具栏、48 给 Windows、64/128/256 给高分屏与固定到开始菜单
-sizes=(16 32 48 64 128 256)
-frames=()
-for s in "${sizes[@]}"; do
-  rsvg-convert -w "$s" -h "$s" -o "$tmp/icon-$s.png" "$SRC"
-  frames+=("$tmp/icon-$s.png")
-done
-
-magick "${frames[@]}" "$OUT/$NAME"
-
-for spec in $PNGS; do
+# 1) macOS 图标集 → icns
+mkdir -p build/icon.iconset
+for spec in 16:icon_16x16 32:icon_16x16@2x 32:icon_32x32 64:icon_32x32@2x \
+            128:icon_128x128 256:icon_128x128@2x 256:icon_256x256 512:icon_256x256@2x \
+            512:icon_512x512 1024:icon_512x512@2x; do
   size="${spec%%:*}"
-  file="${spec#*:}"
-  rsvg-convert -w "$size" -h "$size" -o "$tmp/png-$file" "$SRC"
-  case "$file" in
-    apple-touch*) magick "$tmp/png-$file" -background white -alpha remove -alpha off "$OUT/$file" ;;
-    *)            cp "$tmp/png-$file" "$OUT/$file" ;;
-  esac
+  name="${spec#*:}"
+  magick "$SRC" -resize "${size}x${size}" "build/icon.iconset/${name}.png"
+done
+iconutil -c icns build/icon.iconset -o build/icon.icns
+
+# 2) README 用的单张图标
+magick "$SRC" -resize 512x512 build/icon.png
+
+# 3) 站点图标（README 与 og 由 tools/make-og.py 之外的流程单独更新）
+for size in 512 256 128; do
+  magick "$SRC" -resize "${size}x${size}" "site/public/assets/icon-${size}.png"
 done
 
-echo "已生成（源文件 $SRC 保留）："
-magick identify "$OUT/$NAME" | awk '{printf "  %-28s %s\n", $1, $3}'
-for spec in $PNGS; do
-  file="${spec#*:}"
-  printf '  %-28s %sx%s\n' "$OUT/$file" "${spec%%:*}" "${spec%%:*}"
-done
+# 4) favicon.ico：小尺寸走猫脸，48px 用整图
+magick "$FACE" -resize 16x16 "$tmp/f16.png"
+magick "$FACE" -resize 32x32 "$tmp/f32.png"
+magick "$SRC" -resize 48x48 "$tmp/f48.png"
+magick "$tmp/f16.png" "$tmp/f32.png" "$tmp/f48.png" site/public/favicon.ico
 
-# 透明性自检：背景带圆角的图标，四角必须透。全不透明说明又退回了 MSVG 渲染器。
-alpha="$(magick "$OUT/$NAME[1]" -format '%[fx:p{1,1}.a]' info:)"
-echo "  32px 帧左上角 alpha = ${alpha}（0 表示透明）"
-case "$alpha" in
-  0|0.0*) : ;;
-  *) echo "  ⚠️ 四角不透明：检查是不是缺少 rsvg-convert" >&2 ;;
-esac
+# 5) apple-touch-icon：iOS 会把透明区域涂黑，压到暖底上
+magick "$SRC" -resize 180x180 -background '#FFF7EE' -alpha remove -alpha off \
+  site/public/apple-touch-icon.png
+
+echo "已生成："
+printf "  %-32s %s\n" build/icon.icns "$(stat -f%z build/icon.icns) bytes"
+printf '  %-32s %s\n' build/icon.png "$(magick identify -format '%wx%h' build/icon.png)"
+printf '  %-32s %s\n' site/public/favicon.ico "$(magick identify -format '%wx%h' 'site/public/favicon.ico[0]')"
+printf '  %-32s %s\n' site/public/apple-touch-icon.png "$(magick identify -format '%wx%h' site/public/apple-touch-icon.png)"

@@ -5,7 +5,11 @@ release
 *.log
 .wrangler
 build/icon.iconset
+# 图标母版从 SVG 换成了位图，这三张必须进仓库；其余 png 是生成物。
 build/*.png
+!build/icon-source.png
+!build/icon-favicon.png
+!build/icon.png
 
 # Local environment (never commit the production domain)
 .env
