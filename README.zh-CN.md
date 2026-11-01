@@ -226,6 +226,20 @@ sendtk、codetk、miaomiao-notes 共用**同一个 `common` D1 库**（免费额
 `npx wrangler d1 migrations apply common --remote`；`d1_migrations` 是按文件名记账的
 全库共享台账，因此 `site/migrations/` 里的文件名要带项目名（`0001_bar_init.sql`）。
 
+## 生成物
+
+仓库里的图片都不手改，每一张都有生成脚本：
+
+```bash
+bash tools/build-icons.sh                              # icon.icns、站点图标、favicon、apple-touch-icon、托盘图
+npm run build && npx electron tools/shoot-panels.cjs   # 面板截图（亮色）
+SHOOT_THEME=dark npx electron tools/shoot-panels.cjs   # 面板截图（暗色）
+npx electron tools/make-og.cjs                         # 1200×630 分享卡片
+```
+
+真正要手改的只有两张母版：`build/icon-source.png` 与 `build/icon-favicon.png`；
+底板几何、为什么 16/32px 用头部特写，都写在 `tools/build-icons.sh` 的注释里。
+
 ## 发布新版本
 
 ```bash

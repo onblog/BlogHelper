@@ -262,6 +262,21 @@ indexes. Schema setup is `npx wrangler d1 migrations apply common --remote`; sin
 `d1_migrations` is a database-wide ledger keyed by file name, files in `site/migrations/`
 keep the project prefix (`0001_bar_init.sql`).
 
+## Generated assets
+
+Nothing binary in this repo is hand-edited; each image has a source script:
+
+```bash
+bash tools/build-icons.sh                              # icon.icns, site icons, favicon, apple-touch-icon, tray
+npm run build && npx electron tools/shoot-panels.cjs   # panel screenshots, light
+SHOOT_THEME=dark npx electron tools/shoot-panels.cjs   # panel screenshots, dark
+npx electron tools/make-og.cjs                         # the 1200×630 link preview card
+```
+
+The icon masters (`build/icon-source.png`, `build/icon-favicon.png`) are the only
+images you edit by hand; see `tools/build-icons.sh` for the plate geometry and
+why 16/32px use the head close-up.
+
 ## Releasing
 
 ```bash
