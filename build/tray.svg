@@ -1,8 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <path fill="#000" fill-rule="evenodd" d="M6.9 16.4c0-4.6 4-8.2 9.1-8.2s9.1 3.6 9.1 8.2v2.8c0 4.4-4 7.8-9.1 7.8s-9.1-3.4-9.1-7.8z
-    M12 16.0a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z
-    M20 16.0a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z"/>
-  <path fill="#000" d="M8.2 11.6 6.2 6.2c-.3-.9.6-1.7 1.4-1.2l5.2 2.8zM23.8 11.6l2-5.4c.3-.9-.6-1.7-1.4-1.2l-5.2 2.8z"/>
-  <rect x="1.8" y="14.2" width="5.4" height="8" rx="2.7" fill="#000"/>
-  <rect x="24.8" y="14.2" width="5.4" height="8" rx="2.7" fill="#000"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22" width="22" height="22">
+  <!--
+    Menu bar template image, drawn on a 22-unit grid: 1 unit = 1pt at @1x, so
+    rsvg-convert -w 22 / -w 44 lands on whole pixels for both densities.
+
+    Monochrome on purpose: macOS recolours a template image from its alpha
+    channel alone, so the artwork must stay pure #000 plus transparency and is
+    never more than one ink colour. Eye pupils are kept as opaque dots inside
+    the punched-out eyes, which is what turns them into the mascot's big eyes in
+    a light menu bar (the dark bar inverts the ink, pupils included).
+
+    Shape: the squared-off cat head from the app icon with tall ears, a wide
+    notch, two big eyes and a raised tail. Content spans 18.2pt of the 22-unit
+    canvas so the item keeps clear of the menu bar edges.
+  -->
+  <path fill="#000" fill-rule="evenodd" d="
+    M 6.75 16.70
+    V 5.55 Q 6.75 5.00 6.80 4.45
+    L 7.01 2.32 Q 7.05 1.90 7.35 2.19
+    L 9.71 4.47 Q 10.11 4.85 10.66 4.85
+    H 14.64 Q 15.19 4.85 15.59 4.47
+    L 17.95 2.19 Q 18.25 1.90 18.29 2.32
+    L 18.50 4.45 Q 18.55 5.00 18.55 5.55
+    V 16.70
+    A 3.40 3.40 0 0 1 15.15 20.10
+    H 10.15 A 3.40 3.40 0 0 1 6.75 16.70 Z
+    M 7.80 9.20 a 1.95 1.95 0 1 0 3.90 0 a 1.95 1.95 0 1 0 -3.90 0 Z
+    M 13.60 9.20 a 1.95 1.95 0 1 0 3.90 0 a 1.95 1.95 0 1 0 -3.90 0 Z"/>
+  <circle cx="9.75" cy="9.20" r="0.95"/>
+  <circle cx="15.55" cy="9.20" r="0.95"/>
+  <path fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+        d="M 9.00 18.70 C 6.50 19.00 4.55 15.50 3.90 10.00"/>
 </svg>
