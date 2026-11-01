@@ -50,8 +50,8 @@ iconutil -c icns build/icon.iconset -o build/icon.icns
 # 2) README 用的单张图标
 magick "$SRC" -resize 512x512 build/icon.png
 
-# 3) 站点图标（README 与 og 由 tools/make-og.py 之外的流程单独更新）
-for size in 512 256 128; do
+# 3) 站点图标；128 没有页面在用，少生成一张就不会留下死文件（og 卡片走 tools/make-og.cjs）
+for size in 512 256; do
   magick "$SRC" -resize "${size}x${size}" "site/public/assets/icon-${size}.png"
 done
 
