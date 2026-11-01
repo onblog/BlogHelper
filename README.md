@@ -276,9 +276,10 @@ Shipping to production is still `git push`: Cloudflare Workers Builds deploys th
 
 ## Status
 
-`1.8.0`: 21 actions, image upload to your own S3-compatible bucket, save-to-Downloads and Preview,
-local clipboard history, undo next to the action count, an update check, an anonymous usage page, and the bilingual panel. The app is now called 喵喵剪贴板 (Miaomiao Bar) and lives at **bar.wordtk.com**. The site lives at
-**https://bar.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
+`1.14.0`: 21 actions across six groups, image upload to your own S3-compatible bucket, save to
+Downloads and open in Preview, local clipboard history, undo next to the action count, an update
+check, an anonymous usage page, and the bilingual panel. The app is called 喵喵剪贴板 (Miaomiao Bar)
+and lives at **bar.wordtk.com**; dmgs for both architectures are served from Cloudflare R2.
 
 ## License
 
