@@ -7,7 +7,7 @@
 **macOS 上的剪贴板工作台：文字和图片，凡是进了剪贴板的东西，出来的都是能直接用的样子。**
 
 <a href="https://bar.wordtk.com"><img alt="下载" src="https://img.shields.io/badge/%E2%96%B6_%E4%B8%8B%E8%BD%BD-bar.wordtk.com-f2b544?style=for-the-badge"></a>
-<img alt="版本" src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.13.0-f2b544?style=for-the-badge">
+<img alt="版本" src="https://img.shields.io/badge/%E7%89%88%E6%9C%AC-1.14.0-f2b544?style=for-the-badge">
 
 <br/>
 
