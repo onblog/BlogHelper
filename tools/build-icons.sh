@@ -3,16 +3,23 @@
 # 从位图母版重新生成全部图标（应用图标 / favicon / 站点图标）。
 #
 # 母版（提交进仓库，不再从 SVG 渲染）：
-#   build/icon-source.png   1024²，纯白圆角底 + 橘猫全图，四角透明
-#   build/icon-favicon.png  1024²，同一套白底 + 猫脸特写，供 16/32px 小尺寸用
+#   build/icon-source.png   1024²，纯白圆角底板（r=215，四角透明）+ 整幅插画
+#   build/icon-favicon.png  1024²，同一块底板 + 头部特写，供 16/32px 用
 #
-# 密度约定：整图母版里橘猫占画布约 93%，四边至少留 3% 空白（圆角不裁切）；
-# 换图时保持这个比例，否则图标会变成「白底中间一个小橘猫」。底板是纯白，
-# 所以 alpha < 250 的像素 RGB 必须是白色，否则残留的深色会在此后压白底
-# （apple-touch-icon / og）时露出灰弧。
+# 底板几何：圆角半径 215 / 1024，与上一版图标完全一致。换图时沿用这块遮罩，
+# 否则 Dock 里的图标会比邻居胖一圈或小一圈。
 #
-# 为什么 16/32 用猫脸：整张构图缩到 16px 会糊成一团橙色，特写还能认出是猫。
-# 为什么不用 rsvg-convert：图标源已是手绘位图，矢量管线只会增加偏差。
+# 出血约定：这张插画在源文件四边就被裁切了（头发、裙摆贴边），所以整幅满出血，
+# 不缩进去留白——缩小只会把源文件的硬切口露在底板中间。代价是圆角处会切掉
+# 约 0.4% 的画面，真正被切的是发梢和裙角，可接受。
+#
+# 边缘约定：底板边缘那一圈像素保留插画本色，不压白，这样圆角压在深色、浅色
+# Dock 上都能自然过渡；唯一压白底的是 apple-touch-icon（第 5 步），因为 iOS
+# 会把透明区域涂黑。
+#
+# 为什么 16/32 用头部特写：整幅人物缩到 16px 只剩一团深色头发，特写还能认出
+# 脸和猫耳。
+# 为什么不用 rsvg-convert：图标源是位图插画，矢量管线只会增加偏差。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -27,14 +34,16 @@ command -v iconutil >/dev/null || { echo "缺少 iconutil（macOS 自带）" >&2
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
-# 1) macOS 图标集 → icns
+# 1) macOS 图标集 → icns；16/32 用头部特写，64 及以上用整幅插画
 mkdir -p build/icon.iconset
 for spec in 16:icon_16x16 32:icon_16x16@2x 32:icon_32x32 64:icon_32x32@2x \
             128:icon_128x128 256:icon_128x128@2x 256:icon_256x256 512:icon_256x256@2x \
             512:icon_512x512 1024:icon_512x512@2x; do
   size="${spec%%:*}"
   name="${spec#*:}"
-  magick "$SRC" -resize "${size}x${size}" "build/icon.iconset/${name}.png"
+  art="$SRC"
+  [ "$size" -le 32 ] && art="$FACE"
+  magick "$art" -resize "${size}x${size}" "build/icon.iconset/${name}.png"
 done
 iconutil -c icns build/icon.iconset -o build/icon.icns
 
@@ -46,10 +55,10 @@ for size in 512 256 128; do
   magick "$SRC" -resize "${size}x${size}" "site/public/assets/icon-${size}.png"
 done
 
-# 4) favicon.ico：小尺寸走猫脸，48px 用整图
+# 4) favicon.ico：三档都走头部特写，浏览器标签/书签里的尺寸都太小，整幅人物读不出来
 magick "$FACE" -resize 16x16 "$tmp/f16.png"
 magick "$FACE" -resize 32x32 "$tmp/f32.png"
-magick "$SRC" -resize 48x48 "$tmp/f48.png"
+magick "$FACE" -resize 48x48 "$tmp/f48.png"
 magick "$tmp/f16.png" "$tmp/f32.png" "$tmp/f48.png" site/public/favicon.ico
 
 # 5) apple-touch-icon：iOS 会把透明区域涂黑，压到纯白底上
